@@ -1,0 +1,89 @@
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+
+namespace ZofraTacna.Datos
+{
+    public class RepositorioUsuariosRoles
+    {
+        private readonly string _conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+
+        public List<UsuarioDto> ObtenerTodos()
+        {
+            var lista = new List<UsuarioDto>();
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"SELECT u.IdUsuario, u.LoginUsuario, m.Descripcion AS Rol, u.Activo
+                               FROM UsuarioSistema u
+                               JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
+                               ORDER BY u.IdUsuario";
+                using (var cmd = new SqlCommand(sql, conn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                        lista.Add(new UsuarioDto
+                        {
+                            IdUsuario    = (int)dr["IdUsuario"],
+                            LoginUsuario = dr["LoginUsuario"].ToString(),
+                            Rol          = dr["Rol"].ToString(),
+                            Activo       = (bool)dr["Activo"]
+                        });
+                }
+            }
+            return lista;
+        }
+
+        public bool CambiarEstado(int idUsuario, bool activo)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "UPDATE UsuarioSistema SET Activo=@activo WHERE IdUsuario=@id";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@activo", activo);
+                    cmd.Parameters.AddWithValue("@id",     idUsuario);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public List<EmpleadoSASDto> ObtenerEmpleadosActivos()
+        {
+            var lista = new List<EmpleadoSASDto>();
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "SELECT LoginUsuario, NombreCompleto, Email FROM VW_EmpleadosActivos";
+                using (var cmd = new SqlCommand(sql, conn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                        lista.Add(new EmpleadoSASDto
+                        {
+                            LoginUsuario  = dr["LoginUsuario"].ToString(),
+                            NombreCompleto = dr["NombreCompleto"].ToString(),
+                            Email         = dr["Email"].ToString()
+                        });
+                }
+            }
+            return lista;
+        }
+    }
+
+    public class UsuarioDto
+    {
+        public int    IdUsuario    { get; set; }
+        public string LoginUsuario { get; set; }
+        public string Rol          { get; set; }
+        public bool   Activo       { get; set; }
+    }
+
+    public class EmpleadoSASDto
+    {
+        public string LoginUsuario   { get; set; }
+        public string NombreCompleto { get; set; }
+        public string Email          { get; set; }
+    }
+}

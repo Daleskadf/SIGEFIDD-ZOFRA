@@ -1,0 +1,120 @@
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using ZofraTacna.Models;
+
+namespace ZofraTacna.Datos
+{
+    public class RepositorioDocumentos
+    {
+        private readonly string _conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+
+        public List<Documento> ObtenerPorRegistrador(string login)
+        {
+            var lista = new List<Documento>();
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "SELECT * FROM Documento WHERE LoginUsuarioRegistrador=@u AND Activo=1 ORDER BY FechaCreacion DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@u", login);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                            lista.Add(MapearDocumento(dr));
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public int Insertar(Documento doc)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO Documento (CodigoDocumento,Asunto,IdTipoDocumento,AreaResponsable,
+                               LoginUsuarioRegistrador,RutaArchivoPDF,IdEstadoDocumento)
+                               VALUES (@cod,@asunto,@tipo,@area,@login,@ruta,@estado);
+                               SELECT SCOPE_IDENTITY();";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@cod",    doc.CodigoDocumento);
+                    cmd.Parameters.AddWithValue("@asunto", doc.Asunto);
+                    cmd.Parameters.AddWithValue("@tipo",   doc.IdTipoDocumento);
+                    cmd.Parameters.AddWithValue("@area",   doc.AreaResponsable);
+                    cmd.Parameters.AddWithValue("@login",  doc.LoginUsuarioRegistrador);
+                    cmd.Parameters.AddWithValue("@ruta",   doc.RutaArchivoPDF);
+                    cmd.Parameters.AddWithValue("@estado", doc.IdEstadoDocumento);
+                    return System.Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
+
+        public bool ActualizarEstado(int idDocumento, int idEstado, string loginAccion, string detalle)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "UPDATE Documento SET IdEstadoDocumento=@estado WHERE IdDocumento=@id";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@estado", idEstado);
+                    cmd.Parameters.AddWithValue("@id",     idDocumento);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool InsertarRevision(RevisionDetalle revision)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO RevisionDetalle (IdParticipante,Comentario,EsObservacion)
+                               VALUES (@idp,@com,@obs)";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idp", revision.IdParticipante);
+                    cmd.Parameters.AddWithValue("@com", revision.Comentario);
+                    cmd.Parameters.AddWithValue("@obs", revision.EsObservacion);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool InsertarFirma(FirmaDetalle firma)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO FirmaDetalle (IdParticipante,IdEstadoFirma,FirmaDigitalHash,FechaFirma)
+                               VALUES (@idp,
+                                 (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_FIRMA' AND Codigo='FIR'),
+                                 @hash, GETDATE())";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idp",  firma.IdParticipante);
+                    cmd.Parameters.AddWithValue("@hash", firma.FirmaDigitalHash ?? (object)System.DBNull.Value);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        private Documento MapearDocumento(SqlDataReader dr)
+        {
+            return new Documento
+            {
+                IdDocumento             = (int)dr["IdDocumento"],
+                CodigoDocumento         = dr["CodigoDocumento"].ToString(),
+                Asunto                  = dr["Asunto"].ToString(),
+                IdTipoDocumento         = (int)dr["IdTipoDocumento"],
+                AreaResponsable         = dr["AreaResponsable"].ToString(),
+                LoginUsuarioRegistrador = dr["LoginUsuarioRegistrador"].ToString(),
+                RutaArchivoPDF          = dr["RutaArchivoPDF"].ToString(),
+                IdEstadoDocumento       = (int)dr["IdEstadoDocumento"]
+            };
+        }
+    }
+}

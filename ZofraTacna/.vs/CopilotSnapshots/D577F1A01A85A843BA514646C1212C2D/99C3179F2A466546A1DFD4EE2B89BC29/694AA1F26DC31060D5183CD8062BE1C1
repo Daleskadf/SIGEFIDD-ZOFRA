@@ -1,0 +1,335 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.IO;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace ZofraTacna.Presentacion
+{
+    public class FirmanteItem
+    {
+        public int Orden { get; set; }
+        public string Login { get; set; }
+        public string Tipo { get; set; }
+    }
+
+    public partial class CargarDocumento : Page
+    {
+        private List<FirmanteItem> Firmantes
+        {
+            get
+            {
+                if (Session["FirmantesTemp"] == null)
+                    Session["FirmantesTemp"] = new List<FirmanteItem>();
+                return (List<FirmanteItem>)Session["FirmantesTemp"];
+            }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["LoginUsuario"] == null) { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
+            string rol = Session["RolCodigo"].ToString();
+            if (rol != "ADM" && rol != "REG") { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
+
+            if (!IsPostBack)
+            {
+                string login = Session["LoginUsuario"].ToString();
+                litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
+                litNombre.Text = login;
+                litRol.Text = Session["RolNombre"].ToString();
+                CargarCategorias();
+                CargarUsuariosParaFirmar();
+                litSidebarNav.Text = BuildNav(rol);
+                Session["FirmantesTemp"] = new List<FirmanteItem>();
+            }
+
+            BindFirmantes();
+        }
+
+        private string BuildNav(string rol)
+        {
+            string svgHome = "<svg viewBox='0 0 24 24'><path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/></svg>";
+            string svgBandeja = "<svg viewBox='0 0 24 24'><path d='M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.96.5 13.34.5c-1.3 0-2.48.54-3.34 1.4L9 3l-1-.94C7.12 1.04 5.94.5 4.66.5 2.04.5 0 2.54 0 4.66 0 5.12.11 5.56.18 6H0v14h20V6z'/></svg>";
+            string svgCargar = "<svg viewBox='0 0 24 24'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z'/></svg>";
+            string svgMisDocs = "<svg viewBox='0 0 24 24'><path d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/></svg>";
+            string svgRoles = "<svg viewBox='0 0 24 24'><path d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/></svg>";
+            string svgFirm = "<svg viewBox='0 0 24 24'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z'/></svg>";
+            string svgEstado = "<svg viewBox='0 0 24 24'><path d='M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'/></svg>";
+
+            if (rol == "REG")
+            {
+                return
+                    "<a href='../Registrador.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                    "<a href='CargarDocumento.aspx' class='nav-item active'>" + svgCargar + "Cargar Documento</a>" +
+                    "<a href='MisDocumentos.aspx' class='nav-item'>" + svgMisDocs + "Mis Documentos</a>";
+            }
+            int badge = GetBadgeCount();
+            return
+                "<a href='../../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo<span class='nav-badge'>" + badge + "</span></a>" +
+                "<a href='CargarDocumento.aspx' class='nav-item active'>" + svgCargar + "Cargar Documento</a>" +
+                "<a href='MisDocumentos.aspx' class='nav-item'>" + svgMisDocs + "Mis Documentos</a>" +
+                "<a href='../GestionRoles/GestionRoles.aspx' class='nav-item'>" + svgRoles + "Gesti&oacute;n de Roles</a>" +
+                "<a href='../VisualizarFirmantes/VisualizarFirmantes.aspx' class='nav-item'>" + svgFirm + "Visualizar Firmantes</a>" +
+                "<a href='#' class='nav-item'>" + svgEstado + "Estado del Sistema</a>";
+        }
+
+        private int GetBadgeCount()
+        {
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                using (var cmd = new SqlCommand(
+                    "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')", cn))
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+            }
+        }
+
+        private void CargarCategorias()
+        {
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                using (var cmd = new SqlCommand("SELECT IdMaestro, Descripcion FROM Maestro WHERE Tipo='TIPO_DOC' AND Activo=1 ORDER BY Orden", cn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    ddlCategoria.Items.Clear();
+                    ddlCategoria.Items.Add(new ListItem("Seleccionar...", ""));
+                    while (dr.Read())
+                        ddlCategoria.Items.Add(new ListItem(dr["Descripcion"].ToString(), dr["IdMaestro"].ToString()));
+                }
+            }
+        }
+
+        private void CargarUsuariosParaFirmar()
+        {
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                string sql = @"SELECT u.LoginUsuario, m.Descripcion AS RolNombre
+                               FROM UsuarioSistema u
+                               JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
+                               WHERE u.Activo=1 AND m.Codigo IN ('FIR','REV')
+                               ORDER BY m.Orden, u.LoginUsuario";
+                using (var cmd = new SqlCommand(sql, cn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    ddlFirmante.Items.Clear();
+                    ddlFirmante.Items.Add(new ListItem("Seleccionar usuario...", ""));
+                    while (dr.Read())
+                        ddlFirmante.Items.Add(new ListItem(
+                            dr["LoginUsuario"] + " (" + dr["RolNombre"] + ")",
+                            dr["LoginUsuario"].ToString()
+                        ));
+                }
+            }
+        }
+
+        private void BindFirmantes()
+        {
+            rptFirmantes.DataSource = Firmantes;
+            rptFirmantes.DataBind();
+        }
+
+        protected void btnAgregarFirmante_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(ddlFirmante.SelectedValue))
+            { MostrarMsg("Seleccione un usuario para agregar.", false); return; }
+
+            string loginSel = ddlFirmante.SelectedValue;
+
+            if (Firmantes.Exists(f => f.Login == loginSel))
+            { MostrarMsg("Ese usuario ya está en la lista.", false); return; }
+
+            string textoItem = ddlFirmante.SelectedItem.Text;
+            string tipo = textoItem.Contains("Firmante") ? "Firmante" : "Revisor";
+
+            Firmantes.Add(new FirmanteItem
+            {
+                Orden = Firmantes.Count + 1,
+                Login = loginSel,
+                Tipo = tipo
+            });
+
+            BindFirmantes();
+            MostrarMsg("Usuario agregado correctamente.", true);
+        }
+
+        protected void rptFirmantes_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "Eliminar")
+            {
+                Firmantes.RemoveAll(f => f.Login == e.CommandArgument.ToString());
+                for (int i = 0; i < Firmantes.Count; i++)
+                    Firmantes[i].Orden = i + 1;
+                BindFirmantes();
+            }
+        }
+
+        protected void btnCargar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtTitulo.Text) || string.IsNullOrWhiteSpace(ddlCategoria.SelectedValue))
+                { MostrarMsg("Complete los campos obligatorios.", false); return; }
+                if (!filePDF.HasFile || filePDF.PostedFile == null)
+                { MostrarMsg("Debe adjuntar un archivo PDF.", false); return; }
+                if (Path.GetExtension(filePDF.FileName).ToLower() != ".pdf")
+                { MostrarMsg("Solo se permiten archivos PDF.", false); return; }
+                if (filePDF.PostedFile.ContentLength > 10 * 1024 * 1024)
+                { MostrarMsg("El archivo supera los 10MB.", false); return; }
+                if (Firmantes.Count == 0)
+                { MostrarMsg("Debe agregar al menos un firmante.", false); return; }
+
+                // Leer PDF en memoria
+                byte[] pdfBytes;
+                using (BinaryReader br = new BinaryReader(filePDF.PostedFile.InputStream))
+                    pdfBytes = br.ReadBytes(filePDF.PostedFile.ContentLength);
+
+                if (pdfBytes.Length == 0) { MostrarMsg("El PDF está vacío.", false); return; }
+
+                string nombreArchivo = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Path.GetFileName(filePDF.FileName);
+                int horasRev = int.TryParse(txtPlazoRevision.Text.Trim(), out int hr) ? hr : 24;
+                int horasFirma = int.TryParse(txtPlazoFirma.Text.Trim(), out int hf) ? hf : 48;
+
+                string connDoc = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+                string connFile = ConfigurationManager.ConnectionStrings["FirmaDigital_Files"].ConnectionString;
+
+                int idDocumento;
+
+                // PASO 1: Guardar documento + participantes en FirmaDigital
+                using (var cn = new SqlConnection(connDoc))
+                {
+                    cn.Open();
+
+                    int idEstadoReg;
+                    using (var cmd = new SqlCommand(
+                        "SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_DOC' AND Codigo='REG'", cn))
+                    {
+                        object r = cmd.ExecuteScalar();
+                        if (r == null || r == DBNull.Value)
+                        { MostrarMsg("ERROR: No existe estado REG en Maestro.", false); return; }
+                        idEstadoReg = Convert.ToInt32(r);
+                    }
+
+                    string codigo = "DOC-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                    string sql = @"INSERT INTO Documento
+                        (CodigoDocumento,Asunto,Descripcion,IdTipoDocumento,
+                         AreaResponsable,AreaCategoria,LoginUsuarioRegistrador,
+                         IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion)
+                        VALUES
+                        (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma);
+                        SELECT SCOPE_IDENTITY();";
+
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@cod", codigo);
+                        cmd.Parameters.AddWithValue("@asunto", txtTitulo.Text.Trim());
+                        cmd.Parameters.AddWithValue("@desc", txtDescripcion.Text.Trim());
+                        cmd.Parameters.AddWithValue("@tipo", int.Parse(ddlCategoria.SelectedValue));
+                        cmd.Parameters.AddWithValue("@area", txtDescripcion.Text.Trim().Length > 0 ? txtDescripcion.Text.Trim() : txtTitulo.Text.Trim());
+                        cmd.Parameters.AddWithValue("@catdesc", ddlCategoria.SelectedItem.Text);
+                        cmd.Parameters.AddWithValue("@login", Session["LoginUsuario"].ToString());
+                        cmd.Parameters.AddWithValue("@estado", idEstadoReg);
+                        cmd.Parameters.AddWithValue("@pri", ddlPrioridad.SelectedValue);
+                        cmd.Parameters.AddWithValue("@limRev", DateTime.Now.AddHours(horasRev));
+                        cmd.Parameters.AddWithValue("@limFirma", DateTime.Now.AddHours(horasFirma));
+
+                        object scalar = cmd.ExecuteScalar();
+                        if (scalar == null || scalar == DBNull.Value)
+                        { MostrarMsg("No se pudo crear el documento.", false); return; }
+                        idDocumento = Convert.ToInt32(scalar);
+                    }
+
+                    // Obtener IdMaestro de tipos y estado PEN una sola vez
+                    int idTipoFirmante, idTipoRevisor, idEstadoPen;
+
+                    using (var cmd = new SqlCommand(
+                        "SELECT Codigo, IdMaestro FROM Maestro WHERE Tipo IN ('TIPO_PARTICIPANTE','ESTADO_PARTICIPANTE') AND Codigo IN ('FIR','REV','PEN')", cn))
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        idTipoFirmante = 0; idTipoRevisor = 0; idEstadoPen = 0;
+                        while (dr.Read())
+                        {
+                            string cod = dr["Codigo"].ToString();
+                            int id = Convert.ToInt32(dr["IdMaestro"]);
+                            if (cod == "FIR") idTipoFirmante = id;
+                            else if (cod == "REV") idTipoRevisor = id;
+                            else if (cod == "PEN") idEstadoPen = id;
+                        }
+                    }
+
+                    // Insertar cada participante
+                    foreach (var f in Firmantes)
+                    {
+                        int idTipo = f.Tipo == "Firmante" ? idTipoFirmante : idTipoRevisor;
+
+                        string sqlPart = @"INSERT INTO DocumentoParticipante
+                            (IdDocumento,LoginUsuario,OrdenSecuencial,IdTipoParticipante,EstadoParticipante)
+                            VALUES (@idDoc,@login,@orden,@tipo,@estado)";
+
+                        using (var cmd = new SqlCommand(sqlPart, cn))
+                        {
+                            cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                            cmd.Parameters.AddWithValue("@login", f.Login);
+                            cmd.Parameters.AddWithValue("@orden", f.Orden);
+                            cmd.Parameters.AddWithValue("@tipo", idTipo);
+                            cmd.Parameters.AddWithValue("@estado", idEstadoPen);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                // PASO 2: Guardar PDF en FirmaDigital_Files
+                using (var cn = new SqlConnection(connFile))
+                {
+                    cn.Open();
+                    string sqlAdj = @"INSERT INTO DocumentoAdjunto
+                        (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
+                        VALUES (@id,@pdf,@nom,@mime,@size,@user)";
+
+                    using (var cmd = new SqlCommand(sqlAdj, cn))
+                    {
+                        cmd.CommandTimeout = 120;
+                        cmd.Parameters.AddWithValue("@id", idDocumento);
+                        cmd.Parameters.Add("@pdf", System.Data.SqlDbType.VarBinary, -1).Value = pdfBytes;
+                        cmd.Parameters.AddWithValue("@nom", nombreArchivo);
+                        cmd.Parameters.AddWithValue("@mime", "application/pdf");
+                        cmd.Parameters.AddWithValue("@size", pdfBytes.Length);
+                        cmd.Parameters.AddWithValue("@user", Session["LoginUsuario"].ToString());
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Limpiar todo
+                Session["FirmantesTemp"] = new List<FirmanteItem>();
+                BindFirmantes();
+                txtTitulo.Text = ""; txtDescripcion.Text = "";
+                txtPlazoRevision.Text = "24"; txtPlazoFirma.Text = "48";
+                MostrarMsg("✔ Documento registrado y firmantes asignados correctamente.", true);
+            }
+            catch (Exception ex)
+            {
+                MostrarMsg("ERROR: " + ex.Message + " | " + (ex.InnerException?.Message ?? ""), false);
+            }
+        }
+
+        protected void btnCancelar_Click(object sender, EventArgs e)
+        { Response.Redirect("~/Presentacion/GestionDocumentos/MisDocumentos.aspx"); }
+
+        protected void btnCerrarSesion_Click(object sender, EventArgs e)
+        { Session.Clear(); Session.Abandon(); Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); }
+
+        private void MostrarMsg(string msg, bool ok)
+        {
+            lblMensaje.Text = msg;
+            lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
+            lblMensaje.Visible = true;
+        }
+    }
+}

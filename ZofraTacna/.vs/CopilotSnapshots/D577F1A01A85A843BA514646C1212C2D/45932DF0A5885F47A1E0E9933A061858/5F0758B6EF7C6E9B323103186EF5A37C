@@ -1,0 +1,43 @@
+﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using ZofraTacna.Datos;
+
+namespace ZofraTacna.ServiciosExternos
+{
+    /// <summary>
+    /// Conecta con la BD simulada del Sistema de Autenticacion (SAS).
+    /// En produccion consultaria el servicio institucional real.
+    /// Valida que los usuarios existan en la BD institucional (administracion)
+    /// antes de permitir acceso al sistema.
+    /// </summary>
+    public class ConectorSAS
+    {
+        private readonly RepositorioUsuariosRoles _repo = new RepositorioUsuariosRoles();
+
+        /// <summary>
+        /// Obtiene lista de empleados activos desde VW_EmpleadosActivos
+        /// para cargar dinámicamente en DropDownList del Login.
+        /// </summary>
+        public List<EmpleadoSASDto> ObtenerEmpleadosActivos()
+        {
+            return _repo.ObtenerEmpleadosActivos();
+        }
+
+        /// <summary>
+        /// Valida si un LoginUsuario existe en la vista de empleados activos
+        /// (BD administracion).
+        /// </summary>
+        public bool ValidarEmpleadoActivo(string loginUsuario)
+        {
+            return _repo.ExisteEnEmpleadosActivos(loginUsuario);
+        }
+
+        /// <summary>
+        /// Valida si un usuario ya tiene un rol asignado en el sistema.
+        /// </summary>
+        public bool ValidarNoTieneRolAsignado(string loginUsuario)
+        {
+            return !_repo.YaTieneRolAsignado(loginUsuario);
+        }
+    }
+}

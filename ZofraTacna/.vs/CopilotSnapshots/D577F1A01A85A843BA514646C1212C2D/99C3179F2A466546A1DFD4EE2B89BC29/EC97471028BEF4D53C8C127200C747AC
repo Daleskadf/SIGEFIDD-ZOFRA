@@ -1,0 +1,26 @@
+﻿using System.Collections.Generic;
+using ZofraTacna.Datos;
+using ZofraTacna.Models;
+
+namespace ZofraTacna.LogicaNegocio
+{
+    public class ModuloGestionDocumental
+    {
+        private readonly RepositorioDocumentos _repo = new RepositorioDocumentos();
+
+        public List<Documento> ObtenerDocumentosPorUsuario(string loginUsuario)
+        {
+            return _repo.ObtenerPorRegistrador(loginUsuario);
+        }
+
+        public int RegistrarDocumento(Documento doc)
+        {
+            return _repo.Insertar(doc);
+        }
+
+        public bool ActualizarEstado(int idDocumento, int idEstadoNuevo, string loginAccion, string detalle)
+        {
+            return _repo.ActualizarEstado(idDocumento, idEstadoNuevo, loginAccion, detalle);
+        }
+    }
+}

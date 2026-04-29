@@ -1,0 +1,98 @@
+using System;
+
+namespace ZofraTacna.Models
+{
+    public class Documento
+    {
+        public int      IdDocumento             { get; set; }
+        public string   CodigoDocumento         { get; set; }
+        public string   Asunto                  { get; set; }
+        public string   Descripcion             { get; set; }
+        public int      IdTipoDocumento         { get; set; }
+        public string   AreaResponsable         { get; set; }
+        public string   AreaCategoria           { get; set; }
+        public DateTime FechaCreacion           { get; set; }
+        public string   LoginUsuarioRegistrador { get; set; }
+        public string   RutaArchivoPDF          { get; set; }
+        public string   RutaArchivoPDF_Firmado  { get; set; }
+        public int      IdEstadoDocumento       { get; set; }
+        public string   Prioridad               { get; set; }
+        public DateTime FechaLimiteRevision     { get; set; }
+        public DateTime FechaLimiteAprobacion   { get; set; }
+        public bool     Activo                  { get; set; }
+    }
+
+    public class DocumentoParticipante
+    {
+        public int      IdParticipante          { get; set; }
+        public int      IdDocumento             { get; set; }
+        public string   LoginUsuario            { get; set; }
+        public int      OrdenSecuencial         { get; set; }
+        public int      IdTipoParticipante      { get; set; }
+        public int      EstadoParticipante      { get; set; }
+        public string   CorreoInstitucional     { get; set; }
+    }
+
+    public class DocumentoAdjunto
+    {
+        public int      IdAdjunto               { get; set; }
+        public int      IdDocumento             { get; set; }
+        public byte[]   ContenidoPDF            { get; set; }
+        public string   NombreArchivo           { get; set; }
+        public string   TipoMime                { get; set; }
+        public int      TamanioBytes             { get; set; }
+        public string   UsuarioCreacion         { get; set; }
+    }
+
+    public class RegistrarDocumentoRequest
+    {
+        public string   CodigoDocumento         { get; set; }  // Ej: RS, AD, etc
+        public string   NumeroDocumento         { get; set; }  // Ej: 001, 002, etc
+        public int      AnoDocumento            { get; set; }  // Ej: 2026
+        public string   Asunto                  { get; set; }
+        public string   Descripcion             { get; set; }
+        public int      IdTipoDocumento         { get; set; }
+        public string   Prioridad               { get; set; }
+        public int      HorasRevision           { get; set; }
+        public int      HorasFirma              { get; set; }
+        public byte[]   ContenidoPDF            { get; set; }
+        public string   NombreArchivoPDF        { get; set; }
+        public System.Collections.Generic.List<RegistrarParticipanteItem> Participantes { get; set; }
+    }
+
+    public class RegistrarParticipanteItem
+    {
+        public int      Orden                   { get; set; }
+        public string   Login                   { get; set; }
+        public string   Tipo                    { get; set; }
+    }
+
+    public class RevisionDetalle
+    {
+        public int      IdRevision     { get; set; }
+        public int      IdParticipante { get; set; }
+        public string   Comentario     { get; set; }
+        public bool     EsObservacion  { get; set; }
+        public DateTime FechaRevision  { get; set; }
+    }
+
+    public class FirmaDetalle
+    {
+        public int      IdFirma          { get; set; }
+        public int      IdParticipante   { get; set; }
+        public int      IdEstadoFirma    { get; set; }
+        public string   FirmaDigitalHash { get; set; }
+        public DateTime? FechaFirma      { get; set; }
+    }
+
+    public class HistorialDocumento
+    {
+        public int      IdHistorial        { get; set; }
+        public int      IdDocumento        { get; set; }
+        public int?     IdEstadoAnterior   { get; set; }
+        public int      IdEstadoNuevo      { get; set; }
+        public string   LoginUsuarioAccion { get; set; }
+        public string   DetalleAccion      { get; set; }
+        public DateTime FechaCambio        { get; set; }
+    }
+}

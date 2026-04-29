@@ -1,0 +1,258 @@
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using ZofraTacna.Models;
+
+namespace ZofraTacna.Datos
+{
+    public class RepositorioDocumentos
+    {
+        private readonly string _connDoc = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+        private readonly string _connFiles = ConfigurationManager.ConnectionStrings["FirmaDigital_Files"].ConnectionString;
+
+        #region Lectura de Documentos
+
+        public List<Documento> ObtenerPorRegistrador(string login)
+        {
+            var lista = new List<Documento>();
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = "SELECT * FROM Documento WHERE LoginUsuarioRegistrador=@u AND Activo=1 ORDER BY FechaCreacion DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@u", login);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                            lista.Add(MapearDocumento(dr));
+                    }
+                }
+            }
+            return lista;
+        }
+
+        #endregion
+
+        #region Inserción de Documentos
+
+        public int InsertarDocumentoConParticipantes(RegistrarDocumentoRequest request, string loginUsuario)
+        {
+            int idDocumento = 0;
+
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // PASO 1: Obtener estado "REG"
+                        int idEstadoReg = ObtenerIdMaestro(conn, transaction, "ESTADO_DOC", "REG");
+                        if (idEstadoReg == 0)
+                            throw new Exception("No existe estado REG en Maestro.");
+
+                        // PASO 2: Crear el documento
+                        // El CodigoDocumento ya viene formado desde ModuloGestionDocumental (ej: RS-0001-2026)
+                        string sqlInsert = @"INSERT INTO Documento
+                            (CodigoDocumento,Asunto,Descripcion,IdTipoDocumento,
+                             AreaResponsable,AreaCategoria,LoginUsuarioRegistrador,
+                             IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion,Activo)
+                            VALUES
+                            (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma,1);
+                            SELECT SCOPE_IDENTITY();";
+
+                        using (var cmd = new SqlCommand(sqlInsert, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@cod", request.CodigoDocumento);
+                            cmd.Parameters.AddWithValue("@asunto", request.Asunto);
+                            cmd.Parameters.AddWithValue("@desc", request.Descripcion ?? "");
+                            cmd.Parameters.AddWithValue("@tipo", request.IdTipoDocumento);
+                            cmd.Parameters.AddWithValue("@area", request.Descripcion ?? request.Asunto);
+                            cmd.Parameters.AddWithValue("@catdesc", request.Asunto);
+                            cmd.Parameters.AddWithValue("@login", loginUsuario);
+                            cmd.Parameters.AddWithValue("@estado", idEstadoReg);
+                            cmd.Parameters.AddWithValue("@pri", request.Prioridad);
+                            cmd.Parameters.AddWithValue("@limRev", DateTime.Now.AddHours(request.HorasRevision));
+                            cmd.Parameters.AddWithValue("@limFirma", DateTime.Now.AddHours(request.HorasFirma));
+
+                            object result = cmd.ExecuteScalar();
+                            if (result == null || result == DBNull.Value)
+                                throw new Exception("No se pudo crear el documento.");
+                            idDocumento = Convert.ToInt32(result);
+                        }
+
+                        // PASO 3: Obtener IDs de tipos de participantes
+                        int idTipoFirmante = ObtenerIdMaestro(conn, transaction, "TIPO_PARTICIPANTE", "FIR");
+                        int idTipoRevisor = ObtenerIdMaestro(conn, transaction, "TIPO_PARTICIPANTE", "REV");
+                        int idEstadoPen = ObtenerIdMaestro(conn, transaction, "ESTADO_PARTICIPANTE", "PEN");
+
+                        // PASO 4: Insertar participantes
+                        foreach (var participante in request.Participantes)
+                        {
+                            int idTipo = participante.Tipo == "Firmante" ? idTipoFirmante : idTipoRevisor;
+                            InsertarParticipante(conn, transaction, idDocumento, participante.Login, 
+                                participante.Orden, idTipo, idEstadoPen);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // PASO 5: Guardar PDF en BD de archivos
+            if (request.ContenidoPDF != null && request.ContenidoPDF.Length > 0)
+            {
+                InsertarAdjuntoPDF(idDocumento, request.ContenidoPDF, request.NombreArchivoPDF, loginUsuario);
+            }
+
+            return idDocumento;
+        }
+
+        private void InsertarParticipante(SqlConnection conn, SqlTransaction transaction, int idDocumento, 
+            string loginUsuario, int orden, int idTipo, int idEstado)
+        {
+            string sql = @"INSERT INTO DocumentoParticipante
+                (IdDocumento,LoginUsuario,OrdenSecuencial,IdTipoParticipante,EstadoParticipante)
+                VALUES (@idDoc,@login,@orden,@tipo,@estado)";
+
+            using (var cmd = new SqlCommand(sql, conn, transaction))
+            {
+                cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                cmd.Parameters.AddWithValue("@login", loginUsuario);
+                cmd.Parameters.AddWithValue("@orden", orden);
+                cmd.Parameters.AddWithValue("@tipo", idTipo);
+                cmd.Parameters.AddWithValue("@estado", idEstado);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void InsertarAdjuntoPDF(int idDocumento, byte[] contenidoPDF, string nombreArchivo, string loginUsuario)
+        {
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO DocumentoAdjunto
+                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
+                    VALUES (@id,@pdf,@nom,@mime,@size,@user)";
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.CommandTimeout = 120;
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.Add("@pdf", SqlDbType.VarBinary, -1).Value = contenidoPDF;
+                    cmd.Parameters.AddWithValue("@nom", nombreArchivo);
+                    cmd.Parameters.AddWithValue("@mime", "application/pdf");
+                    cmd.Parameters.AddWithValue("@size", contenidoPDF.Length);
+                    cmd.Parameters.AddWithValue("@user", loginUsuario);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Actualización
+
+        public bool ActualizarEstado(int idDocumento, int idEstado)
+        {
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = "UPDATE Documento SET IdEstadoDocumento=@estado WHERE IdDocumento=@id";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@estado", idEstado);
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Participantes
+
+        public bool InsertarRevision(RevisionDetalle revision)
+        {
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO RevisionDetalle (IdParticipante,Comentario,EsObservacion)
+                               VALUES (@idp,@com,@obs)";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idp", revision.IdParticipante);
+                    cmd.Parameters.AddWithValue("@com", revision.Comentario);
+                    cmd.Parameters.AddWithValue("@obs", revision.EsObservacion);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool InsertarFirma(FirmaDetalle firma)
+        {
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO FirmaDetalle (IdParticipante,IdEstadoFirma,FirmaDigitalHash,FechaFirma)
+                               VALUES (@idp,
+                                 (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_FIRMA' AND Codigo='FIR'),
+                                 @hash, GETDATE())";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idp", firma.IdParticipante);
+                    cmd.Parameters.AddWithValue("@hash", firma.FirmaDigitalHash ?? (object)DBNull.Value);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Utilidades
+
+        private int ObtenerIdMaestro(SqlConnection conn, SqlTransaction transaction, string tipo, string codigo)
+        {
+            string sql = "SELECT IdMaestro FROM Maestro WHERE Tipo=@tipo AND Codigo=@cod";
+            using (var cmd = new SqlCommand(sql, conn, transaction))
+            {
+                cmd.Parameters.AddWithValue("@tipo", tipo);
+                cmd.Parameters.AddWithValue("@cod", codigo);
+                object result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 0;
+            }
+        }
+
+        private Documento MapearDocumento(SqlDataReader dr)
+        {
+            return new Documento
+            {
+                IdDocumento = (int)dr["IdDocumento"],
+                CodigoDocumento = dr["CodigoDocumento"].ToString(),
+                Asunto = dr["Asunto"].ToString(),
+                Descripcion = dr["Descripcion"] != DBNull.Value ? dr["Descripcion"].ToString() : "",
+                IdTipoDocumento = (int)dr["IdTipoDocumento"],
+                AreaResponsable = dr["AreaResponsable"].ToString(),
+                AreaCategoria = dr["AreaCategoria"] != DBNull.Value ? dr["AreaCategoria"].ToString() : "",
+                LoginUsuarioRegistrador = dr["LoginUsuarioRegistrador"].ToString(),
+                RutaArchivoPDF = dr["RutaArchivoPDF"] != DBNull.Value ? dr["RutaArchivoPDF"].ToString() : "",
+                IdEstadoDocumento = (int)dr["IdEstadoDocumento"],
+                Prioridad = dr["Prioridad"] != DBNull.Value ? dr["Prioridad"].ToString() : "",
+                FechaCreacion = (DateTime)dr["FechaCreacion"],
+                FechaLimiteRevision = dr["FechaLimiteRevision"] != DBNull.Value ? (DateTime)dr["FechaLimiteRevision"] : DateTime.MinValue,
+                FechaLimiteAprobacion = dr["FechaLimiteAprobacion"] != DBNull.Value ? (DateTime)dr["FechaLimiteAprobacion"] : DateTime.MinValue,
+                Activo = (bool)dr["Activo"]
+            };
+        }
+
+        #endregion
+    }
+}

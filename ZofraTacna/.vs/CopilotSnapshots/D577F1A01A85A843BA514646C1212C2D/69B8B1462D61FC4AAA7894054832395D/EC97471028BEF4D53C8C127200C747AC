@@ -1,0 +1,134 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using ZofraTacna.Datos;
+using ZofraTacna.Models;
+
+namespace ZofraTacna.LogicaNegocio
+{
+    public class ModuloGestionDocumental
+    {
+        private readonly RepositorioDocumentos _repo = new RepositorioDocumentos();
+
+        #region Lectura
+
+        public List<Documento> ObtenerDocumentosPorUsuario(string loginUsuario)
+        {
+            return _repo.ObtenerPorRegistrador(loginUsuario);
+        }
+
+        public List<string> ObtenerCategorias()
+        {
+            var lista = new List<string>();
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                using (var cmd = new SqlCommand("SELECT IdMaestro, Descripcion FROM Maestro WHERE Tipo='TIPO_DOC' AND Activo=1 ORDER BY Orden", cn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                        lista.Add(dr["IdMaestro"] + "|" + dr["Descripcion"]);
+                }
+            }
+            return lista;
+        }
+
+        public List<string> ObtenerUsuariosParaFirmar()
+        {
+            var lista = new List<string>();
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                string sql = @"SELECT u.LoginUsuario, m.Descripcion AS RolNombre, m.Codigo AS RolCodigo
+                               FROM UsuarioSistema u
+                               JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
+                               WHERE u.Activo=1 AND m.Codigo IN ('FIR','REV')
+                               ORDER BY m.Orden, u.LoginUsuario";
+                using (var cmd = new SqlCommand(sql, cn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                        lista.Add(dr["LoginUsuario"] + "|" + dr["RolNombre"] + "|" + dr["RolCodigo"]);
+                }
+            }
+            return lista;
+        }
+
+        #endregion
+
+        #region Registrar Documento
+
+        public int RegistrarDocumentoConParticipantes(RegistrarDocumentoRequest request, string loginUsuario)
+        {
+            // Validar
+            if (string.IsNullOrWhiteSpace(request.CodigoDocumento))
+                throw new ArgumentException("El código del documento es requerido.");
+            if (string.IsNullOrWhiteSpace(request.NumeroDocumento))
+                throw new ArgumentException("El número del documento es requerido.");
+            if (request.AnoDocumento < 2000 || request.AnoDocumento > 2100)
+                throw new ArgumentException("El año debe estar entre 2000 y 2100.");
+            if (string.IsNullOrWhiteSpace(request.Asunto))
+                throw new ArgumentException("El asunto es requerido.");
+            if (request.IdTipoDocumento <= 0)
+                throw new ArgumentException("Debe seleccionar una categoría válida.");
+            if (request.ContenidoPDF == null || request.ContenidoPDF.Length == 0)
+                throw new ArgumentException("El PDF está vacío.");
+            if (request.Participantes == null || request.Participantes.Count == 0)
+                throw new ArgumentException("Debe agregar al menos un participante.");
+
+            // Validar formato: codigo debe ser 2-3 letras
+            if (!System.Text.RegularExpressions.Regex.IsMatch(request.CodigoDocumento, @"^[A-Z]{2,3}$"))
+                throw new ArgumentException("El código debe ser 2-3 letras mayúsculas (ej: RS, AD, CONTR).");
+
+            // Validar número: 3 dígitos
+            if (!System.Text.RegularExpressions.Regex.IsMatch(request.NumeroDocumento, @"^\d{3}$"))
+                throw new ArgumentException("El número debe ser 3 dígitos (ej: 001, 002, etc).");
+
+            // Formar título completo: RS-001-2026
+            string tituloCompleto = $"{request.CodigoDocumento}-{request.NumeroDocumento}-{request.AnoDocumento}";
+            request.Asunto = tituloCompleto;
+
+            // Insertar en BD
+            return _repo.InsertarDocumentoConParticipantes(request, loginUsuario);
+        }
+
+        #endregion
+
+        #region Actualizar
+
+        public bool ActualizarEstado(int idDocumento, int idEstadoNuevo)
+        {
+            return _repo.ActualizarEstado(idDocumento, idEstadoNuevo);
+        }
+
+        #endregion
+
+        #region Participantes
+
+        public bool RegistrarRevision(int idParticipante, string comentario, bool esObservacion)
+        {
+            var revision = new RevisionDetalle
+            {
+                IdParticipante = idParticipante,
+                Comentario = comentario,
+                EsObservacion = esObservacion
+            };
+            return _repo.InsertarRevision(revision);
+        }
+
+        public bool RegistrarFirma(int idParticipante, string hashFirma)
+        {
+            var firma = new FirmaDetalle
+            {
+                IdParticipante = idParticipante,
+                FirmaDigitalHash = hashFirma
+            };
+            return _repo.InsertarFirma(firma);
+        }
+
+        #endregion
+    }
+}

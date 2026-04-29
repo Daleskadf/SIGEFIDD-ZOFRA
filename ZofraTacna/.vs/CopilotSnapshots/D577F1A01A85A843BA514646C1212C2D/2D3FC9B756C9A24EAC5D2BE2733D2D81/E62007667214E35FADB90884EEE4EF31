@@ -1,0 +1,144 @@
+﻿using System;
+using System;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using ZofraTacna.LogicaNegocio;
+using ZofraTacna.ServiciosExternos;
+
+namespace ZofraTacna
+{
+    public partial class Login : Page
+    {
+        private readonly ModuloAutenticacion _moduloAuth = new ModuloAutenticacion();
+        private readonly ConectorSAS _conectorSAS = new ConectorSAS();
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["LoginUsuario"] != null)
+                RedirectByRole(Session["RolCodigo"].ToString());
+
+            if (!IsPostBack)
+                CargarUsuarios();
+        }
+
+        /// <summary>
+        /// Carga la lista de usuarios activos del sistema.
+        /// </summary>
+        private void CargarUsuarios()
+        {
+            try
+            {
+                ddlUsuario.Items.Clear();
+                ddlUsuario.Items.Add(new ListItem("-- Seleccione un usuario --", ""));
+
+                // Obtener empleados activos desde la vista VW_EmpleadosActivos
+                var empleados = _conectorSAS.ObtenerEmpleadosActivos();
+
+                foreach (var emp in empleados)
+                {
+                    var item = new ListItem(
+                        $"{emp.LoginUsuario} ({emp.NombreCompleto})", 
+                        emp.LoginUsuario
+                    );
+                    ddlUsuario.Items.Add(item);
+                }
+
+                ActualizarPreview();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR CargarUsuarios: " + ex.Message);
+            }
+        }
+
+        protected void ddlUsuario_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ActualizarPreview();
+        }
+
+        /// <summary>
+        /// Actualiza la vista previa del usuario seleccionado.
+        /// </summary>
+        private void ActualizarPreview()
+        {
+            string login = ddlUsuario.SelectedValue;
+            if (string.IsNullOrEmpty(login))
+            {
+                litPreviewAvatar.Text = "?";
+                litPreviewNombre.Text = "Seleccione un usuario";
+                litPreviewRol.Text = "&nbsp;";
+                litPreviewCodigo.Text = "";
+                litBadgeDisplay.Text = "none";
+                return;
+            }
+
+            try
+            {
+                // Autenticar para obtener datos del rol
+                var sesion = _moduloAuth.Autenticar(login);
+                if (sesion != null)
+                {
+                    string iniciales = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
+                    litPreviewAvatar.Text = iniciales;
+                    litPreviewNombre.Text = login;
+                    litPreviewRol.Text = sesion.RolNombre;
+                    litPreviewCodigo.Text = sesion.RolCodigo;
+                    litBadgeDisplay.Text = "inline-block";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR ActualizarPreview: " + ex.Message);
+            }
+        }
+
+        protected void btnLogin_Click(object sender, EventArgs e)
+        {
+            string login = ddlUsuario.SelectedValue;
+            if (string.IsNullOrEmpty(login))
+                return;
+
+            try
+            {
+                // Autenticar usuario
+                var sesion = _moduloAuth.Autenticar(login);
+                if (sesion == null)
+                    return;
+
+                // Guardar en sesión
+                Session["LoginUsuario"] = sesion.LoginUsuario;
+                Session["RolCodigo"] = sesion.RolCodigo;
+                Session["RolNombre"] = sesion.RolNombre;
+
+                // Redirigir según rol
+                RedirectByRole(sesion.RolCodigo);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR btnLogin_Click: " + ex.Message);
+            }
+        }
+
+        private void RedirectByRole(string rol)
+        {
+            switch (rol)
+            {
+                case "ADM":
+                    Response.Redirect("~/Presentacion/Default.aspx");
+                    break;
+                case "REG":
+                    Response.Redirect("~/Presentacion/Registrador.aspx");
+                    break;
+                case "REV":
+                    Response.Redirect("~/Presentacion/Revisor.aspx");
+                    break;
+                case "FIR":
+                    Response.Redirect("~/Presentacion/Firmante.aspx");
+                    break;
+                default:
+                    Response.Redirect("~/Presentacion/Default.aspx");
+                    break;
+            }
+        }
+    }
+}
