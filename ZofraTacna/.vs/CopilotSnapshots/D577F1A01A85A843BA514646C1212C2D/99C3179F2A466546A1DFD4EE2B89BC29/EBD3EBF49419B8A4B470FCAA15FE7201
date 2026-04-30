@@ -1,0 +1,48 @@
+﻿using System;
+
+namespace ZofraTacna.Models
+{
+    public class Documento
+    {
+        public int      IdDocumento             { get; set; }
+        public string   CodigoDocumento         { get; set; }
+        public string   Asunto                  { get; set; }
+        public int      IdTipoDocumento         { get; set; }
+        public string   AreaResponsable         { get; set; }
+        public DateTime FechaCreacion           { get; set; }
+        public string   LoginUsuarioRegistrador { get; set; }
+        public string   RutaArchivoPDF          { get; set; }
+        public string   RutaArchivoPDF_Firmado  { get; set; }
+        public int      IdEstadoDocumento       { get; set; }
+        public bool     Activo                  { get; set; }
+    }
+
+    public class RevisionDetalle
+    {
+        public int      IdRevision     { get; set; }
+        public int      IdParticipante { get; set; }
+        public string   Comentario     { get; set; }
+        public bool     EsObservacion  { get; set; }
+        public DateTime FechaRevision  { get; set; }
+    }
+
+    public class FirmaDetalle
+    {
+        public int      IdFirma          { get; set; }
+        public int      IdParticipante   { get; set; }
+        public int      IdEstadoFirma    { get; set; }
+        public string   FirmaDigitalHash { get; set; }
+        public DateTime? FechaFirma      { get; set; }
+    }
+
+    public class HistorialDocumento
+    {
+        public int      IdHistorial        { get; set; }
+        public int      IdDocumento        { get; set; }
+        public int?     IdEstadoAnterior   { get; set; }
+        public int      IdEstadoNuevo      { get; set; }
+        public string   LoginUsuarioAccion { get; set; }
+        public string   DetalleAccion      { get; set; }
+        public DateTime FechaCambio        { get; set; }
+    }
+}

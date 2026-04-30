@@ -1,0 +1,19 @@
+﻿using System.Collections.Generic;
+using ZofraTacna.Datos;
+
+namespace ZofraTacna.ServiciosExternos
+{
+    /// <summary>
+    /// Conecta con la BD simulada del Sistema de Autenticacion (SAS).
+    /// En produccion consultaria el servicio institucional real.
+    /// </summary>
+    public class ConectorSAS
+    {
+        private readonly RepositorioUsuariosRoles _repo = new RepositorioUsuariosRoles();
+
+        public List<EmpleadoSASDto> ObtenerEmpleadosActivos()
+        {
+            return _repo.ObtenerEmpleadosActivos();
+        }
+    }
+}

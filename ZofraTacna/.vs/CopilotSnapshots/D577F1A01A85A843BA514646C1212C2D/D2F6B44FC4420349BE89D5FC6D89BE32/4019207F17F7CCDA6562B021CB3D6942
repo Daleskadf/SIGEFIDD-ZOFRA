@@ -1,0 +1,45 @@
+﻿using System.Configuration;
+using System.Data.SqlClient;
+
+namespace ZofraTacna.LogicaNegocio
+{
+    public class ModuloAutenticacion
+    {
+        private readonly string _conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+
+        public UsuarioSesion Autenticar(string login, string password)
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"SELECT u.LoginUsuario, m.Codigo AS RolCodigo, m.Descripcion AS RolNombre
+                               FROM UsuarioSistema u
+                               JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
+                               WHERE u.LoginUsuario = @login AND u.Password = @pass AND u.Activo = 1";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@login", login);
+                    cmd.Parameters.AddWithValue("@pass", password);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                            return new UsuarioSesion
+                            {
+                                LoginUsuario = dr["LoginUsuario"].ToString(),
+                                RolCodigo = dr["RolCodigo"].ToString(),
+                                RolNombre = dr["RolNombre"].ToString()
+                            };
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    public class UsuarioSesion
+    {
+        public string LoginUsuario { get; set; }
+        public string RolCodigo { get; set; }
+        public string RolNombre { get; set; }
+    }
+}
