@@ -1,0 +1,297 @@
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{234A9862-96D3-4E93-A615-74023E30D56C}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZofraTacna</RootNamespace>
+    <AssemblyName>ZofraTacna</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="Presentacion\Default.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\Firmante.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\Revisor.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\Registrador.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\InicioSesion\Login.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Presentacion -->
+    <Compile Include="LogicaNegocio\ModuloAutenticacion.cs" />
+    <Compile Include="Presentacion\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Firmante.aspx.cs">
+      <DependentUpon>Firmante.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Firmante.aspx.designer.cs">
+      <DependentUpon>Firmante.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.cs">
+      <DependentUpon>CargarDocumento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Revisor.aspx.cs">
+      <DependentUpon>Revisor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Revisor.aspx.designer.cs">
+      <DependentUpon>Revisor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Registrador.aspx.cs">
+      <DependentUpon>Registrador.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Registrador.aspx.designer.cs">
+      <DependentUpon>Registrador.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\InicioSesion\Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\InicioSesion\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <!-- Presentacion - BandejaTrabajo -->
+    <Compile Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx.cs">
+      <DependentUpon>BandejaTrabajo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx.designer.cs">
+      <DependentUpon>BandejaTrabajo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\ServirPdf.ashx.cs">
+      <DependentUpon>ServirPdf.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx.cs">
+      <DependentUpon>EmitirRevision.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx.designer.cs">
+      <DependentUpon>EmitirRevision.aspx</DependentUpon>
+    </Compile>
+    <!-- Presentacion - GestionDocumentos -->
+    <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.designer.cs">
+      <DependentUpon>CargarDocumento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\MisDocumentos.aspx.cs">
+      <DependentUpon>MisDocumentos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\MisDocumentos.aspx.designer.cs">
+      <DependentUpon>MisDocumentos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\VerObservaciones.aspx.cs">
+      <DependentUpon>VerObservaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\VerObservaciones.aspx.designer.cs">
+      <DependentUpon>VerObservaciones.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.cs">
+      <DependentUpon>EditarDocumento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.designer.cs">
+      <DependentUpon>EditarDocumento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\Historial.aspx.cs">
+      <DependentUpon>Historial.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\Historial.aspx.designer.cs">
+      <DependentUpon>Historial.aspx</DependentUpon>
+    </Compile>
+    <!-- Presentacion - GestionRoles -->
+    <Compile Include="Presentacion\GestionRoles\GestionRoles.aspx.cs">
+      <DependentUpon>GestionRoles.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionRoles\GestionRoles.aspx.designer.cs">
+      <DependentUpon>GestionRoles.aspx</DependentUpon>
+    </Compile>
+    <!-- Presentacion - VisualizarFirmantes -->
+    <Compile Include="Presentacion\VisualizarFirmantes\VisualizarFirmantes.aspx.cs">
+      <DependentUpon>VisualizarFirmantes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\VisualizarFirmantes\VisualizarFirmantes.aspx.designer.cs">
+      <DependentUpon>VisualizarFirmantes.aspx</DependentUpon>
+    </Compile>
+    <!-- LogicaNegocio -->
+    <Compile Include="LogicaNegocio\ModuloGestionDocumental.cs" />
+    <Compile Include="LogicaNegocio\ModuloRevision.cs" />
+    <Compile Include="LogicaNegocio\ModuloFirmaDigital.cs" />
+    <Compile Include="LogicaNegocio\ModuloNotificaciones.cs" />
+    <Compile Include="LogicaNegocio\ModuloAuditoria.cs" />
+    <!-- Datos -->
+    <Compile Include="Datos\RepositorioDocumentos.cs" />
+    <Compile Include="Datos\RepositorioUsuariosRoles.cs" />
+    <Compile Include="Datos\RepositorioAuditoria.cs" />
+    <!-- Models -->
+    <Compile Include="Models\Documento.cs" />
+    <!-- ServiciosExternos -->
+    <Compile Include="ServiciosExternos\ServicioSMTP.cs" />
+    <Compile Include="ServiciosExternos\ConectorSAS.cs" />
+    <Compile Include="ServiciosExternos\ComponenteFirma.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionDocumentos\CargarDocumento.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionDocumentos\MisDocumentos.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionDocumentos\VerObservaciones.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionDocumentos\EditarDocumento.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionDocumentos\Historial.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionRoles\GestionRoles.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\VisualizarFirmantes\VisualizarFirmantes.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Presentacion\EstadoSistema\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56945</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:56945/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
