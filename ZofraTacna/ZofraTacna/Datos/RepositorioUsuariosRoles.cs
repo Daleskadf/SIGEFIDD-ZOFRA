@@ -103,6 +103,150 @@ namespace ZofraTacna.Datos
 
         #endregion
 
+        #region Obtener empleados con información completa
+
+        /// <summary>
+        /// Obtiene todos los empleados activos de la vista VW_EmpleadosActivos
+        /// con información si ya están en UsuarioSistema.
+        /// </summary>
+        public List<ZofraTacna.Models.EmpleadoDTO> ObtenerEmpleadosConEstado()
+        {
+            var lista = new List<ZofraTacna.Models.EmpleadoDTO>();
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT 
+                        v.LoginUsuario,
+                        v.NombreCompleto,
+                        ISNULL(v.Email, v.LoginUsuario + '@zofratacna.com.pe') AS Email,
+                        CASE WHEN u.IdUsuario IS NOT NULL THEN 1 ELSE 0 END AS EnSistema
+                    FROM VW_EmpleadosActivos v
+                    LEFT JOIN UsuarioSistema u ON v.LoginUsuario = u.LoginUsuario AND u.Activo = 1
+                    ORDER BY v.NombreCompleto";
+
+                using (var cmd = new SqlCommand(sql, conn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        string login = dr.IsDBNull(0) ? "" : dr.GetString(0);
+                        string nombreCompleto = dr.IsDBNull(1) ? login : dr.GetString(1);
+                        string email = dr.IsDBNull(2) ? login + "@zofratacna.com.pe" : dr.GetString(2);
+                        int enSistemaInt = dr.IsDBNull(3) ? 0 : dr.GetInt32(3);
+                        bool enSistema = enSistemaInt == 1;
+
+                        lista.Add(new ZofraTacna.Models.EmpleadoDTO
+                        {
+                            IDEmpleado = 0,
+                            LoginUsuario = login,
+                            Nombre = "",
+                            Apellido = "",
+                            NombreCompleto = nombreCompleto,
+                            Email = email,
+                            EnSistema = enSistema
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
+        #endregion
+
+        #region Gestión de UsuarioSistema
+
+        /// <summary>
+        /// Obtiene el IdMaestro del rol "Revisor" (ROL_SISTEMA.REV).
+        /// </summary>
+        public int ObtenerIdRolRevisor()
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "SELECT IdMaestro FROM Maestro WHERE Tipo='ROL_SISTEMA' AND Codigo='REV'";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? (int)result : 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el IdMaestro del rol "Firmante" (ROL_SISTEMA.FIR).
+        /// </summary>
+        public int ObtenerIdRolFirmante()
+        {
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = "SELECT IdMaestro FROM Maestro WHERE Tipo='ROL_SISTEMA' AND Codigo='FIR'";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? (int)result : 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Agrega un usuario a UsuarioSistema si no existe, asignándole un rol específico.
+        /// Soporta: "REV" (Revisor) o "FIR" (Firmante)
+        /// </summary>
+        public bool AgregarUsuarioSistemaConRol(string loginUsuario, string codigoRol)
+        {
+            try
+            {
+                // Validar que existe en administracion
+                if (!ExisteEnEmpleadosActivos(loginUsuario))
+                    return false;
+
+                // Verificar si ya existe
+                if (YaTieneRolAsignado(loginUsuario))
+                    return true; // Ya existe, no es error
+
+                int idRol = 0;
+                if (codigoRol == "REV")
+                    idRol = ObtenerIdRolRevisor();
+                else if (codigoRol == "FIR")
+                    idRol = ObtenerIdRolFirmante();
+                else
+                    return false;
+
+                if (idRol == 0)
+                    return false;
+
+                using (var conn = new SqlConnection(_conn))
+                {
+                    conn.Open();
+                    string sql = @"INSERT INTO UsuarioSistema 
+                        (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador, FechaCreacion)
+                        VALUES (@login, NULL, @idRol, 1, 'SISTEMA', GETDATE())";
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@login", loginUsuario);
+                        cmd.Parameters.AddWithValue("@idRol", idRol);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Agrega un usuario a UsuarioSistema si no existe, asignándole el rol de Revisor.
+        /// </summary>
+        public bool AgregarUsuarioSistemaComoRevisor(string loginUsuario)
+        {
+            return AgregarUsuarioSistemaConRol(loginUsuario, "REV");
+        }
+
+        #endregion
+
         #region Actualización
 
         public bool CambiarEstado(int idUsuario, bool activo)

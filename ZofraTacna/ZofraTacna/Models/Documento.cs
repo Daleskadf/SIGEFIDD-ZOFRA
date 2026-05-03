@@ -52,6 +52,7 @@ namespace ZofraTacna.Models
         public string   Asunto                  { get; set; }
         public string   Descripcion             { get; set; }
         public int      IdTipoDocumento         { get; set; }
+        public int      IDUnidadOrganica        { get; set; }  // Área/Unidad Orgánica
         public string   Prioridad               { get; set; }
         public int      HorasRevision           { get; set; }
         public int      HorasFirma              { get; set; }
@@ -94,6 +95,25 @@ namespace ZofraTacna.Models
         public string   LoginUsuarioAccion { get; set; }
         public string   DetalleAccion      { get; set; }
         public DateTime FechaCambio        { get; set; }
+    }
+
+    public class EmpleadoDTO
+    {
+        public int      IDEmpleado      { get; set; }
+        public string   LoginUsuario    { get; set; }
+        public string   Nombre          { get; set; }
+        public string   Apellido        { get; set; }
+        public string   NombreCompleto  { get; set; }
+        public string   Email           { get; set; }
+        public bool     EnSistema       { get; set; }  // Si ya está en UsuarioSistema
+    }
+
+    public class ParticipanteAsignadoDTO
+    {
+        public string   LoginUsuario    { get; set; }
+        public string   NombreCompleto  { get; set; }
+        public string   Tipo            { get; set; }  // REV o FIR
+        public int      Orden           { get; set; }
     }
 
     /// <summary>Evento ordenado para la línea de tiempo en revisión.</summary>

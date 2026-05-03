@@ -1,7 +1,7 @@
 using System;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using ZofraTacna.Datos;
 using ZofraTacna.Models;
@@ -11,6 +11,7 @@ namespace ZofraTacna.LogicaNegocio
     public class ModuloGestionDocumental
     {
         private readonly RepositorioDocumentos _repo = new RepositorioDocumentos();
+        private readonly RepositorioUsuariosRoles _repoUsuarios = new RepositorioUsuariosRoles();
 
         #region Lectura
 
@@ -58,6 +59,53 @@ namespace ZofraTacna.LogicaNegocio
             return lista;
         }
 
+        /// <summary>
+        /// Obtiene todos los empleados activos para la búsqueda/autocomplete
+        /// en la asignación de firmantes.
+        /// </summary>
+        public List<EmpleadoDTO> ObtenerEmpleadosDisponibles()
+        {
+            return _repoUsuarios.ObtenerEmpleadosConEstado();
+        }
+
+        /// <summary>
+        /// Agrega un empleado a UsuarioSistema como Revisor si no existe.
+        /// </summary>
+        public bool AgregarEmpleadoComoRevisor(string loginUsuario)
+        {
+            return _repoUsuarios.AgregarUsuarioSistemaComoRevisor(loginUsuario);
+        }
+
+        /// <summary>
+        /// Obtiene todas las unidades orgánicas de la BD administracion.
+        /// Formato: IDUnidadOrganica|Descripcion
+        /// </summary>
+        public List<string> ObtenerUnidadesOrganicas()
+        {
+            var lista = new List<string>();
+
+            string connFirma = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+
+            using (var cn = new SqlConnection(connFirma))
+            {
+                cn.Open();
+
+                // CORRECCIÓN 2: Consultar a la VISTA dbo.VW_UnidadesOrganicas
+                // No olvides el "dbo." para seguir el estándar de Zofra
+                string sql = "SELECT IDUnidadOrganica, Descripcion FROM dbo.VW_UnidadesOrganicas ORDER BY Descripcion";
+
+                using (var cmd = new SqlCommand(sql, cn))
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        lista.Add(dr["IDUnidadOrganica"].ToString() + "|" + dr["Descripcion"].ToString());
+                    }
+                }
+            }
+            return lista;
+        }
+
         #endregion
 
         #region Registrar Documento
@@ -84,12 +132,47 @@ namespace ZofraTacna.LogicaNegocio
             if (request.Participantes == null || request.Participantes.Count == 0)
                 throw new ArgumentException("Debe agregar al menos un participante.");
 
+            // PASO PREVIO: Crear usuarios en UsuarioSistema si no existen
+            CrearUsuariosParticipantes(request.Participantes);
+
             // Formar el código completo en CodigoDocumento: CODIGO-NUMERO-AÑO (ej: RS-0001-2026)
             string codigoCompleto = $"{request.CodigoDocumento}-{request.NumeroDocumento.PadLeft(4, '0')}-{request.AnoDocumento}";
             request.CodigoDocumento = codigoCompleto;
 
             // Insertar en BD
             return _repo.InsertarDocumentoConParticipantes(request, loginUsuario);
+        }
+
+        /// <summary>
+        /// Crea usuarios en UsuarioSistema para los participantes si no existen.
+        /// Asigna el rol correcto (Revisor o Firmante) según su tipo.
+        /// </summary>
+        private void CrearUsuariosParticipantes(List<RegistrarParticipanteItem> participantes)
+        {
+            foreach (var participante in participantes)
+            {
+                // El tipo viene como "FIR" o "REV"
+                string codigoRol = participante.Tipo;
+                _repoUsuarios.AgregarUsuarioSistemaConRol(participante.Login, codigoRol);
+            }
+        }
+
+        public void NotificarRevisores(int idDocumento)
+        {
+            // Usamos la misma conexión de FirmaDigital que ya tienes configurada
+            string connString = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+
+            using (SqlConnection cn = new SqlConnection(connString))
+            {
+                using (SqlCommand cmd = new SqlCommand("dbo.USP_NotificarAsignacionRevision", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@IdDocumento", idDocumento);
+
+                    cn.Open();
+                    cmd.ExecuteNonQuery(); // Dispara el procedimiento de SQL que envía los correos
+                }
+            }
         }
 
         #endregion

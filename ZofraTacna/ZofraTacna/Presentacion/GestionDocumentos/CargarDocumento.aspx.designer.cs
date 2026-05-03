@@ -152,6 +152,8 @@ namespace ZofraTacna.Presentacion
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPrioridad;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlArea;
+
         /// <summary>
         /// Control txtPlazoRevision.
         /// </summary>
@@ -171,40 +173,22 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtPlazoFirma;
 
         /// <summary>
-        /// Control ddlFirmante.
+        /// Control txtBuscador.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlFirmante;
+        protected global::System.Web.UI.WebControls.TextBox txtBuscador;
 
         /// <summary>
-        /// Control btnAgregarFirmante.
+        /// Control lstBuscador.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAgregarFirmante;
-
-        /// <summary>
-        /// Control rptFirmantes.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptFirmantes;
-
-        /// <summary>
-        /// Control hfFirmantes.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfFirmantes;
+        protected global::System.Web.UI.WebControls.ListBox lstBuscador;
 
         /// <summary>
         /// Control filePDF.
@@ -241,5 +225,14 @@ namespace ZofraTacna.Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCancelar;
+
+        /// <summary>
+        /// Control hfParticipantes.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfParticipantes;
     }
 }

@@ -29,6 +29,8 @@ namespace ZofraTacna.Presentacion
             }
         }
 
+        #region Page Events
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["LoginUsuario"] == null)
@@ -48,11 +50,72 @@ namespace ZofraTacna.Presentacion
             {
                 CargarDatosUsuario();
                 CargarCombos();
-                Session["FirmantesTemp"] = new List<FirmanteItem>();
+            }
+        }
+
+        #endregion
+
+        #region Search Methods
+
+        protected void txtBuscador_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtBuscador.Text.Trim()))
+            {
+                lstBuscador.Items.Clear();
+                lstBuscador.Visible = false;
+                return;
             }
 
-            BindFirmantes();
+            FiltrarEmpleados(txtBuscador.Text);
+            lstBuscador.Visible = lstBuscador.Items.Count > 0;
         }
+
+        protected void lstBuscador_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstBuscador.SelectedIndex >= 0)
+            {
+                string selectedText = lstBuscador.SelectedItem.Text;
+                string selectedValue = lstBuscador.SelectedValue;
+
+                // Agregar automáticamente como REVISOR (sin modal)
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "agregarRevisor",
+                    $"agregarParticipanteAuto('{selectedValue}', '{selectedText}');", true);
+
+                // SOLO deseleccionar el item del listbox y ocultarlo
+                // NO limpiar el txtBuscador para mantener el texto escrito
+                lstBuscador.SelectedIndex = -1;
+                lstBuscador.Visible = false;
+            }
+        }
+
+        private void FiltrarEmpleados(string termino)
+        {
+            termino = termino.ToLower().Trim();
+
+            var empleados = _modulo.ObtenerEmpleadosDisponibles();
+
+            lstBuscador.Items.Clear();
+
+            foreach (var emp in empleados)
+            {
+                if (emp.LoginUsuario.ToLower().Contains(termino) || 
+                    emp.NombreCompleto.ToLower().Contains(termino))
+                {
+                    string texto = emp.NombreCompleto + " (" + emp.LoginUsuario + ")";
+                    lstBuscador.Items.Add(new ListItem(texto, emp.LoginUsuario));
+                }
+            }
+
+            // Máximo 20 resultados
+            while (lstBuscador.Items.Count > 20)
+            {
+                lstBuscador.Items.RemoveAt(lstBuscador.Items.Count - 1);
+            }
+        }
+
+        #endregion
+
+        #region Load Data
 
         private void CargarDatosUsuario()
         {
@@ -77,16 +140,14 @@ namespace ZofraTacna.Presentacion
                 ddlCategoria.Items.Add(new ListItem(partes[1], partes[0]));
             }
 
-            // Usuarios para firmar
-            var usuarios = _modulo.ObtenerUsuariosParaFirmar();
-            ddlFirmante.Items.Clear();
-            ddlFirmante.Items.Add(new ListItem("Seleccionar usuario...", ""));
-            foreach (var usuario in usuarios)
+            // Unidades Orgánicas
+            var unidades = _modulo.ObtenerUnidadesOrganicas();
+            ddlArea.Items.Clear();
+            ddlArea.Items.Add(new ListItem("Seleccionar...", ""));
+            foreach (var unidad in unidades)
             {
-                string[] partes = usuario.Split('|');
-                string login = partes[0];
-                string rolNombre = partes[1];
-                ddlFirmante.Items.Add(new ListItem(login + " (" + rolNombre + ")", login));
+                string[] partes = unidad.Split('|');
+                ddlArea.Items.Add(new ListItem(partes[1], partes[0]));
             }
 
             // Generar lista de años (2024-2080) para el modal
@@ -107,66 +168,9 @@ namespace ZofraTacna.Presentacion
             litAnosLista.Text = sb.ToString();
         }
 
-        private void BindFirmantes()
-        {
-            rptFirmantes.DataSource = Firmantes;
-            rptFirmantes.DataBind();
-        }
+        #endregion
 
-        protected void btnAgregarFirmante_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(ddlFirmante.SelectedValue))
-                {
-                    MostrarMsg("Seleccione un usuario para agregar.", false);
-                    return;
-                }
-
-                string loginSel = ddlFirmante.SelectedValue;
-
-                if (Firmantes.Exists(f => f.Login == loginSel))
-                {
-                    MostrarMsg("Ese usuario ya está en la lista.", false);
-                    return;
-                }
-
-                string textoItem = ddlFirmante.SelectedItem.Text;
-                string tipo = textoItem.Contains("Revisor") ? "Revisor" : "Firmante";
-
-                Firmantes.Add(new FirmanteItem
-                {
-                    Orden = Firmantes.Count + 1,
-                    Login = loginSel,
-                    Tipo = tipo
-                });
-
-                BindFirmantes();
-                MostrarMsg("Usuario agregado correctamente.", true);
-            }
-            catch (Exception ex)
-            {
-                MostrarMsg("ERROR al agregar: " + ex.Message, false);
-            }
-        }
-
-        protected void rptFirmantes_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            try
-            {
-                if (e.CommandName == "Eliminar")
-                {
-                    Firmantes.RemoveAll(f => f.Login == e.CommandArgument.ToString());
-                    for (int i = 0; i < Firmantes.Count; i++)
-                        Firmantes[i].Orden = i + 1;
-                    BindFirmantes();
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarMsg("ERROR al eliminar: " + ex.Message, false);
-            }
-        }
+        #region Button Events
 
         protected void btnCargar_Click(object sender, EventArgs e)
         {
@@ -212,9 +216,20 @@ namespace ZofraTacna.Presentacion
                     return;
                 }
 
-                if (Firmantes.Count == 0)
+                // Obtener participantes desde JSON
+                string jsonParticipantes = hfParticipantes.Value;
+                if (string.IsNullOrWhiteSpace(jsonParticipantes))
                 {
-                    MostrarMsg("Debe agregar al menos un firmante.", false);
+                    MostrarMsg("Debe asignar al menos un revisor o firmante.", false);
+                    return;
+                }
+
+                var js = new System.Web.Script.Serialization.JavaScriptSerializer();
+                var participantesJson = js.Deserialize<List<dynamic>>(jsonParticipantes);
+
+                if (participantesJson == null || participantesJson.Count == 0)
+                {
+                    MostrarMsg("Debe asignar al menos un revisor o firmante.", false);
                     return;
                 }
 
@@ -233,15 +248,20 @@ namespace ZofraTacna.Presentacion
                 int horasRev = int.TryParse(txtPlazoRevision.Text.Trim(), out int hr) ? hr : 24;
                 int horasFirma = int.TryParse(txtPlazoFirma.Text.Trim(), out int hf) ? hf : 48;
 
-                // Convertir firmantes a participantes
+                // Convertir participantes JSON a lista de objetos
                 var participantes = new List<RegistrarParticipanteItem>();
-                foreach (var f in Firmantes)
+
+                foreach (var p in participantesJson)
                 {
+                    string login = p["login"] ?? "";
+                    string tipo = p["tipo"] ?? "REV";
+                    int orden = p.ContainsKey("orden") ? (p["orden"] ?? 0) : 0;
+
                     participantes.Add(new RegistrarParticipanteItem
                     {
-                        Orden = f.Orden,
-                        Login = f.Login,
-                        Tipo = f.Tipo
+                        Orden = orden,
+                        Login = login,
+                        Tipo = tipo
                     });
                 }
 
@@ -254,6 +274,7 @@ namespace ZofraTacna.Presentacion
                     Asunto = txtAsunto.Text.Trim(),
                     Descripcion = txtDescripcion.Text.Trim(),
                     IdTipoDocumento = int.Parse(ddlCategoria.SelectedValue),
+                    IDUnidadOrganica = int.Parse(ddlArea.SelectedValue),
                     Prioridad = ddlPrioridad.SelectedValue,
                     HorasRevision = horasRev,
                     HorasFirma = horasFirma,
@@ -265,10 +286,12 @@ namespace ZofraTacna.Presentacion
                 // Registrar en lógica de negocio
                 string loginUsuario = Session["LoginUsuario"].ToString();
                 int idDocumento = _modulo.RegistrarDocumentoConParticipantes(request, loginUsuario);
+                if (idDocumento > 0)
+                {
+                    _modulo.NotificarRevisores(idDocumento);
+                }
 
                 // Limpiar
-                Session["FirmantesTemp"] = new List<FirmanteItem>();
-                BindFirmantes();
                 txtCodigoDoc.Text = "";
                 txtNumeroDoc.Text = "";
                 txtAsunto.Text = "";
@@ -276,8 +299,9 @@ namespace ZofraTacna.Presentacion
                 txtAnoDoc.Text = "2026";
                 txtPlazoRevision.Text = "24";
                 txtPlazoFirma.Text = "48";
+                hfParticipantes.Value = "";
 
-                MostrarMsg("? Documento registrado y firmantes asignados correctamente.", true);
+                MostrarMsg("? Documento registrado y participantes asignados correctamente.", true);
             }
             catch (ArgumentException ex)
             {
@@ -300,6 +324,10 @@ namespace ZofraTacna.Presentacion
             Session.Abandon();
             Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
         }
+
+        #endregion
+
+        #region Utilities
 
         private string BuildNav(string rol)
         {
@@ -335,5 +363,7 @@ namespace ZofraTacna.Presentacion
             lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
             lblMensaje.Visible = true;
         }
+
+        #endregion
     }
 }

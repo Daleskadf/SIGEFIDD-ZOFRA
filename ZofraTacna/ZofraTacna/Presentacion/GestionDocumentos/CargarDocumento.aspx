@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CargarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.CargarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CargarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.CargarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -48,12 +48,25 @@
         .upload-zone .uz-title{font-size:14px;font-weight:500;color:#555;margin-bottom:4px}
         .upload-zone .uz-sub{font-size:12px;color:#aaa}
         .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-        .form-actions{display:flex;gap:12px}
-        .btn-submit{padding:12px 28px;background:linear-gradient(90deg,#1a2a4a,#8b1a1a);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-        .btn-cancel{padding:12px 24px;background:white;color:#555;border:1.5px solid #ddd;border-radius:8px;font-size:14px;cursor:pointer}
-        .alert-ok{background:#d4edda;color:#155724;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px}
-        .alert-err{background:#f8d7da;color:#721c24;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px}
-    </style>
+             .form-actions{display:flex;gap:12px}
+            .btn-submit{padding:12px 28px;background:linear-gradient(90deg,#1a2a4a,#8b1a1a);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+            .btn-cancel{padding:12px 24px;background:white;color:#555;border:1.5px solid #ddd;border-radius:8px;font-size:14px;cursor:pointer}
+            .alert-ok{background:#d4edda;color:#155724;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px}
+            .alert-err{background:#f8d7da;color:#721c24;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px}
+            /* Estilos para buscador y participantes */
+            .empleado-resultado{padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+            .empleado-resultado:hover{background:#f5f5f5}
+            .empleado-nombre{font-weight:600;color:#1a2a4a}
+            .empleado-login{font-size:11px;color:#999}
+            .badge-novedad{background:#fff3cd;color:#856404;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+            .participante-tag{display:inline-flex;align-items:center;gap:8px;background:#e8eaf0;color:#1a2a4a;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;margin:4px;cursor:move;position:relative;user-select:none}
+            .participante-tag:hover{background:#d8dce0}
+            .participante-tag .close-btn{cursor:pointer;color:#c0392b;font-weight:bold;padding:0 4px}
+            .participante-tag .close-btn:hover{color:#8b1a1a}
+            .orden-input{width:35px;height:32px;padding:4px;border:1.5px solid #ddd;border-radius:4px;text-align:center;font-size:12px;font-weight:600}
+            .orden-input:focus{border-color:#1a2a4a;outline:none}
+            .drop-zone-active{background:#e8f4ff !important;border-color:#1a2a4a !important}
+        </style>
 </head>
 <body>
 <form id="form1" runat="server" enctype="multipart/form-data" style="display:flex;width:100%;height:100vh;overflow:hidden;">
@@ -144,6 +157,11 @@
                     </asp:DropDownList>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">ÁREA (UNIDAD ORGÁNICA) <span class="required">*</span></label>
+                <asp:DropDownList ID="ddlArea" runat="server" CssClass="form-input"/>
+            </div>
             <div class="plazos-box">
                 <div class="plazos-title">Gesti&oacute;n de Plazos por Etapa</div>
                 <div class="plazos-sub">Establezca los tiempos l&iacute;mite para cada fase del proceso.</div>
@@ -160,50 +178,48 @@
                     </div>
                 </div>
             </div>
+            <!-- Buscador de empleados y asignación de participantes -->
             <div class="plazos-box">
-                <div class="plazos-title">Asignar Firmantes</div>
-                <div class="plazos-sub">Seleccione los usuarios que deben firmar este documento en orden.</div>
-   
-                <div class="form-row">
-                    <div>
-                        <label class="form-label">USUARIO</label>
-                        <asp:DropDownList ID="ddlFirmante" runat="server" CssClass="form-input"/>
+                <div class="plazos-title">Asignar Revisores y Firmantes</div>
+                <div class="plazos-sub">Busque empleados por nombre o login y asígnelos como revisores o firmantes.</div>
+
+                <div style="margin-bottom:20px;">
+                    <label class="form-label">BUSCAR EMPLEADO <span class="required">*</span></label>
+                    <asp:TextBox ID="txtBuscador" runat="server" CssClass="form-input" placeholder="Escriba nombre o login..." AutoPostBack="true" OnTextChanged="txtBuscador_TextChanged"/>
+                    <asp:ListBox ID="lstBuscador" runat="server" style="width:100%;margin-top:8px;border:1.5px solid #e0e0e0;border-radius:8px;max-height:200px;" Visible="false" OnSelectedIndexChanged="lstBuscador_SelectedIndexChanged" AutoPostBack="true" SelectionMode="Single"/>
+                </div>
+
+                <!-- Dos columnas: Revisores y Firmantes -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+                    <!-- COLUMNA IZQUIERDA: REVISORES -->
+                    <div style="border:1.5px solid #e8eaf0;border-radius:8px;padding:16px;background:#f8f9fc;">
+                        <div style="font-size:13px;font-weight:700;color:#1a2a4a;margin-bottom:12px;">
+                            ✓ REVISORES (sin orden)
+                        </div>
+                        <div id="listaRevisores" style="min-height:100px;border:1px dashed #ccc;border-radius:6px;padding:12px;background:white;">
+                            <!-- Revisores agregados aquí -->
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:8px;">
+                            Haz clic en un empleado para asignar como revisor
+                        </div>
                     </div>
-                    <div style="display:flex;align-items:flex-end;">
-                        <asp:Button ID="btnAgregarFirmante" runat="server" Text="+ Agregar"
-                            CssClass="btn-submit" OnClick="btnAgregarFirmante_Click"
-                            CausesValidation="false" Style="margin-bottom:0"/>
+
+                    <!-- COLUMNA DERECHA: FIRMANTES -->
+                    <div style="border:1.5px solid #e8eaf0;border-radius:8px;padding:16px;background:#f8f9fc;">
+                        <div style="font-size:13px;font-weight:700;color:#1a2a4a;margin-bottom:12px;">
+                            🔏 FIRMANTES (con orden)
+                        </div>
+                        <div id="listaFirmantes" style="min-height:100px;border:1px dashed #ccc;border-radius:6px;padding:12px;background:white;">
+                            <!-- Firmantes agregados aquí con orden -->
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:8px;">
+                            Haz clic en un empleado para asignar como firmante
+                        </div>
                     </div>
                 </div>
 
-                <!-- Lista de firmantes agregados -->
-                <asp:Repeater ID="rptFirmantes" runat="server" OnItemCommand="rptFirmantes_ItemCommand">
-                    <HeaderTemplate>
-                        <table style="width:100%;margin-top:12px;border-collapse:collapse;">
-                        <tr style="background:#f0f2f5;font-size:12px;font-weight:700;color:#555;">
-                            <td style="padding:8px 12px;">ORDEN</td>
-                            <td style="padding:8px 12px;">USUARIO</td>
-                            <td style="padding:8px 12px;">TIPO</td>
-                            <td style="padding:8px 12px;"></td>
-                        </tr>
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <tr style="border-bottom:1px solid #eee;font-size:13px;">
-                            <td style="padding:8px 12px;"><%# Eval("Orden") %></td>
-                            <td style="padding:8px 12px;"><%# Eval("Login") %></td>
-                            <td style="padding:8px 12px;"><%# Eval("Tipo") %></td>
-                            <td style="padding:8px 12px;">
-                                <asp:LinkButton runat="server" CommandName="Eliminar"
-                                    CommandArgument='<%# Eval("Login") %>'
-                                    Style="color:#c0392b;font-size:12px;">Quitar</asp:LinkButton>
-                            </td>
-                        </tr>
-                    </ItemTemplate>
-                    <FooterTemplate></table></FooterTemplate>
-                </asp:Repeater>
-
-                <!-- Campo oculto para pasar la lista al servidor -->
-                <asp:HiddenField ID="hfFirmantes" runat="server" />
+                <!-- Campo oculto para pasar los datos al servidor -->
+                <asp:HiddenField ID="hfParticipantes" runat="server" />
             </div>
 
             <div class="form-group">
@@ -224,7 +240,258 @@
     </div>
 </div>
 <script type="text/javascript">
-    // Manejo del modal de años
+    // ============================================================
+    // VARIABLES GLOBALES - PERSISTENTES CON SESSIONST ORAGE
+    // ============================================================
+    let revisores = [];
+    let firmantes = [];
+    let textoOriginalBuscador = "";
+
+    // ============================================================
+    // INICIALIZAR INMEDIATAMENTE (NO ESPERAR A DOMContentLoaded)
+    // ============================================================
+    (function() {
+        try {
+            let revGuardados = sessionStorage.getItem('revisores_temp');
+            let firGuardados = sessionStorage.getItem('firmantes_temp');
+
+            if (revGuardados) {
+                revisores = JSON.parse(revGuardados);
+                console.log('✓ Revisores recuperados:', revisores.length);
+            }
+            if (firGuardados) {
+                firmantes = JSON.parse(firGuardados);
+                console.log('✓ Firmantes recuperados:', firmantes.length);
+            }
+        } catch (e) {
+            console.error('Error al cargar participantes inicial:', e);
+        }
+    })();
+
+    // ============================================================
+    // BUSCADOR: Evento keyup para filtrar empleados
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        let txtBuscador = document.getElementById('<%= txtBuscador.ClientID %>');
+        if (txtBuscador) {
+            txtBuscador.addEventListener('keyup', function() {
+                let lstBuscador = document.getElementById('<%= lstBuscador.ClientID %>');
+                let valor = this.value.toLowerCase().trim();
+                textoOriginalBuscador = this.value;
+
+                if (valor.length > 0) {
+                    __doPostBack('<%= lstBuscador.ClientID %>', 'Search');
+                } else {
+                    lstBuscador.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    // ============================================================
+    // AGREGAR: Función automática (EN AMBAS COLUMNAS)
+    // ============================================================
+    function agregarParticipanteAuto(login, nombre) {
+        console.log('Agregando:', login, nombre);
+        console.log('Revisores antes:', revisores.length);
+        console.log('Firmantes antes:', firmantes.length);
+
+        // Verificar si ya existe
+        if (revisores.some(r => r.login === login) || firmantes.some(f => f.login === login)) {
+            alert('✓ ' + nombre + ' ya ha sido asignado');
+            return;
+        }
+
+        // Agregar como REVISOR
+        revisores.push({ login: login, nombre: nombre });
+
+        // Agregar como FIRMANTE con orden
+        firmantes.push({ 
+            login: login, 
+            nombre: nombre, 
+            orden: firmantes.length + 1 
+        });
+
+        console.log('Revisores después:', revisores.length);
+        console.log('Firmantes después:', firmantes.length);
+
+        // Renderizar y guardar
+        renderizarParticipantes();
+        guardarParticipantesEnSessionStorage();
+    }
+
+    // ============================================================
+    // RENDERIZAR: Mostrar revisores y firmantes en columnas
+    // ============================================================
+    function renderizarParticipantes() {
+        console.log('Renderizando... Revisores:', revisores.length, 'Firmantes:', firmantes.length);
+
+        // -------- COLUMNA REVISORES --------
+        let listaRevisoresDiv = document.getElementById('listaRevisores');
+        if (!listaRevisoresDiv) {
+            console.error('No se encontró elemento listaRevisores');
+            return;
+        }
+
+        if (revisores.length === 0) {
+            listaRevisoresDiv.innerHTML = '<div style="color:#999;text-align:center;padding:20px;">Sin revisores</div>';
+        } else {
+            let html = '';
+            for (let i = 0; i < revisores.length; i++) {
+                let r = revisores[i];
+                html += '<div class="participante-tag" data-login="' + r.login + '" ';
+                html += 'style="background:#e8f5e9;border:1px solid #4caf50;color:#1b5e20;';
+                html += 'display:inline-flex;align-items:center;gap:8px;padding:8px 12px;';
+                html += 'border-radius:6px;margin:4px;font-size:13px;">';
+                html += r.nombre;
+                html += '<span class="close-btn" style="cursor:pointer;margin-left:4px;font-weight:bold;font-size:16px;" ';
+                html += 'onclick="removerRevisor(\'' + r.login + '\')">×</span>';
+                html += '</div>';
+            }
+            listaRevisoresDiv.innerHTML = html;
+        }
+
+        // -------- COLUMNA FIRMANTES --------
+        let listaFirmantesDiv = document.getElementById('listaFirmantes');
+        if (!listaFirmantesDiv) {
+            console.error('No se encontró elemento listaFirmantes');
+            return;
+        }
+
+        if (firmantes.length === 0) {
+            listaFirmantesDiv.innerHTML = '<div style="color:#999;text-align:center;padding:20px;">Sin firmantes</div>';
+        } else {
+            let html = '';
+            for (let i = 0; i < firmantes.length; i++) {
+                let f = firmantes[i];
+                html += '<div class="participante-tag" data-login="' + f.login + '" ';
+                html += 'style="background:#e3f2fd;border:1px solid #2196f3;color:#0d47a1;';
+                html += 'display:inline-flex;align-items:center;gap:8px;padding:8px 12px;';
+                html += 'border-radius:6px;margin:4px;font-size:13px;">';
+                html += '<input type="number" class="orden-input" value="' + f.orden + '" ';
+                html += 'min="1" max="' + firmantes.length + '" ';
+                html += 'onchange="actualizarOrden(\'' + f.login + '\', this.value)" ';
+                html += 'style="width:40px;padding:4px;border:1px solid #2196f3;border-radius:4px;text-align:center;"/>';
+                html += '<span style="flex:1;">' + f.nombre + '</span>';
+                html += '<span class="close-btn" style="cursor:pointer;font-weight:bold;font-size:16px;" ';
+                html += 'onclick="removerFirmante(\'' + f.login + '\')">×</span>';
+                html += '</div>';
+            }
+            listaFirmantesDiv.innerHTML = html;
+        }
+
+        // Actualizar campo oculto del servidor
+        guardarParticipantes();
+    }
+
+    // ============================================================
+    // REMOVER: Revisor (también lo saca de firmantes)
+    // ============================================================
+    function removerRevisor(login) {
+        revisores = revisores.filter(r => r.login !== login);
+        firmantes = firmantes.filter(f => f.login !== login);
+        firmantes.forEach((f, idx) => f.orden = idx + 1);
+        renderizarParticipantes();
+        guardarParticipantesEnSessionStorage();
+        console.log('✓ Revisor eliminado');
+    }
+
+    // ============================================================
+    // REMOVER: Firmante (solo de firmantes)
+    // ============================================================
+    function removerFirmante(login) {
+        firmantes = firmantes.filter(f => f.login !== login);
+        firmantes.forEach((f, idx) => f.orden = idx + 1);
+        renderizarParticipantes();
+        guardarParticipantesEnSessionStorage();
+        console.log('✓ Firmante eliminado');
+    }
+
+    // ============================================================
+    // ORDEN: Actualizar números de firma
+    // ============================================================
+    function actualizarOrden(login, nuevoOrden) {
+        let orden = parseInt(nuevoOrden);
+        if (isNaN(orden) || orden < 1) orden = 1;
+        if (orden > firmantes.length) orden = firmantes.length;
+
+        let firmante = firmantes.find(f => f.login === login);
+        if (firmante) {
+            let anterior = firmante.orden;
+            firmante.orden = orden;
+
+            if (orden > anterior) {
+                firmantes
+                    .filter(f => f.orden > anterior && f.orden <= orden && f.login !== login)
+                    .forEach(f => f.orden--);
+            } else {
+                firmantes
+                    .filter(f => f.orden < anterior && f.orden >= orden && f.login !== login)
+                    .forEach(f => f.orden++);
+            }
+
+            firmantes.sort((a, b) => a.orden - b.orden);
+            firmantes.forEach((f, idx) => f.orden = idx + 1);
+
+            renderizarParticipantes();
+            guardarParticipantesEnSessionStorage();
+        }
+    }
+
+    // ============================================================
+    // GUARDAR: En campo oculto del servidor (para POST)
+    // ============================================================
+    function guardarParticipantes() {
+        let participantes = [];
+        let loginsProcesados = new Set();
+
+        // IMPORTANTE: Todos los participantes se guardan como REVISOR en la BD
+        // Los que aparecen en firmantes solo tienen el orden, pero el rol es REVISOR
+
+        // Agregar REVISORES
+        revisores.forEach(r => {
+            participantes.push({
+                login: r.login,
+                nombre: r.nombre,
+                tipo: 'REV',  // ← SIEMPRE REVISOR
+                orden: 0
+            });
+            loginsProcesados.add(r.login);
+        });
+
+        // Agregar FIRMANTES que NO sean revisores
+        // PERO también como REVISOR en BD
+        firmantes.forEach(f => {
+            if (!loginsProcesados.has(f.login)) {
+                participantes.push({
+                    login: f.login,
+                    nombre: f.nombre,
+                    tipo: 'REV',  // ← TAMBIÉN REVISOR
+                    orden: 0
+                });
+                loginsProcesados.add(f.login);
+            }
+        });
+
+        document.getElementById('<%= hfParticipantes.ClientID %>').value = JSON.stringify(participantes);
+    }
+
+    // ============================================================
+    // GUARDAR: En sessionStorage (para persistencia entre postbacks)
+    // ============================================================
+    function guardarParticipantesEnSessionStorage() {
+        try {
+            sessionStorage.setItem('revisores_temp', JSON.stringify(revisores));
+            sessionStorage.setItem('firmantes_temp', JSON.stringify(firmantes));
+            console.log('✓ Guardado en sessionStorage. Revisores:', revisores.length, 'Firmantes:', firmantes.length);
+        } catch (e) {
+            console.error('Error al guardar en sessionStorage:', e);
+        }
+    }
+
+    // ============================================================
+    // MODAL: Selector de años
+    // ============================================================
     function abrirSelectorAnos() {
         document.getElementById('modalAnoSelector').style.display = 'flex';
     }
@@ -239,28 +506,34 @@
         cerrarSelectorAnos();
     }
 
-    // Actualizar vista previa en tiempo real
+    // ============================================================
+    // PREVIEW: Código de documento
+    // ============================================================
     function actualizarPreview() {
         var codigo = (document.getElementById('<%= txtCodigoDoc.ClientID %>').value || 'RS').toUpperCase();
         var numero = document.getElementById('<%= txtNumeroDoc.ClientID %>').value || '1';
         var ano = document.getElementById('<%= txtAnoDoc.ClientID %>').value || '2026';
 
-        // Convertir número a 4 dígitos con ceros a la izquierda
-        numero = numero.replace(/[^0-9]/g, ''); // Solo números
-        numero = ('000' + numero).slice(-4); // Rellena con ceros a la izquierda
+        numero = numero.replace(/[^0-9]/g, '');
+        numero = ('000' + numero).slice(-4);
 
         var resultado = codigo + '-' + numero + '-' + ano;
         document.getElementById('<%= litCodigoPreview.ClientID %>').textContent = resultado;
     }
 
-    // Event listeners
+    // ============================================================
+    // INICIALIZACIÓN: Después de DOMContentLoaded
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
+        // Renderizar participantes recuperados
+        renderizarParticipantes();
+
+        // Setup de eventos para código, número y año
         var txtCodigo = document.getElementById('<%= txtCodigoDoc.ClientID %>');
         var txtNumero = document.getElementById('<%= txtNumeroDoc.ClientID %>');
         var txtAno = document.getElementById('<%= txtAnoDoc.ClientID %>');
         var modal = document.getElementById('modalAnoSelector');
 
-        // Solo letras en código
         if (txtCodigo) {
             txtCodigo.addEventListener('keyup', function() {
                 this.value = this.value.replace(/[^A-Za-z]/g, '').toUpperCase();
@@ -268,7 +541,6 @@
             });
         }
 
-        // Solo números en número
         if (txtNumero) {
             txtNumero.addEventListener('keyup', function() {
                 this.value = this.value.replace(/[^0-9]/g, '');
@@ -276,7 +548,6 @@
             });
         }
 
-        // Cerrar modal al hacer click fuera
         if (modal) {
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
@@ -285,8 +556,14 @@
             });
         }
 
-        // Inicializar preview
         actualizarPreview();
+    });
+
+    // ============================================================
+    // LIMPIAR: Al enviar el formulario (guardar participantes)
+    // ============================================================
+    window.addEventListener('beforeunload', function() {
+        // Los datos en sessionStorage se mantienen hasta cerrar el navegador
     });
 </script>
 </form>

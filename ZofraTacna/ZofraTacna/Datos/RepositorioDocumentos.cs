@@ -273,7 +273,7 @@ namespace ZofraTacna.Datos
                             cmd.Parameters.AddWithValue("@asunto", request.Asunto);
                             cmd.Parameters.AddWithValue("@desc", request.Descripcion ?? "");
                             cmd.Parameters.AddWithValue("@tipo", request.IdTipoDocumento);
-                            cmd.Parameters.AddWithValue("@area", request.Descripcion ?? request.Asunto);
+                            cmd.Parameters.AddWithValue("@area", request.IDUnidadOrganica);
                             cmd.Parameters.AddWithValue("@catdesc", request.Asunto);
                             cmd.Parameters.AddWithValue("@login", loginUsuario);
                             cmd.Parameters.AddWithValue("@estado", idEstadoReg);
@@ -295,7 +295,8 @@ namespace ZofraTacna.Datos
                         // PASO 4: Insertar participantes
                         foreach (var participante in request.Participantes)
                         {
-                            int idTipo = participante.Tipo == "Firmante" ? idTipoFirmante : idTipoRevisor;
+                            // El JavaScript envía "FIR" o "REV"
+                            int idTipo = participante.Tipo == "FIR" ? idTipoFirmante : idTipoRevisor;
                             InsertarParticipante(conn, transaction, idDocumento, participante.Login, 
                                 participante.Orden, idTipo, idEstadoPen);
                         }
