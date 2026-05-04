@@ -61,6 +61,15 @@
         .btn-editar{padding:5px 14px;border:1.5px solid #dde1f0;border-radius:6px;background:white;color:#1a2a4a;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;text-decoration:none;display:inline-block}
         .btn-eliminar{padding:5px 14px;border:1.5px solid #fca5a5;border-radius:6px;background:white;color:#c0392b;font-size:12px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block}
         .empty{text-align:center;padding:60px;color:#aaa;font-size:14px}
+        /* FILTER BAR */
+        .filter-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+        .filter-bar input{flex:1;min-width:180px;padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;color:#333;outline:none;font-family:'Segoe UI',sans-serif}
+        .filter-bar input:focus{border-color:#1a2a4a}
+        .filter-bar select{padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;color:#333;outline:none;font-family:'Segoe UI',sans-serif;background:white}
+        .filter-bar select:focus{border-color:#1a2a4a}
+        .btn-limpiar-filtro{padding:9px 16px;border:1.5px solid #ddd;border-radius:8px;background:white;color:#555;font-size:13px;cursor:pointer;white-space:nowrap}
+        .btn-limpiar-filtro:hover{background:#f4f4f4}
+        .filter-count{font-size:12px;color:#888;margin-left:auto;white-space:nowrap}
         /* FORM PANEL UC-006 */
         .fup{background:white;border-radius:12px;border-left:4px solid #1a2a4a;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px 24px;margin-bottom:20px}
         .fup-title{font-size:15px;font-weight:700;color:#1a2a4a;margin-bottom:16px}
@@ -156,13 +165,27 @@
                 </div>
             </div>
 
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <input type="text" id="filterTexto" placeholder="Buscar por login o email..." oninput="filtrarTabla()"/>
+                <select id="filterRol" onchange="filtrarTabla()">
+                    <option value="">Todos los roles</option>
+                    <option value="adm">Administrador</option>
+                    <option value="rev">Revisor</option>
+                    <option value="fir">Firmante</option>
+                    <option value="reg">Registrador</option>
+                </select>
+                <button class="btn-limpiar-filtro" type="button" onclick="limpiarFiltro()">Limpiar</button>
+                <span class="filter-count" id="filterCount"></span>
+            </div>
+
             <!-- TABLE -->
             <div class="tbl-wrap">
                 <asp:Panel ID="pnlEmpty" runat="server" Visible="false">
                     <div class="empty">No hay usuarios registrados.</div>
                 </asp:Panel>
                 <asp:Panel ID="pnlTable" runat="server">
-                    <table>
+                    <table id="tblUsuarios">
                         <thead>
                             <tr>
                                 <th>NOMBRE</th>
@@ -174,7 +197,7 @@
                         <tbody>
                             <asp:Repeater ID="rptUsuarios" runat="server" OnItemCommand="rptUsuarios_ItemCommand">
                                 <ItemTemplate>
-                                    <tr>
+                                    <tr data-login="<%# Eval("LoginUsuario").ToString().ToLower() %>" data-email="<%# Eval("Email").ToString().ToLower() %>" data-rol="<%# Eval("RolCodigo").ToString().ToLower() %>">
                                         <td>
                                             <div class="user-row-name"><%# System.Web.HttpUtility.HtmlEncode(Eval("LoginUsuario").ToString()) %></div>
                                         </td>
@@ -199,5 +222,30 @@
     </div>
 </div>
 </form>
+<script>
+    function filtrarTabla() {
+        var texto = document.getElementById('filterTexto').value.toLowerCase().trim();
+        var rol   = document.getElementById('filterRol').value.toLowerCase();
+        var filas = document.querySelectorAll('#tblUsuarios tbody tr');
+        var visibles = 0;
+        filas.forEach(function(tr) {
+            var login = tr.getAttribute('data-login') || '';
+            var email = tr.getAttribute('data-email') || '';
+            var trRol = tr.getAttribute('data-rol') || '';
+            var okTexto = !texto || login.indexOf(texto) >= 0 || email.indexOf(texto) >= 0;
+            var okRol   = !rol   || trRol === rol;
+            if (okTexto && okRol) { tr.style.display = ''; visibles++; }
+            else                  { tr.style.display = 'none'; }
+        });
+        var total = filas.length;
+        var cnt = document.getElementById('filterCount');
+        if (cnt) cnt.textContent = (texto || rol) ? 'Mostrando ' + visibles + ' de ' + total : '';
+    }
+    function limpiarFiltro() {
+        document.getElementById('filterTexto').value = '';
+        document.getElementById('filterRol').value   = '';
+        filtrarTabla();
+    }
+</script>
 </body>
 </html>

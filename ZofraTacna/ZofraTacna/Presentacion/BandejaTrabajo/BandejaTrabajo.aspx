@@ -148,16 +148,13 @@
                                     <strong>Máx. Aprobación:</strong> <%# Eval("FechaMaxFirma") %> <span class='<%# Eval("FechaMaxFirmaTexto").ToString().Contains("fuera") ? "tiempo-vencido" : "tiempo-ok" %>'><%# Eval("FechaMaxFirmaTexto") %></span></div>
                                 </div>
                                 <div class="section-botones">
-                                    <%# (bool)Eval("PuedeEditarRevision")
-                                        ? string.Format("<button class='btn-detalle btn-detalle-activo' type='button' onclick=\"window.location.href='EmitirRevision.aspx?id={0}'\"><svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z'/></svg>Editar Revisión</button>", Eval("IdDocumento"))
-                                        : "<button class='btn-detalle' type='button' disabled><svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:currentColor'><path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/></svg>Editar Revisión</button>" %>
-                                    <%# (bool)Eval("EsConformeRevision")
-                                        ? "<span class='estado-conforme'>Conforme</span>"
-                                        : ((bool)Eval("EsObservadoRevision")
-                                            ? "<span class='estado-observado'>Observado</span>"
-                                        : ((string)Eval("EstadoCodigo") == "PEN" || (string)Eval("EstadoCodigo") == "FPAR"
-                                            ? "<button class='btn-firma' type='button'><svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z'/></svg>Firmar Documento</button>"
-                                            : string.Format("<button type='button' class='btn-revision' onclick=\"window.location.href='EmitirRevision.aspx?id={0}'\"><svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z'/></svg>Emitir Revisión</button>", Eval("IdDocumento")))) %>
+                                    <%# GenerarBotonesAccion(
+                                            (bool)Eval("EsAdministrador"),
+                                            (int)Eval("IdDocumento"),
+                                            (bool)Eval("PuedeEditarRevision"),
+                                            (bool)Eval("EsConformeRevision"),
+                                            (bool)Eval("EsObservadoRevision"),
+                                            (string)Eval("EstadoCodigo")) %>
                                 </div>
                             </div>
                         </div>

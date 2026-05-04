@@ -152,6 +152,13 @@
     <Compile Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx.designer.cs">
       <DependentUpon>EmitirRevision.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx.cs">
+      <DependentUpon>GestionarParticipantes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx.designer.cs">
+      <DependentUpon>GestionarParticipantes.aspx</DependentUpon>
+    </Compile>
     <!-- Presentacion - GestionDocumentos -->
     <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.designer.cs">
       <DependentUpon>CargarDocumento.aspx</DependentUpon>
@@ -229,6 +236,9 @@
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\GestionDocumentos\CargarDocumento.aspx">
