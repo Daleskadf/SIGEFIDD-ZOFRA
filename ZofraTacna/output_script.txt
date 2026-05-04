@@ -1,0 +1,161 @@
+============================================================
+ SIGEFIDD-ZOFRA  -  Script de instalacion completa
+ Fecha: 2026-05-04 11:25:10
+============================================================
+ 
+--- PARTE 1: administracion ---
+Changed database context to 'master'.
+BD administracion ya existe. Continuando...
+Changed database context to 'administracion'.
+Tabla administracion.dbo.Empleado ya existe.
+Empleados de administracion verificados/insertados.
+5 nuevos empleados insertados correctamente.
+Msg 2627, Level 14, State 1, Server LAPTOP-SH88HTAV\LOCALDB#3B712AEA, Line 2
+Violation of PRIMARY KEY constraint 'pk_UnidadOrganica'. Cannot insert duplicate key in object 'dbo.UnidadOrganica'. The duplicate key value is (164).
+The statement has been terminated.
+Registros de Unidad Organica insertados correctamente.
+ 
+--- PARTE 2: FirmaDigital ---
+Changed database context to 'master'.
+BD FirmaDigital ya existe. Continuando...
+Changed database context to 'FirmaDigital'.
+Tabla Maestro ya existe.
+Tabla UsuarioSistema ya existe - columnas verificadas/agregadas.
+Tabla Documento ya existe - columnas nuevas verificadas/agregadas.
+Tabla DocumentoParticipante ya existe - columnas verificadas/agregadas.
+Tabla RevisionDetalle ya existe - columnas nuevas verificadas/agregadas.
+Tabla FirmaDetalle ya existe.
+Tabla HistorialDocumento ya existe.
+Tabla LogErrorSistema ya existe.
+ 
+--- Insertando catalogos Maestro ---
+ROL_SISTEMA ya tiene datos.
+ESTADO_DOC ya tiene datos.
+TIPO_DOC ya tiene datos.
+ESTADO_FIRMA ya tiene datos.
+TIPO_PARTICIPANTE insertado.
+ESTADO_PARTICIPANTE insertado.
+ 
+--- Insertando usuarios del sistema ---
+Usuarios del sistema verificados/insertados.
+Vista VW_EmpleadosActivos creada/actualizada.
+Procedimiento sp_InsertarParticipante creado/actualizado.
+ 
+--- PARTE 3: FirmaDigital_Files ---
+BD FirmaDigital_Files ya existe. Continuando...
+Changed database context to 'FirmaDigital_Files'.
+Tabla FirmaDigital_Files.dbo.DocumentoAdjunto ya existe.
+ 
+============================================================
+ VERIFICACION FINAL
+============================================================
+Changed database context to 'administracion'.
+--- administracion.dbo.Empleado ---
+IDEmpleado  CodigoPersonal       NombreCompleto                                                                                                                                                                                             LoginUsuario                                       Email                                                                                                ActivoAsist
+----------- -------------------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- -----------
+          1 E001                 Salas, Walter                                                                                                                                                                                              wsalas                                             wsalas@prueba.com                                                                                              1
+          2 E002                 User, Prueba                                                                                                                                                                                               user01                                             NULL                                                                                                           1
+          3 E003                 Vargas, Angel                                                                                                                                                                                              angel                                              angel@prueba.com                                                                                               1
+          4 E004                 Admin, Augusto                                                                                                                                                                                             augusto                                            augusto@prueba.com                                                                                             1
+          5 E005                 Firmante, Daleska                                                                                                                                                                                          daleska                                            daleska@prueba.com                                                                                             1
+          6 001                  Administrador, Augusto                                                                                                                                                                                     augusto                                            augusto@zofratacna.com.pe                                                                                      1
+          7 002                  Vargas Gutierrez, Angel                                                                                                                                                                                    angel                                              angel@zofratacna.com.pe                                                                                        1
+          8 003                  Salas, W.                                                                                                                                                                                                  wsalas                                             wsalas@zofratacna.com.pe                                                                                       1
+          9 004                  Firmante, Daleska                                                                                                                                                                                          daleska                                            daleska@zofratacna.com.pe                                                                                      1
+         10 001                  Administrador, Augusto                                                                                                                                                                                     augusto                                            augusto@zofratacna.com.pe                                                                                      1
+         11 002                  Vargas Gutierrez, Angel                                                                                                                                                                                    angel                                              angel@zofratacna.com.pe                                                                                        1
+         12 003                  Salas, W.                                                                                                                                                                                                  wsalas                                             wsalas@zofratacna.com.pe                                                                                       1
+         13 004                  Firmante, Daleska                                                                                                                                                                                          daleska                                            daleska@zofratacna.com.pe                                                                                      1
+         14 2024-010             Condori Quispe, Ricardo                                                                                                                                                                                    rcondori                                           daleskanicolle118@gmail.com                                                                                    1
+         15 2024-011             Flores Tapia, Claudia                                                                                                                                                                                      cflores                                            daleskafervilla118@gmail.com                                                                                   1
+         16 2024-012             Mendoza Valdivia, Roberto                                                                                                                                                                                  rmendoza                                           roberto_m@outlook.com                                                                                          1
+         17 2024-013             Zeballos Luna, Patricia                                                                                                                                                                                    pzeballos                                          p.zeballos@upt.pe                                                                                              1
+         18 2024-014             Vargas Machuca, Fernando                                                                                                                                                                                   fvargas                                            fernando_vargas@zofra.pe                                                                                       1
+         19 2024-010             Condori Quispe, Ricardo                                                                                                                                                                                    rcondori                                           daleskanicolle118@gmail.com                                                                                    1
+         20 2024-011             Flores Tapia, Claudia                                                                                                                                                                                      cflores                                            daleskafervilla118@gmail.com                                                                                   1
+         21 2024-012             Mendoza Valdivia, Roberto                                                                                                                                                                                  rmendoza                                           roberto_m@outlook.com                                                                                          1
+         22 2024-013             Zeballos Luna, Patricia                                                                                                                                                                                    pzeballos                                          p.zeballos@upt.pe                                                                                              1
+         23 2024-014             Vargas Machuca, Fernando                                                                                                                                                                                   fvargas                                            fernando_vargas@zofra.pe                                                                                       1
+Changed database context to 'FirmaDigital'.
+--- FirmaDigital: tablas ---
+TABLE_NAME                                                                                                                      
+--------------------------------------------------------------------------------------------------------------------------------
+Documento                                                                                                                       
+DocumentoParticipante                                                                                                           
+FirmaDetalle                                                                                                                    
+HistorialDocumento                                                                                                              
+LogErrorSistema                                                                                                                 
+Maestro                                                                                                                         
+RevisionDetalle                                                                                                                 
+UsuarioSistema                                                                                                                  
+--- FirmaDigital: catalogo Maestro ---
+Tipo                                               Codigo               Descripcion                                                                                          Orden      
+-------------------------------------------------- -------------------- ---------------------------------------------------------------------------------------------------- -----------
+ESTADO_DOC                                         REG                  Registrado                                                                                                     1
+ESTADO_DOC                                         REV                  En Revision                                                                                                    2
+ESTADO_DOC                                         PEN                  Pendiente de Firma                                                                                             3
+ESTADO_DOC                                         FPAR                 Firmado Parcialmente                                                                                           4
+ESTADO_DOC                                         OBS                  Observado                                                                                                      5
+ESTADO_DOC                                         FCOM                 Firmado Completamente                                                                                          6
+ESTADO_FIRMA                                       PEN                  Pendiente                                                                                                      1
+ESTADO_FIRMA                                       FIR                  Firmado                                                                                                        2
+ESTADO_FIRMA                                       OBS                  Observado                                                                                                      3
+ESTADO_PARTICIPANTE                                PEN                  Pendiente                                                                                                      1
+ESTADO_PARTICIPANTE                                REV                  En Revision                                                                                                    2
+ESTADO_PARTICIPANTE                                OBS                  Observado                                                                                                      3
+ESTADO_PARTICIPANTE                                FIR                  Firmado                                                                                                        4
+ROL_FIRMANTE                                       AUT                  Autor                                                                                                          1
+ROL_FIRMANTE                                       CON                  Conformidad                                                                                                    2
+ROL_FIRMANTE                                       VB                   Visto Bueno                                                                                                    3
+ROL_SISTEMA                                        REG                  Registrador                                                                                                    1
+ROL_SISTEMA                                        ADM                  Administrador                                                                                                  2
+ROL_SISTEMA                                        REV                  Revisor                                                                                                        3
+ROL_SISTEMA                                        FIR                  Firmante                                                                                                       4
+TIPO_DOC                                           RES                  Resolucion                                                                                                     1
+TIPO_DOC                                           ACT                  Acta                                                                                                           2
+TIPO_DOC                                           PLA                  Plan                                                                                                           3
+TIPO_DOC                                           PRO                  Procedimiento                                                                                                  4
+TIPO_PART                                          REV                  Revisor                                                                                                        1
+TIPO_PART                                          FIR                  Firmante                                                                                                       2
+TIPO_PARTICIPANTE                                  REV                  Revisor                                                                                                        1
+TIPO_PARTICIPANTE                                  FIR                  Firmante                                                                                                       2
+--- FirmaDigital: vistas ---
+Vista                                                                                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+VW_EmpleadosActivos                                                                                                             
+VW_UnidadesOrganicas                                                                                                            
+--- FirmaDigital: procedimientos ---
+Procedimiento                                                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------
+GEN_X_EnviarMail                                                                                                                
+sp_InsertarParticipante                                                                                                         
+USP_NotificarAsignacionRevision                                                                                                 
+Changed database context to 'FirmaDigital_Files'.
+--- FirmaDigital_Files: tablas ---
+TABLE_NAME                                                                                                                      
+--------------------------------------------------------------------------------------------------------------------------------
+DocumentoAdjunto                                                                                                                
+Changed database context to 'master'.
+ 
+============================================================
+ INSTALACION COMPLETADA EXITOSAMENTE
+ Bases de datos listas:
+   - administracion        (empleados institucionales)
+   - FirmaDigital          (core SIGEFIDD-ZOFRA)
+   - FirmaDigital_Files    (repositorio de PDFs)
+============================================================
+Changed database context to 'FirmaDigital'.
+HResult 0x3BB1, Level 16, State 1
+SQL Server blocked access to procedure 'dbo.sp_send_dbmail' of component 'Database Mail XPs' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'Database Mail XPs' by using sp_configure. For more information about enabling 'Database Mail XPs', search for 'Database Mail XPs' in SQL Server Books Online.
+HResult 0x3BB1, Level 16, State 1
+SQL Server blocked access to procedure 'dbo.sp_send_dbmail' of component 'Database Mail XPs' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'Database Mail XPs' by using sp_configure. For more information about enabling 'Database Mail XPs', search for 'Database Mail XPs' in SQL Server Books Online.
+HResult 0x3BB1, Level 16, State 1
+SQL Server blocked access to procedure 'dbo.sp_send_dbmail' of component 'Database Mail XPs' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'Database Mail XPs' by using sp_configure. For more information about enabling 'Database Mail XPs', search for 'Database Mail XPs' in SQL Server Books Online.
+HResult 0x3BB1, Level 16, State 1
+SQL Server blocked access to procedure 'dbo.sp_send_dbmail' of component 'Database Mail XPs' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'Database Mail XPs' by using sp_configure. For more information about enabling 'Database Mail XPs', search for 'Database Mail XPs' in SQL Server Books Online.
+Msg 134, Level 15, State 1, Server LAPTOP-SH88HTAV\LOCALDB#3B712AEA, Line 169
+The variable name '@Cuerpo' has already been declared. Variable names must be unique within a query batch or stored procedure.
+CodigoDocumento                                    Persona                                                                                                                                                                                                    Email                                                                                                Orden       CodigoRol            RolEnDocumento                                                                                      
+-------------------------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------- -------------------- ----------------------------------------------------------------------------------------------------
+IdUsuario   LoginUsuario                                       Password                                                                                             IdRolSistema Activo
+----------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ------------ ------

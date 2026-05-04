@@ -69,15 +69,15 @@ namespace ZofraTacna.Datos
         }
 
         /// <summary>Primer PDF adjunto al documento en FirmaDigital_Files.</summary>
-        public bool IntentarAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out int tamanioBytes)
+        public bool IntentarAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out int tamañoBytes)
         {
             idAdjunto = 0;
             nombreArchivo = null;
-            tamanioBytes = 0;
+            tamañoBytes = 0;
             using (var conn = new SqlConnection(_connFiles))
             {
                 conn.Open();
-                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, TamanioBytes
+                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, TamañoBytes
                                FROM DocumentoAdjunto WHERE IdDocumento=@id ORDER BY IdAdjunto ASC";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -87,7 +87,7 @@ namespace ZofraTacna.Datos
                         if (!dr.Read()) return false;
                         idAdjunto = (int)dr["IdAdjunto"];
                         nombreArchivo = dr["NombreArchivo"].ToString();
-                        tamanioBytes = Convert.ToInt32(dr["TamanioBytes"]);
+                        tamañoBytes = Convert.ToInt32(dr["TamañoBytes"]);
                         return true;
                     }
                 }
@@ -260,12 +260,14 @@ namespace ZofraTacna.Datos
                         // PASO 2: Crear el documento
                         // El CodigoDocumento ya viene formado desde ModuloGestionDocumental (ej: RS-0001-2026)
                         string sqlInsert = @"INSERT INTO Documento
-                            (CodigoDocumento,Asunto,Descripcion,IdTipoDocumento,
-                             AreaResponsable,AreaCategoria,LoginUsuarioRegistrador,
-                             IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion,Activo)
-                            VALUES
-                            (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma,1);
-                            SELECT SCOPE_IDENTITY();";
+                                            (CodigoDocumento,Asunto,Descripcion,IdTipoDocumento,
+                                             AreaResponsable,AreaCategoria,LoginUsuarioRegistrador,
+                                             IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion,
+                                             RutaArchivoPDF,Activo)
+                                            VALUES
+                                            (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma,
+                                             @rutaPDF,1);
+                                            SELECT SCOPE_IDENTITY();";
 
                         using (var cmd = new SqlCommand(sqlInsert, conn, transaction))
                         {
@@ -280,6 +282,7 @@ namespace ZofraTacna.Datos
                             cmd.Parameters.AddWithValue("@pri", request.Prioridad);
                             cmd.Parameters.AddWithValue("@limRev", DateTime.Now.AddHours(request.HorasRevision));
                             cmd.Parameters.AddWithValue("@limFirma", DateTime.Now.AddHours(request.HorasFirma));
+                            cmd.Parameters.AddWithValue("@rutaPDF", request.NombreArchivoPDF ?? "");
 
                             object result = cmd.ExecuteScalar();
                             if (result == null || result == DBNull.Value)
@@ -344,7 +347,7 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 string sql = @"INSERT INTO DocumentoAdjunto
-                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
+                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamañoBytes,UsuarioCreacion)
                     VALUES (@id,@pdf,@nom,@mime,@size,@user)";
 
                 using (var cmd = new SqlCommand(sql, conn))
@@ -766,9 +769,9 @@ namespace ZofraTacna.Datos
                 conn.Open();
                 string sql = existe
                     ? @"UPDATE DocumentoAdjunto
-                        SET ContenidoPDF=@pdf, NombreArchivo=@nom, TipoMime='application/pdf', TamanioBytes=@tam
+                        SET ContenidoPDF=@pdf, NombreArchivo=@nom, TipoMime='application/pdf', TamañoBytes=@tam
                         WHERE IdAdjunto=@idAdj"
-                    : @"INSERT INTO DocumentoAdjunto (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
+                    : @"INSERT INTO DocumentoAdjunto (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamañoBytes,UsuarioCreacion)
                         VALUES (@idDoc,@pdf,@nom,'application/pdf',@tam,@usr)";
                 using (var cmd = new SqlCommand(sql, conn))
                 {

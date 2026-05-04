@@ -1,81 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\",
+  "WorkspaceRootPath": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\asus\\desktop\\nueva carpeta\\sigefidd-zofra\\zofratacna\\zofratacna\\presentacion\\bandejatrabajo\\bandejatrabajo.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\bandejatrabajo\\bandejatrabajo.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\asus\\desktop\\nueva carpeta\\sigefidd-zofra\\zofratacna\\zofratacna\\presentacion\\gestiondocumentos\\misdocumentos.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\misdocumentos.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\logicanegocio\\modulogestiondocumental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\logicanegocio\\modulogestiondocumental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\asus\\desktop\\nueva carpeta\\sigefidd-zofra\\zofratacna\\zofratacna\\presentacion\\iniciosesion\\login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\iniciosesion\\login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\editardocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\iniciosesion\\login.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\iniciosesion\\login.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\BUSCADOR_SIMPLIFICADO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\iniciosesion\\login.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\iniciosesion\\login.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\datos\\repositoriodocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\datos\\repositoriodocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\logicanegocio\\moduloautenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\logicanegocio\\moduloautenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\models\\documento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\models\\documento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestionroles\\gestionroles.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestionroles\\gestionroles.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\serviciosexternos\\conectorsas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\serviciosexternos\\conectorsas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\datos\\repositoriousuariosroles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\datos\\repositoriousuariosroles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1547784299\\CargarDocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -93,11 +25,79 @@
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_LISTAS_ACUMULATIVAS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
-      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\cargardocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Datos\\RepositorioDocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Models\\Documento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\ServiciosExternos\\ConectorSAS.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -113,9 +113,9 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "BandejaTrabajo.aspx",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
               "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
@@ -124,20 +124,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 8,
               "Title": "MisDocumentos.aspx",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
               "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
-              "WhenOpened": "2026-05-04T07:49:31.31Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-04T07:49:31.31Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 7,
               "Title": "EditarDocumento.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx",
@@ -149,24 +148,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "Login.aspx",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
               "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
-              "WhenOpened": "2026-04-22T08:14:48.686Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-22T08:14:48.686Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 10,
               "Title": "CargarDocumento.aspx",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
               "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
@@ -174,11 +172,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 11,
               "Title": "Web.config",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config",
               "RelativeDocumentMoniker": "ZofraTacna\\Web.config",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config",
               "RelativeToolTip": "ZofraTacna\\Web.config",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
@@ -187,11 +185,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 12,
               "Title": "CargarDocumento.aspx.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
               "ViewState": "AgIAAKwAAAAAAAAAAAAmwCcBAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -199,24 +197,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 13,
               "Title": "ModuloGestionDocumental.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
               "RelativeToolTip": "ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
               "ViewState": "AgIAAEsAAAAAAAAAAIAwwGgAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-22T08:29:32.338Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-22T08:29:32.338Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 14,
               "Title": "EditarDocumento.aspx",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
               "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
@@ -224,11 +221,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 15,
               "Title": "EditarDocumento.aspx.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
               "ViewState": "AgIAAHwBAAAAAAAAAAAAAIsBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -236,11 +233,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 16,
               "Title": "EditarDocumento.aspx.designer.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAALwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -248,11 +245,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 17,
               "Title": "CargarDocumento.aspx.designer.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
               "ViewState": "AgIAAIsAAAAAAAAAAAAlwJkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -260,11 +257,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 18,
               "Title": "Login.aspx.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -272,7 +269,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 6,
               "Title": "SOLUCION_LISTAS_ACUMULATIVAS.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_LISTAS_ACUMULATIVAS.md",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_LISTAS_ACUMULATIVAS.md",
@@ -284,7 +281,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 4,
               "Title": "SOLUCION_ERROR_BUSCADOR.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_ERROR_BUSCADOR.md",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_ERROR_BUSCADOR.md",
@@ -296,7 +293,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 1,
               "Title": "BUSCADOR_SIMPLIFICADO.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\BUSCADOR_SIMPLIFICADO.md",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\BUSCADOR_SIMPLIFICADO.md",
@@ -308,7 +305,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 5,
               "Title": "CargarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\CargarDocumento.aspx.cs",
@@ -320,7 +317,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 3,
               "Title": "IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
@@ -332,11 +329,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 19,
               "Title": "RepositorioDocumentos.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Datos\\RepositorioDocumentos.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "RelativeToolTip": "ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "ViewState": "AgIAAPAAAAAAAAAAAABBwPEAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -344,11 +341,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 20,
               "Title": "Login.aspx.designer.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -356,11 +353,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 21,
               "Title": "ModuloAutenticacion.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
               "RelativeToolTip": "ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -368,11 +365,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 22,
               "Title": "Documento.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Models\\Documento.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs",
               "RelativeToolTip": "ZofraTacna\\Models\\Documento.cs",
               "ViewState": "AgIAADYAAAAAAAAAAABQwHYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -380,7 +377,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 2,
               "Title": "CargarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1547784299\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1547784299\\CargarDocumento.aspx.cs",
@@ -392,11 +389,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 23,
               "Title": "GestionRoles.aspx.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
               "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
               "ViewState": "AgIAAKsAAAAAAAAAAAAowKYAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -404,11 +401,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 24,
               "Title": "ConectorSAS.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
               "RelativeToolTip": "ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -416,15 +413,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 25,
               "Title": "RepositorioUsuariosRoles.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
+              "DocumentMoniker": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\Nueva carpeta\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
+              "ToolTip": "C:\\Users\\Angel\\Desktop\\a\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
               "RelativeToolTip": "ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
               "ViewState": "AgIAAMEAAAAAAAAAAIBJwBUBAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-28T18:50:41.665Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             }
           ]
         }

@@ -321,7 +321,7 @@ namespace ZofraTacna.Presentacion
 
                         // Insertar nuevo PDF
                         string sqlInsert = @"INSERT INTO DocumentoAdjunto 
-                            (IdDocumento, ContenidoPDF, NombreArchivo, TipoMime, TamanioBytes, UsuarioCreacion, FechaCreacion)
+                            (IdDocumento, ContenidoPDF, NombreArchivo, TipoMime, TamañoBytes, UsuarioCreacion, FechaCreacion)
                             VALUES (@id, @pdf, @nom, @mime, @size, @user, GETDATE())";
 
                         using (var cmd = new SqlCommand(sqlInsert, cnFiles))
