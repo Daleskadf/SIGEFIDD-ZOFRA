@@ -262,11 +262,9 @@ namespace ZofraTacna.Datos
                         string sqlInsert = @"INSERT INTO Documento
                                             (CodigoDocumento,Asunto,Descripcion,IdTipoDocumento,
                                              AreaResponsable,AreaCategoria,LoginUsuarioRegistrador,
-                                             IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion,
-                                             RutaArchivoPDF,Activo)
+                                             IdEstadoDocumento,Prioridad,FechaLimiteRevision,FechaLimiteAprobacion,Activo)
                                             VALUES
-                                            (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma,
-                                             @rutaPDF,1);
+                                            (@cod,@asunto,@desc,@tipo,@area,@catdesc,@login,@estado,@pri,@limRev,@limFirma,1);
                                             SELECT SCOPE_IDENTITY();";
 
                         using (var cmd = new SqlCommand(sqlInsert, conn, transaction))
@@ -282,7 +280,7 @@ namespace ZofraTacna.Datos
                             cmd.Parameters.AddWithValue("@pri", request.Prioridad);
                             cmd.Parameters.AddWithValue("@limRev", DateTime.Now.AddHours(request.HorasRevision));
                             cmd.Parameters.AddWithValue("@limFirma", DateTime.Now.AddHours(request.HorasFirma));
-                            cmd.Parameters.AddWithValue("@rutaPDF", request.NombreArchivoPDF ?? "");
+                      
 
                             object result = cmd.ExecuteScalar();
                             if (result == null || result == DBNull.Value)
