@@ -74,6 +74,7 @@
     <Content Include="Presentacion\Firmante.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Presentacion\GestionDocumentos\EditarDocumento.aspx" />
     <Content Include="Presentacion\Revisor.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
@@ -104,6 +105,13 @@
     </Compile>
     <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.cs">
       <DependentUpon>CargarDocumento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.cs">
+      <DependentUpon>EditarDocumento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.designer.cs">
+      <DependentUpon>EditarDocumento.aspx</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Revisor.aspx.cs">
       <DependentUpon>Revisor.aspx</DependentUpon>
@@ -161,13 +169,6 @@
     </Compile>
     <Compile Include="Presentacion\GestionDocumentos\VerObservaciones.aspx.designer.cs">
       <DependentUpon>VerObservaciones.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.cs">
-      <DependentUpon>EditarDocumento.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Presentacion\GestionDocumentos\EditarDocumento.aspx.designer.cs">
-      <DependentUpon>EditarDocumento.aspx</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\GestionDocumentos\Historial.aspx.cs">
       <DependentUpon>Historial.aspx</DependentUpon>
@@ -237,9 +238,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\GestionDocumentos\VerObservaciones.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Presentacion\GestionDocumentos\EditarDocumento.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\GestionDocumentos\Historial.aspx">

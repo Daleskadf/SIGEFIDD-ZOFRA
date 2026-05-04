@@ -259,7 +259,6 @@ GO
 -- ============================================================
 -- 2.2  UsuarioSistema
 --   Usuarios habilitados para ingresar al sistema.
---   Modo simulacion: Password = NULL (login por DropDownList).
 --   IdRolSistema -> FK a Maestro (Tipo = ROL_SISTEMA).
 -- ============================================================
 IF OBJECT_ID('dbo.UsuarioSistema', 'U') IS NULL
@@ -267,7 +266,6 @@ BEGIN
     CREATE TABLE dbo.UsuarioSistema (
         IdUsuario            INT          IDENTITY(1,1) NOT NULL,
         LoginUsuario         VARCHAR(50)                NOT NULL,
-        Password             VARCHAR(255)               NULL,
         IdRolSistema         INT                        NOT NULL,
         Activo               BIT                        NOT NULL CONSTRAINT df_UsuarioSistema_Activo    DEFAULT 1,
         -- Auditoria ET-003
@@ -288,7 +286,6 @@ GO
 -- ============================================================
 -- 2.3  Documento
 --   Tabla principal del sistema.
---   RutaArchivoPDF          -> ruta fisica del PDF original
 --   RutaArchivoPDF_Firmado  -> ruta del PDF con firma aplicada
 --   IdArchivoPrincipal      -> FK logico a FirmaDigital_Files
 --   NumeroRevisionActual    -> DEFAULT 1 (sin revision aun)
@@ -305,7 +302,6 @@ BEGIN
 		AreaResponsable         INT                        NOT NULL,
         AreaCategoria           VARCHAR(150)               NULL,
         LoginUsuarioRegistrador VARCHAR(50)                NOT NULL,
-        RutaArchivoPDF          VARCHAR(500)               NULL,
         RutaArchivoPDF_Firmado  VARCHAR(500)               NULL,
         IdArchivoPrincipal      INT                        NULL,
         IdEstadoDocumento       INT                        NOT NULL,
@@ -331,8 +327,6 @@ END
 ELSE
 BEGIN
     -- Columnas que pudieron no existir en versiones anteriores
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF')
-        ALTER TABLE dbo.Documento ADD RutaArchivoPDF VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF_Firmado')
         ALTER TABLE dbo.Documento ADD RutaArchivoPDF_Firmado VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='AreaCategoria')
@@ -367,7 +361,6 @@ BEGIN
         IdParticipante      INT          IDENTITY(1,1) NOT NULL,
         IdDocumento         INT                        NOT NULL,
         LoginUsuario        VARCHAR(50)                NOT NULL,
-        CorreoInstitucional VARCHAR(150)               NULL,
         OrdenSecuencial     INT                        NOT NULL CONSTRAINT df_DocParticipante_Orden     DEFAULT 1,
         IdTipoParticipante  INT                        NOT NULL,
         EstadoParticipante  INT                        NOT NULL,
@@ -599,7 +592,8 @@ BEGIN
     INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
     ('ESTADO_FIRMA', 'PEN',  'Pendiente de Firma', 1, 'SISTEMA'),
     ('ESTADO_FIRMA', 'FIR',  'Firmado',            2, 'SISTEMA'),
-    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3, 'SISTEMA');
+    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3, 'SISTEMA'),
+	('ESTADO_FIRMA', 'OBS', 'Observado',           4, 'SISTEMA');  
     PRINT 'ESTADO_FIRMA insertado.';
 END
 ELSE
@@ -636,7 +630,6 @@ GO
 
 -- ============================================================
 -- 4.  USUARIOS DEL SISTEMA
---   Modo simulacion: Password = NULL.
 --   El login se realiza via DropDownList (sin contrasena).
 --   Los SELECT usan JOIN a Maestro para obtener el IdMaestro
 --   correcto independientemente del orden de insercion.
@@ -646,22 +639,22 @@ PRINT '--- Insertando usuarios del sistema ---';
 GO
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'augusto')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'augusto', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'ADM';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'angel')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'angel', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REG';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'wsalas')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'wsalas', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REV';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'daleska')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'daleska', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'FIR';
 
@@ -948,15 +941,6 @@ PRINT '--- FirmaDigital: catalogo Maestro ---';
 SELECT Tipo, Codigo, Descripcion, Orden
 FROM dbo.Maestro
 ORDER BY Tipo, Orden;
-
-PRINT '--- FirmaDigital: usuarios del sistema ---';
-SELECT u.IdUsuario, u.LoginUsuario,
-       m.Codigo AS RolCodigo, m.Descripcion AS RolNombre,
-       u.Activo,
-       CASE WHEN u.Password IS NULL THEN 'SIN PASSWORD (simulacion)' ELSE 'CON PASSWORD' END AS ModoAuth
-FROM dbo.UsuarioSistema u
-JOIN dbo.Maestro m ON u.IdRolSistema = m.IdMaestro
-ORDER BY u.IdUsuario;
 
 PRINT '--- FirmaDigital: vistas ---';
 SELECT TABLE_NAME AS Vista
@@ -1516,6 +1500,7 @@ SELECT * FROM DocumentoParticipante
 SELECT * FROM Documentoadjunto
 SELECT * FROM maestro
 SELECT * FROM unidadorganica
+SELECT * FROM HISTORIALDOCUMENTO
 
 -- Consultamos el "diccionario" usando el nombre correcto de la columna
 SELECT IdMaestro, Codigo, Descripcion 
