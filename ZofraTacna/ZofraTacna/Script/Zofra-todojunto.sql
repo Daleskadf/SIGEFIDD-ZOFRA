@@ -83,13 +83,16 @@ BEGIN
         ActivoAsist      BIT                        NOT NULL
             CONSTRAINT df_Empleado_ActivoAsist DEFAULT 1,
         CONSTRAINT pk_Empleado PRIMARY KEY CLUSTERED (IDEmpleado),
-        CONSTRAINT uq_Empleado_Login UNIQUE (LoginUsuario)
+        CONSTRAINT uq_Empleado_Login UNIQUE (LoginUsuario),
+		CONSTRAINT fk_Empleado_UnidadOrganica FOREIGN KEY (IDUnidadOrganica) 
+            REFERENCES dbo.UnidadOrganica(IDUnidadOrganica)
     );
     PRINT 'Tabla administracion.dbo.Empleado creada.';
 END
 ELSE
     PRINT 'Tabla administracion.dbo.Empleado ya existe.';
 GO
+
 
 -- Seed: 4 empleados (coinciden 1-a-1 con UsuarioSistema en FirmaDigital)
 IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'augusto')
@@ -111,6 +114,93 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'daleska')
 PRINT 'Empleados de administracion verificados/insertados.';
 GO
 
+-- Insertamos 5 nuevos empleados en un solo bloque
+INSERT INTO dbo.Empleado 
+(CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+VALUES 
+('2024-010', 'Condori Quispe', 'Ricardo', 'rcondori', 'daleskanicolle118@gmail.com', 164, 1), -- Gerencia General
+('2024-011', 'Flores Tapia', 'Claudia', 'cflores', 'daleskafervilla118@gmail.com', 376, 1),              -- Tecnologías de la Información
+('2024-012', 'Mendoza Valdivia', 'Roberto', 'rmendoza', 'roberto_m@outlook.com', 301, 1),     -- Oficina de Administración y Finanzas
+('2024-013', 'Zeballos Luna', 'Patricia', 'pzeballos', 'p.zeballos@upt.pe', 363, 1),          -- Oficina de Asesoría Jurídica
+('2024-014', 'Vargas Machuca', 'Fernando', 'fvargas', 'fernando_vargas@zofra.pe', 332, 1);     -- Área de Logística
+
+PRINT '5 nuevos empleados insertados correctamente.';
+GO
+-- ------------------------------------------------------------
+-- Tabla: dbo.UnidadOrganica
+--   Estructura simulada de la BD institucional.
+--   ActivoAsist = 1  ->  empleado activo visible al sistema.
+-- ------------------------------------------------------------
+IF OBJECT_ID('dbo.UnidadOrganica', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.UnidadOrganica (
+        IDUnidadOrganica      INT NOT NULL,
+        Descripcion           VARCHAR(250) NOT NULL,
+        Abreviatura           VARCHAR(20)  NULL,
+        CodigoUnidadOrganica  VARCHAR(20)  NULL,
+		CONSTRAINT pk_UnidadOrganica PRIMARY KEY CLUSTERED (IDUnidadOrganica)
+    );
+    PRINT 'Tabla UnidadOrganica creada.';
+END
+GO
+-- INSERTANDO REGISTROS A LA TABLA UNIDADORGANICA
+INSERT INTO dbo.UnidadOrganica (IDUnidadOrganica, Descripcion, Abreviatura, CodigoUnidadOrganica)
+VALUES 
+(164, 'GERENCIA GENERAL', 'GG', '2000'),
+(289, 'Área de Fiscalización', 'AFIS', '2200'),
+(385, 'Unidad de Relaciones Públicas e Imagen Institucional', 'URPII', '2300'),
+(290, 'ORGANO DE CONTROL INSTITUCIONAL', 'OCI', '3000'),
+(386, 'Sistema de Actividades de Control y Seguimiento', 'URPII', '3100'),
+(387, 'Sistema de Acciones de Control', 'SAC', '3200'),
+(363, 'OFICINA DE ASESORIA JURIDICA', 'OAJ', '4000'),
+(388, 'Unidad de Asuntos Judiciales', 'UAJ', '4100'),
+(389, 'Unidad de Asuntos Administrativos', 'UAA', '4200'),
+(296, 'OFICINA DE PLANEAMIENTO Y PRESUPUESTO', 'OPP', '5000'),
+(390, 'Sistemas de Gestión', 'SG', '5100'),
+(391, 'Sistema de Presupuesto y Proyectos', 'SPYP', '5200'),
+(392, 'Sistema de Planes y Programas', 'SPP', '5300'),
+(393, 'Sistema de Racionalización', 'SR', '5400'),
+(301, 'OFICINA DE ADMINISTRACION Y FINANZAS', 'OAF', '6000'),
+(381, 'Área de Gestión del Talento Humano', 'AGTH', '6100'),
+(302, 'Área de Contabilidad', 'AC', '6200'),
+(303, 'Área de Tesorería', 'AT', '6300'),
+(332, 'Área de Logística', 'AL', '6400'),
+(394, 'Unidad de Transporte y Mantenimiento', 'UTYM', '6410'),
+(395, 'Unidad de Áreas Verdes y Jardinería', 'UAVYJ', '6420'),
+(396, 'Unidad de Control Patrimonial', 'UCP', '6500'),
+(397, 'Unidad de Archivo Central', 'UAC', '6600'),
+(398, 'Unidad de Seguridad y Vigilancia', 'USYV', '6700'),
+(399, 'Unidad de Trámite Documentario', 'UTD', '6800'),
+(366, 'GERENCIA DE PROMOCION Y DESARROLLO', 'GPD', '7000'),
+(367, 'Área de Marketing y Promoción', 'AMP', '7100'),
+(368, 'Área de Soluciones al Usuario', 'ASU', '7200'),
+(372, 'Área de Desarrollo e Infraestructura', 'ADI', '7300'),
+(321, 'GERENCIA DE OPERACIONES', 'GO', '9000'),
+(322, 'Sección de Registro de Usuarios', 'SRU', '9100'),
+(382, 'Sección Archivo GO', 'SAGO', '9200'),
+(336, 'Área de Control Operativo, Zona Comercial y de Franquicia', 'ACOZC', '9300'),
+(337, 'Sección de Control Operativo y de Zona Comercial', 'SCOZC', '9310'),
+(323, 'Sección Control de Franquicia', 'SCF', '9320'),
+(338, 'Área de Técnica Aduanera', 'ATAD', '9400'),
+(339, 'Sección de Valoración', 'SVAL', '9410'),
+(340, 'Sección de Nomenclatura y Procedimientos', 'SNP', '9420'),
+(341, 'Área de Operaciones Aduaneras', 'AOAD', '9500'),
+(342, 'Sección de Garita y Balanza', 'SGB', '9510'),
+(343, 'Sección de Depósito Franco', 'SDF', '9520'),
+(327, 'Área de Actividades Productivas', 'AAP', '9600'),
+(328, 'Área de Régimen Simplificado', 'ARS', '9700'),
+(345, 'Sección de Registro de Información de Régimen Simplificado', 'SRIRS', '9710'),
+(347, 'Sección de Almacén - Régimen Simplificado', 'SARS', '9730'),
+(348, 'Sección de Control de Plataforma Régimen Simplificado', 'SCPRS', '9740'),
+(383, 'Sección de Clasificación, Codificación y Valoración', 'SCCV', '9750'),
+(384, 'Sección de Aforo', 'SA', '9760'),
+(376, 'Área de Tecnologías de la Información y Comunicaciones', 'ATI', '9800'),
+(377, 'Sección de Desarrollo de Sistemas', 'SDS', '9810'),
+(378, 'Sección de Administración de la Información', 'SAI', '9820'),
+(379, 'Sección de Soporte', 'SST', '9830');
+
+PRINT 'Registros de Unidad Organica insertados correctamente.';
+GO
 -- ============================================================
 -- PARTE 2: BASE DE DATOS  FirmaDigital
 --   Core del sistema SIGEFIDD-ZOFRA.
@@ -169,7 +259,6 @@ GO
 -- ============================================================
 -- 2.2  UsuarioSistema
 --   Usuarios habilitados para ingresar al sistema.
---   Modo simulacion: Password = NULL (login por DropDownList).
 --   IdRolSistema -> FK a Maestro (Tipo = ROL_SISTEMA).
 -- ============================================================
 IF OBJECT_ID('dbo.UsuarioSistema', 'U') IS NULL
@@ -177,7 +266,6 @@ BEGIN
     CREATE TABLE dbo.UsuarioSistema (
         IdUsuario            INT          IDENTITY(1,1) NOT NULL,
         LoginUsuario         VARCHAR(50)                NOT NULL,
-        Password             VARCHAR(255)               NULL,
         IdRolSistema         INT                        NOT NULL,
         Activo               BIT                        NOT NULL CONSTRAINT df_UsuarioSistema_Activo    DEFAULT 1,
         -- Auditoria ET-003
@@ -198,7 +286,6 @@ GO
 -- ============================================================
 -- 2.3  Documento
 --   Tabla principal del sistema.
---   RutaArchivoPDF          -> ruta fisica del PDF original
 --   RutaArchivoPDF_Firmado  -> ruta del PDF con firma aplicada
 --   IdArchivoPrincipal      -> FK logico a FirmaDigital_Files
 --   NumeroRevisionActual    -> DEFAULT 1 (sin revision aun)
@@ -212,10 +299,9 @@ BEGIN
         CodigoDocumento         VARCHAR(50)                NOT NULL,
         Asunto                  VARCHAR(300)               NOT NULL,
         IdTipoDocumento         INT                        NOT NULL,
-        AreaResponsable         VARCHAR(200)               NOT NULL,
+		AreaResponsable         INT                        NOT NULL,
         AreaCategoria           VARCHAR(150)               NULL,
         LoginUsuarioRegistrador VARCHAR(50)                NOT NULL,
-        RutaArchivoPDF          VARCHAR(500)               NULL,
         RutaArchivoPDF_Firmado  VARCHAR(500)               NULL,
         IdArchivoPrincipal      INT                        NULL,
         IdEstadoDocumento       INT                        NOT NULL,
@@ -241,8 +327,6 @@ END
 ELSE
 BEGIN
     -- Columnas que pudieron no existir en versiones anteriores
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF')
-        ALTER TABLE dbo.Documento ADD RutaArchivoPDF VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF_Firmado')
         ALTER TABLE dbo.Documento ADD RutaArchivoPDF_Firmado VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='AreaCategoria')
@@ -277,7 +361,6 @@ BEGIN
         IdParticipante      INT          IDENTITY(1,1) NOT NULL,
         IdDocumento         INT                        NOT NULL,
         LoginUsuario        VARCHAR(50)                NOT NULL,
-        CorreoInstitucional VARCHAR(150)               NULL,
         OrdenSecuencial     INT                        NOT NULL CONSTRAINT df_DocParticipante_Orden     DEFAULT 1,
         IdTipoParticipante  INT                        NOT NULL,
         EstadoParticipante  INT                        NOT NULL,
@@ -289,7 +372,7 @@ BEGIN
         CONSTRAINT fk_DocParticipante_Documento   FOREIGN KEY (IdDocumento)        REFERENCES dbo.Documento(IdDocumento),
         CONSTRAINT fk_DocParticipante_TipoPartic  FOREIGN KEY (IdTipoParticipante) REFERENCES dbo.Maestro(IdMaestro),
         CONSTRAINT fk_DocParticipante_Estado      FOREIGN KEY (EstadoParticipante) REFERENCES dbo.Maestro(IdMaestro),
-        CONSTRAINT uq_DocParticipante             UNIQUE (IdDocumento, LoginUsuario)
+        CONSTRAINT uq_DocParticipante             UNIQUE (IdDocumento, LoginUsuario, IdTipoParticipante)
     );
     PRINT 'Tabla DocumentoParticipante creada.';
 END
@@ -321,7 +404,7 @@ BEGIN
         SELECT 1 FROM sys.indexes
         WHERE object_id = OBJECT_ID('dbo.DocumentoParticipante') AND name = 'uq_DocParticipante')
         ALTER TABLE dbo.DocumentoParticipante
-            ADD CONSTRAINT uq_DocParticipante UNIQUE (IdDocumento, LoginUsuario);
+            ADD CONSTRAINT uq_DocParticipante UNIQUE (IdDocumento, LoginUsuario, IdTipoParticipante);
 
     PRINT 'Tabla DocumentoParticipante ya existe - columnas nuevas verificadas/agregadas.';
 END
@@ -509,7 +592,8 @@ BEGIN
     INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
     ('ESTADO_FIRMA', 'PEN',  'Pendiente de Firma', 1, 'SISTEMA'),
     ('ESTADO_FIRMA', 'FIR',  'Firmado',            2, 'SISTEMA'),
-    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3, 'SISTEMA');
+    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3, 'SISTEMA'),
+	('ESTADO_FIRMA', 'OBS', 'Observado',           4, 'SISTEMA');  
     PRINT 'ESTADO_FIRMA insertado.';
 END
 ELSE
@@ -546,7 +630,6 @@ GO
 
 -- ============================================================
 -- 4.  USUARIOS DEL SISTEMA
---   Modo simulacion: Password = NULL.
 --   El login se realiza via DropDownList (sin contrasena).
 --   Los SELECT usan JOIN a Maestro para obtener el IdMaestro
 --   correcto independientemente del orden de insercion.
@@ -556,22 +639,22 @@ PRINT '--- Insertando usuarios del sistema ---';
 GO
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'augusto')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'augusto', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'ADM';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'angel')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'angel', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REG';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'wsalas')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'wsalas', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REV';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'daleska')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador)
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
     SELECT 'daleska', NULL, IdMaestro, 1, 'SISTEMA'
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'FIR';
 
@@ -598,15 +681,26 @@ CREATE VIEW dbo.VW_EmpleadosActivos AS
         e.LoginUsuario,
         ISNULL(e.Email, e.LoginUsuario + '@zofratacna.com.pe') AS Email,
         e.IDUnidadOrganica,
-        e.IDCargo,
+		uo.Descripcion AS NombreUnidad, -- Jalamos el nombre real del área
+        uo.Abreviatura AS AreaSiglas,
+		e.IDCargo,
         e.IDSede,
         e.IdRol
     FROM administracion.dbo.Empleado e
+	LEFT JOIN administracion.dbo.UnidadOrganica uo ON e.IDUnidadOrganica = uo.IDUnidadOrganica
     WHERE e.ActivoAsist = 1;
 GO
-
 PRINT 'Vista VW_EmpleadosActivos creada/actualizada.';
 GO
+-- vista para listar unidades organicas 
+CREATE OR ALTER VIEW dbo.VW_UnidadesOrganicas AS
+SELECT 
+    IDUnidadOrganica, 
+    Descripcion, 
+    Abreviatura
+FROM [administracion].[dbo].[UnidadOrganica];
+GO
+
 
 -- ============================================================
 -- POCEDIMIENTOS ALMACENADOS
@@ -675,6 +769,90 @@ BEGIN
 END
 GO
 
+-- CORREO PARA AVISAR SOBRE REVISION DE UN DOCUMENTO
+CREATE OR ALTER PROCEDURE dbo.USP_NotificarAsignacionRevision
+    @IdDocumento INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @TipoDoc VARCHAR(150), 
+            @AreaDoc VARCHAR(150), @FechaReg VARCHAR(20);
+    DECLARE @EmailDestino VARCHAR(150), @NombreRevisor VARCHAR(250), 
+            @Cuerpo NVARCHAR(MAX), @AsuntoFinal NVARCHAR(250),
+            @DiasPlazo INT; -- Nueva variable para el plazo dinámico
+
+    -- 1. Obtener datos reales del documento (Incluyendo el nombre del Área)
+    SELECT 
+        @AsuntoDoc = d.Asunto,
+        @CodigoDoc = d.CodigoDocumento,
+        @TipoDoc = m.Descripcion,
+        @AreaDoc = ISNULL(uo.Descripcion, 'Área No Definida'), -- JOIN con UnidadOrganica
+        @FechaReg = CONVERT(VARCHAR, d.FechaCreacion, 103)
+    FROM dbo.Documento d
+    INNER JOIN dbo.Maestro m ON d.IdTipoDocumento = m.IdMaestro
+    LEFT JOIN administracion.dbo.UnidadOrganica uo ON d.AreaResponsable = uo.IDUnidadOrganica
+    WHERE d.IdDocumento = @IdDocumento;
+
+    -- 2. Cursor: Jalamos el Email, Nombre y su Plazo específico
+    DECLARE curRevisores CURSOR FOR
+    SELECT v.Email, v.NombreCompleto, dp.PlazoDias
+    FROM dbo.DocumentoParticipante dp
+    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
+    WHERE dp.IdDocumento = @IdDocumento
+      AND m.Codigo = 'REV'; -- SOLO enviamos a revisores en esta etapa
+
+    OPEN curRevisores;
+    FETCH NEXT FROM curRevisores INTO @EmailDestino, @NombreRevisor, @DiasPlazo;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- 3. Armamos el diseño profesional (CONCAT por bloques para evitar errores de longitud)
+        SET @Cuerpo = CONCAT(
+            N'<div style="font-family: Segoe UI, Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">',
+            N'<div style="background-color: #1a335d; color: white; padding: 15px 20px; font-size: 13px;">',
+            N'<table width="100%"><tr><td><span style="background-color: white; color: #1a335d; padding: 4px 8px; border-radius: 4px; font-weight: bold;">ZOFRATACNA</span></td>',
+            N'<td style="text-align: center; opacity: 0.8;">Sistema de Firmado Digital</td>',
+            N'<td style="text-align: right; font-size: 10px; opacity: 0.6;">ISO 9001:2015</td></tr></table></div>',
+            N'<div style="background-color: #2b6cb0; color: white; padding: 10px 20px; font-size: 14px; font-weight: 500;">Documento asignado para revisión</div>',
+            N'<div style="padding: 30px; color: #444; line-height: 1.5;">',
+            N'<p style="margin-top: 0;">Estimado(a),<br><strong style="font-size: 18px; color: #1a202c;">', @NombreRevisor, N'</strong></p>',
+            N'<p style="font-size: 14px;">Se le ha asignado un documento para revisión en el Sistema de Firmado Digital de ZOFRATACNA.</p>',
+            N'<div style="background-color: #ebf4ff; border-radius: 4px; padding: 20px; margin: 20px 0;">',
+            N'<h4 style="color: #2c5282; margin: 0 0 15px 0; font-size: 12px; text-transform: uppercase;">Detalle del documento</h4>',
+            N'<table style="width: 100%; font-size: 13px; border-collapse: collapse; color: #2d3748;">',
+            N'<tr><td style="color: #4a5568; width: 35%; padding: 4px 0;">Asunto</td><td><strong>', @AsuntoDoc, N'</strong></td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Tipo</td><td>', @TipoDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Área responsable</td><td>', @AreaDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Código</td><td>', @CodigoDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Fecha de registro</td><td>', @FechaReg, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Plazo para revisar</td><td><span style="background-color: #bee3f8; color: #2c5282; padding: 2px 8px; border-radius: 12px; font-size: 11px;">Hasta 5 días</span></td></tr>',
+            N'</table></div>',
+            N'<div style="text-align: center; margin-top: 30px;">',
+            N'<a href="https://zofratacna.com.pe" style="background-color: #1a335d; color: white; padding: 12px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px; display: inline-block;">Revisar documento ahora</a>',
+            N'</div></div>',
+            N'<div style="background-color: #fcfcfc; padding: 20px; font-size: 10px; color: #a0aec0; text-align: left; border-top: 1px solid #edf2f7;">',
+            N'Mensaje generado automáticamente — ZOFRATACNA — Panamericana Sur Km. 1308, Tacna Perú</div></div>'
+        );
+
+        -- 4. Preparamos el Asunto fuera del EXEC para evitar el error de sintaxis
+        SET @AsuntoFinal = CONCAT(N'Asignación de Revisión - ', @CodigoDoc);
+
+        -- 5. Enviar el correo
+        EXEC dbo.GEN_X_EnviarMail 
+            @Para = @EmailDestino, 
+            @Asunto = @AsuntoFinal, 
+            @Mensaje = @Cuerpo;
+
+        FETCH NEXT FROM curRevisores INTO @EmailDestino, @NombreRevisor, @DiasPlazo;
+    END
+
+    CLOSE curRevisores;
+    DEALLOCATE curRevisores;
+END
+GO
+
 -- ============================================================
 -- PARTE 3: BASE DE DATOS  FirmaDigital_Files
 --   Repositorio de archivos PDF.
@@ -688,8 +866,6 @@ PRINT '';
 PRINT '--- PARTE 3: FirmaDigital_Files ---';
 GO
 
-USE master;
-GO
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'FirmaDigital_Files')
 BEGIN
@@ -766,15 +942,6 @@ SELECT Tipo, Codigo, Descripcion, Orden
 FROM dbo.Maestro
 ORDER BY Tipo, Orden;
 
-PRINT '--- FirmaDigital: usuarios del sistema ---';
-SELECT u.IdUsuario, u.LoginUsuario,
-       m.Codigo AS RolCodigo, m.Descripcion AS RolNombre,
-       u.Activo,
-       CASE WHEN u.Password IS NULL THEN 'SIN PASSWORD (simulacion)' ELSE 'CON PASSWORD' END AS ModoAuth
-FROM dbo.UsuarioSistema u
-JOIN dbo.Maestro m ON u.IdRolSistema = m.IdMaestro
-ORDER BY u.IdUsuario;
-
 PRINT '--- FirmaDigital: vistas ---';
 SELECT TABLE_NAME AS Vista
 FROM INFORMATION_SCHEMA.VIEWS
@@ -814,15 +981,15 @@ GO
 -- ============================================================
 -- EJECUTAR
 -- ============================================================
-
-ALTER TABLE DocumentoParticipante
-ADD PlazoDias INT NOT NULL DEFAULT 3;
+-- TENER CUIDADO CON ESTO SE DEBE ARREGLAR ESTA ASIGNANDO POR DEFECTO 3 PERO NO DEBE SER ASI
+ALTER TABLE dbo.DocumentoParticipante
+ADD CONSTRAINT df_PlazoDias 
+DEFAULT 3 FOR PlazoDias;
 
 ALTER TABLE dbo.Documento
 ADD Descripcion VARCHAR(1000) NULL;
 
-ALTER TABLE Documento
-ALTER COLUMN AreaResponsable VARCHAR(200) NULL;
+
 
 
 -- ============================================================
@@ -878,7 +1045,7 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Acción Requerida: Documento pendiente de firma', 
     @Mensaje = @Cuerpo;
 
@@ -958,7 +1125,7 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Documento asignado para revisión - RGG-045-2025', 
     @Mensaje = @Cuerpo;
 
@@ -1042,7 +1209,7 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Documento corregido — RGG-045-2025', 
     @Mensaje = @Cuerpo;
 
@@ -1141,7 +1308,7 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Acción requerida: firma digital pendiente - RGG-045-2025', 
     @Mensaje = @Cuerpo;
 
@@ -1220,7 +1387,7 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Recordatorio: documentos pendientes de revisión - RGG-045-2025', 
     @Mensaje = @Cuerpo;
 
@@ -1317,6 +1484,56 @@ DECLARE @Cuerpo NVARCHAR(MAX) = '
 </div>
 ';
 EXEC [dbo].[GEN_X_EnviarMail] 
-    @Para = 'daleskanicolle118@gmail.com', 
+    @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Recordatorio urgente — firma digital sin completar - RGG-045-2025', 
     @Mensaje = @Cuerpo;
+
+
+-- ============================================================
+-- SOLO SON CONSULTAS EXTERNAS NADA QUE VER NO EJECUTAR
+-- ============================================================
+select * from empleado
+select * from usuariosistema
+EXEC dbo.USP_NotificarAsignacionRevision @IdDocumento = 1009;
+
+SELECT * FROM DocumentoParticipante
+SELECT * FROM Documentoadjunto
+SELECT * FROM maestro
+SELECT * FROM unidadorganica
+SELECT * FROM HISTORIALDOCUMENTO
+
+-- Consultamos el "diccionario" usando el nombre correcto de la columna
+SELECT IdMaestro, Codigo, Descripcion 
+FROM dbo.Maestro 
+WHERE IdMaestro IN (23, 24, 25, 26, 27, 28, 29, 30);
+
+
+USE FirmaDigital;
+GO
+
+DECLARE @IdDocumento INT = 1013; 
+
+SELECT 
+    d.CodigoDocumento,
+    v.NombreCompleto AS Persona,
+    v.Email,
+    p.OrdenSecuencial AS Orden,
+    m.Codigo AS CodigoRol,    -- Aquí verás si es 'REV' o 'FIR'
+    m.Descripcion AS RolEnDocumento
+FROM dbo.DocumentoParticipante p
+INNER JOIN dbo.Documento d ON p.IdDocumento = d.IdDocumento
+INNER JOIN dbo.VW_EmpleadosActivos v ON p.LoginUsuario = v.LoginUsuario
+INNER JOIN dbo.Maestro m ON p.IdTipoParticipante = m.IdMaestro
+WHERE d.IdDocumento = @IdDocumento 
+  AND m.Codigo IN ('REV', 'FIR') -- <--- AQUÍ: Buscamos ambos códigos
+ORDER BY m.Codigo DESC, p.OrdenSecuencial ASC; 
+-- El ORDER BY hará que primero salgan los REVISORES (REV) 
+-- y luego los FIRMANTES (FIR) por su orden de firma.
+
+
+UPDATE dbo.UsuarioSistema
+SET IdRolSistema = 3  -- <--- Aquí pones el nuevo número de ID de rol que quieras asignar
+WHERE IdUsuario = 1008;
+
+-- Verificamos el cambio
+SELECT * FROM dbo.UsuarioSistema WHERE IdUsuario = 1008;

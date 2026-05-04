@@ -31,7 +31,7 @@
         .content{flex:1;padding:28px;overflow-y:auto}
         .content h1{font-size:24px;color:#1a2a4a;font-weight:700}
         .content .sub{font-size:13px;color:#888;margin-top:2px;margin-bottom:24px}
-        .doc-card{background:white;border-radius:12px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;flex-wrap:wrap;gap:16px 16px}
+        .doc-card{background:white;border-radius:12px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;flex-wrap:wrap;gap:16px 16px;align-items:stretch}
         .doc-card-header{display:flex;align-items:center;gap:10px;margin-bottom:0;width:100%;flex-shrink:0}
         .doc-title{font-size:16px;font-weight:600;color:#1a2a4a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%}
         .doc-desc{font-size:13px;color:#666;margin-bottom:0;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;flex-shrink:0}
@@ -77,10 +77,17 @@
         .tiempo-vencido{color:#c0392b;font-weight:600;background:#ffebee;padding:2px 6px;border-radius:3px}
         .card-section.section-acciones .section-botones{margin-top:auto}
         /* SEGUNDA SECCIÓN - REVISORES */
-        .revisores-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .revisores-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:flex-start;flex:1}
         .revisor-item{padding:6px 10px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#555;border-left:2px solid #1a2a4a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .revisor-item.revisor-ok{background:#eaf2ff;border-left-color:#1a56db;color:#163b7a}
+        .revisor-item.revisor-obs{background:#ffebee;border-left-color:#c0392b;color:#7f1d1d}
         /* TERCERA SECCIÓN - FIRMA */
-        .section-firma{min-height:60px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:13px}
+        .section-firma{min-height:60px;display:flex;align-items:flex-start;justify-content:flex-start;color:#ccc;font-size:13px;flex:1}
+        .firma-list{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:flex-start;flex:1}
+        .firma-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#555;border-left:2px solid #1a2a4a;overflow:hidden}
+        .firma-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;background:#1a2a4a;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+        .firma-login{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .firma-empty{color:#bbb;font-size:12px}
         .empty{text-align:center;padding:60px;color:#aaa;font-size:14px;background:white;border-radius:12px}
     </style>
 </head>
@@ -124,7 +131,7 @@
                             <span class='badge badge-<%# Eval("PrioridadCss") %>'><%# Eval("Prioridad") %></span>
                             <span class='badge <%# Eval("EstadoBadgeCss") %>'><%# Eval("EstadoDesc") %></span>
                         </div>
-                        <div class="doc-desc"><%# Eval("AreaResponsable") %></div>
+                        <div class="doc-desc"><%# Eval("Descripcion") %></div>
                         
                         <!-- SECCIÓN 1: CARACTERÍSTICAS + acciones (botones en extremos) -->
                         <div class="card-section section-acciones">
@@ -170,7 +177,11 @@
                         <!-- SECCIÓN 3: ORDEN DE FIRMA -->
                         <div class="card-section">
                             <div class="section-subtitle">Orden de Firma</div>
-                            <div class="section-firma"></div>
+                            <div class="section-firma">
+                                <div class="firma-list">
+                                    <%# Eval("FirmantesOrdenHtml") %>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </ItemTemplate>

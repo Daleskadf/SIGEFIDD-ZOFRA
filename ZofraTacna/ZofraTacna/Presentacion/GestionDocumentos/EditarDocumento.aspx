@@ -1,8 +1,9 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.EditarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.EditarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SIGEFIDD-ZOFRA | Editar Documento</title>
     <style>
@@ -56,7 +57,8 @@
         }
         .nav-item:hover { background: rgba(255,255,255,.07); color: white; }
         .nav-item.active { background: linear-gradient(90deg, #2a3f6f, #8b1a1a); color: white; }
-        .nav-item svg { width: 18px; height: 18px; }
+        .nav-item svg { width: 17px; height: 17px; fill: currentColor; flex-shrink: 0; }
+        .nav-badge { margin-left: auto; background: #c0392b; color: white; border-radius: 10px; font-size: 10px; padding: 1px 6px; font-weight: 600; }
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .topbar {
             background: white;
@@ -66,6 +68,7 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #e8eaf0;
+            flex-shrink: 0;
         }
         .breadcrumb { font-size: 13px; color: #999; }
         .breadcrumb strong { color: #1a2a4a; }
@@ -81,7 +84,9 @@
             font-size: 12px;
             font-weight: 700;
         }
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
         .user-info { display: flex; align-items: center; gap: 8px; }
+        .user-name { font-size: 14px; font-weight: 600; color: #333; }
         .role-badge {
             background: #eef0f8;
             color: #1a2a4a;
@@ -102,10 +107,12 @@
             margin-top: auto;
             text-decoration: none;
             background: linear-gradient(135deg, #8b1a1a, #c0392b);
-            border: none;
+            border: 1.5px solid #7d1717;
             margin-bottom: 10px;
             font-weight: 600;
+            box-shadow: 0 6px 16px rgba(139, 26, 26, .25);
         }
+        .nav-item-logout:hover { background: linear-gradient(135deg, #a32121, #d44736); }
         .content {
             flex: 1;
             padding: 24px 28px;
@@ -134,7 +141,8 @@
             font-weight: 700;
             background: linear-gradient(135deg, #8b1a1a, #c0392b);
         }
-        .btn-back:hover { opacity: 0.9; }
+        .btn-back:hover { opacity: 0.92; }
+        .btn-back-arrow { font-size: 14px; line-height: 1; }
         .form-label {
             font-size: 11px;
             font-weight: 700;
@@ -225,8 +233,14 @@
             cursor: pointer;
             background: linear-gradient(135deg, #2a3f6f, #1a2a4a);
             transition: opacity .2s;
+            box-shadow: 0 6px 16px rgba(26, 42, 74, .22);
         }
-        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:hover { opacity: 0.94; }
+        .btn-submit-correccion {
+            padding: 14px 32px;
+            font-size: 14px;
+            border-radius: 10px;
+        }
         #lblMensaje { display: block; margin-bottom: 12px; }
     </style>
 </head>
@@ -244,7 +258,7 @@
                         <div class="bot">ZONA FRANCA DE TACNA</div>
                     </div>
                 </div>
-                <nav class="sidebar-nav">
+                <nav class="sidebar-nav" style="display: flex; flex-direction: column; height: 100%;">
                     <div style="flex:1;overflow-y:auto">
                         <asp:Literal ID="litSidebarNav" runat="server"/>
                     </div>
@@ -257,10 +271,12 @@
                 <!-- TOPBAR -->
                 <div class="topbar">
                     <div class="breadcrumb"><strong>SIGEFIDD-ZOFRA</strong> / Editar Documento</div>
-                    <div class="user-info">
-                        <div class="user-avatar"><asp:Literal ID="litAvatar" runat="server"/></div>
-                        <span><asp:Literal ID="litNombre" runat="server"/></span>
-                        <span class="role-badge"><asp:Literal ID="litRol" runat="server"/></span>
+                    <div class="topbar-right">
+                        <div class="user-info">
+                            <div class="user-avatar"><asp:Literal ID="litAvatar" runat="server"/></div>
+                            <span class="user-name"><asp:Literal ID="litNombre" runat="server"/></span>
+                            <span class="role-badge"><asp:Literal ID="litRol" runat="server"/></span>
+                        </div>
                     </div>
                 </div>
 
@@ -270,7 +286,7 @@
 
                     <div class="head">
                         <h1>Editar Documento</h1>
-                        <a class="btn-back" href="MisDocumentos.aspx"> Regresar</a>
+                        <a class="btn-back" href='VerObservaciones.aspx?id=<%= Request.QueryString["id"] %>'><span class="btn-back-arrow" aria-hidden="true">&#8592;</span> Regresar</a>
                     </div>
 
                     <!-- CÓDIGO DOCUMENTO -->
@@ -341,7 +357,7 @@
 
                     <!-- BOTONES ACCIÓN -->
                     <div class="actions">
-                        <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección" CssClass="btn-submit" OnClick="btnEnviarCorreccion_Click" />
+                        <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección" CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click" />
                     </div>
                 </div>
             </div>

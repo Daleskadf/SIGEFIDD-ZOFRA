@@ -58,6 +58,7 @@
         .plazo-ok{color:#888;font-size:11px}
         .btn-editar-doc{border:none;border-radius:9px;padding:9px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a3f6f,#1a2a4a);box-shadow:0 6px 16px rgba(26,42,74,.22)}
         .btn-editar-doc:hover{background:linear-gradient(135deg,#355287,#243a62)}
+        .btn-editar-doc:disabled{background:#c4cada;box-shadow:none;cursor:not-allowed;color:#f6f7fb}
         .revisores-cell{min-width:230px}
         .revisores-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
         .rev-item{font-size:11px;padding:4px 6px;border-radius:6px;background:#f4f6fb;color:#4a546d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -139,7 +140,15 @@
                                         <td class="revisores-cell"><%# Eval("RevisoresHtml") %></td>
                                         <td><%# Eval("PlazosHtml") %></td>
                                         <td><%# Eval("FechaStr") %></td>
-                                        <td><button type="button" class="btn-editar-doc" onclick="window.location.href='VerObservaciones.aspx?id=<%# Eval("IdDocumento") %>'">Ver Observaciones</button></td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="btn-editar-doc"
+                                                <%# Convert.ToBoolean(Eval("PuedeVerObservaciones")) ? "" : "disabled='disabled' title='Se habilita cuando un revisor registre una observación'" %>
+                                                onclick="window.location.href='VerObservaciones.aspx?id=<%# Eval("IdDocumento") %>'">
+                                                Ver Observaciones
+                                            </button>
+                                        </td>
                                     </tr>
                                 </ItemTemplate>
                             </asp:Repeater>
@@ -150,6 +159,14 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    (function () {
+        try {
+            sessionStorage.removeItem('revisores_temp');
+            sessionStorage.removeItem('firmantes_temp');
+        } catch (e) { }
+    })();
+</script>
 </form>
 </body>
 </html>

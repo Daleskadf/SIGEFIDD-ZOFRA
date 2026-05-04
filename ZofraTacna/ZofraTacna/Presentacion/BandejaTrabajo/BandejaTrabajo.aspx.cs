@@ -31,7 +31,20 @@ namespace ZofraTacna.Presentacion
                 int badge = GetBadgeCount(cn);
                 litSidebarNav.Text = BuildNav(rol, badge);
 
-                string sql = @"SELECT d.IdDocumento, d.Asunto, d.AreaResponsable, d.AreaCategoria,
+                string filtroRol = "";
+                if (rol == "REV" || rol == "FIR")
+                {
+                    filtroRol = @" AND EXISTS (
+                                        SELECT 1
+                                        FROM DocumentoParticipante dpf
+                                        INNER JOIN Maestro mtf ON dpf.IdTipoParticipante = mtf.IdMaestro
+                                        WHERE dpf.IdDocumento = d.IdDocumento
+                                          AND dpf.LoginUsuario = @login
+                                          AND mtf.Codigo = @tipoRol
+                                   )";
+                }
+
+                string sql = @"SELECT d.IdDocumento, d.Asunto, d.Descripcion, d.AreaCategoria,
                                       d.Prioridad, d.RutaArchivoPDF, d.FechaCreacion,
                                       d.FechaLimiteRevision, d.FechaLimiteAprobacion,
                                       d.LoginUsuarioRegistrador AS Registrador,
@@ -41,70 +54,81 @@ namespace ZofraTacna.Presentacion
                                JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
                                LEFT JOIN Maestro mt ON d.IdTipoDocumento = mt.IdMaestro
                                WHERE d.Activo = 1 AND me.Codigo IN ('REG','REV','PEN','FPAR','OBS')
+                               " + filtroRol + @"
                                ORDER BY d.FechaCreacion ASC";
 
                 var lista = new List<object>();
                 using (var cmd = new SqlCommand(sql, cn))
-                using (var dr = cmd.ExecuteReader())
                 {
-                    while (dr.Read())
+                    if (rol == "REV" || rol == "FIR")
                     {
-                        string pri  = dr["Prioridad"].ToString().ToUpper();
-                        string est  = dr["EstadoCodigo"].ToString();
-                        string ruta = dr["RutaArchivoPDF"].ToString();
-                        DateTime fechaCreacion = Convert.ToDateTime(dr["FechaCreacion"]);
-                        int idDocumento = Convert.ToInt32(dr["IdDocumento"]);
-                        
-                        // Obtener fechas límite de la BD
-                        DateTime maxRevision = Convert.ToDateTime(dr["FechaLimiteRevision"]);
-                        DateTime maxFirma = Convert.ToDateTime(dr["FechaLimiteAprobacion"]);
-                        
-                        // Calcular horas restantes
-                        TimeSpan tsRevision = maxRevision - DateTime.Now;
-                        TimeSpan tsFirma = maxFirma - DateTime.Now;
-                        double horasRevision = tsRevision.TotalHours;
-                        double horasFirma = tsFirma.TotalHours;
-                        
-                        // Crear textos de estado
-                        string textoRevision = horasRevision >= 0 
-                            ? string.Format("{0} horas restantes", Math.Ceiling(horasRevision))
-                            : string.Format("{0} horas fuera de límites", Math.Ceiling(Math.Abs(horasRevision)));
-                        
-                        string textoFirma = horasFirma >= 0 
-                            ? string.Format("{0} horas restantes", Math.Ceiling(horasFirma))
-                            : string.Format("{0} horas fuera de límites", Math.Ceiling(Math.Abs(horasFirma)));
-                        
-                        // Obtener revisores asignados
-                        string revisoresHtml = ObtenerRevisoresHtml(idDocumento);
-                        bool esConformeRevision = false;
-                        bool esObservadoRevision = false;
-                        bool puedeEditarRevision = false;
-                        if (rol == "REV")
-                            ObtenerEstadoRevisionUsuario(idDocumento, login, out esConformeRevision, out esObservadoRevision, out puedeEditarRevision);
-                        
-                        lista.Add(new {
-                            IdDocumento     = idDocumento,
-                            Asunto          = dr["Asunto"].ToString(),
-                            AreaResponsable = dr["AreaResponsable"].ToString(),
-                            AreaCategoria   = dr["AreaCategoria"]?.ToString() ?? "-",
-                            Prioridad       = pri,
-                            PrioridadCss    = pri == "ALTA" ? "alta" : pri == "BAJA" ? "baja" : "media",
-                            EstadoDesc      = dr["EstadoDesc"].ToString(),
-                            EstadoCodigo    = est,
-                            EstadoBadgeCss  = est == "PEN" || est == "FPAR" ? "badge-firma" : "badge-estado",
-                            NombreArchivo   = System.IO.Path.GetFileName(ruta),
-                            TipoDocumento   = dr["TipoDocumento"].ToString(),
-                            Registrador     = dr["Registrador"].ToString(),
-                            FechaCreacionStr = fechaCreacion.ToString("d/M/yyyy"),
-                            FechaMaxRevision = maxRevision.ToString("d/M/yyyy HH:mm"),
-                            FechaMaxRevisionTexto = textoRevision,
-                            FechaMaxFirma = maxFirma.ToString("d/M/yyyy HH:mm"),
-                            FechaMaxFirmaTexto = textoFirma,
-                            RevisoresHtml = revisoresHtml,
-                            EsConformeRevision = esConformeRevision,
-                            EsObservadoRevision = esObservadoRevision,
-                            PuedeEditarRevision = puedeEditarRevision
-                        });
+                        cmd.Parameters.AddWithValue("@login", login);
+                        cmd.Parameters.AddWithValue("@tipoRol", rol);
+                    }
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string pri  = dr["Prioridad"].ToString().ToUpper();
+                            string est  = dr["EstadoCodigo"].ToString();
+                            string ruta = dr["RutaArchivoPDF"].ToString();
+                            DateTime fechaCreacion = Convert.ToDateTime(dr["FechaCreacion"]);
+                            int idDocumento = Convert.ToInt32(dr["IdDocumento"]);
+
+                            // Obtener fechas límite de la BD
+                            DateTime maxRevision = Convert.ToDateTime(dr["FechaLimiteRevision"]);
+                            DateTime maxFirma = Convert.ToDateTime(dr["FechaLimiteAprobacion"]);
+
+                            // Calcular horas restantes
+                            TimeSpan tsRevision = maxRevision - DateTime.Now;
+                            TimeSpan tsFirma = maxFirma - DateTime.Now;
+                            double horasRevision = tsRevision.TotalHours;
+                            double horasFirma = tsFirma.TotalHours;
+
+                            // Crear textos de estado
+                            string textoRevision = horasRevision >= 0
+                                ? string.Format("{0} horas restantes", Math.Ceiling(horasRevision))
+                                : string.Format("{0} horas fuera de límites", Math.Ceiling(Math.Abs(horasRevision)));
+
+                            string textoFirma = horasFirma >= 0
+                                ? string.Format("{0} horas restantes", Math.Ceiling(horasFirma))
+                                : string.Format("{0} horas fuera de límites", Math.Ceiling(Math.Abs(horasFirma)));
+
+                            // Obtener revisores asignados
+                            string revisoresHtml = ObtenerRevisoresHtml(idDocumento);
+                            bool esConformeRevision = false;
+                            bool esObservadoRevision = false;
+                            bool puedeEditarRevision = false;
+                            if (rol == "REV")
+                                ObtenerEstadoRevisionUsuario(idDocumento, login, out esConformeRevision, out esObservadoRevision, out puedeEditarRevision);
+
+                            lista.Add(new {
+                                IdDocumento     = idDocumento,
+                                Asunto          = dr["Asunto"].ToString(),
+                                // Descripción del documento (no usar AreaResponsable aquí)
+                                Descripcion     = dr["Descripcion"] == DBNull.Value ? "" : dr["Descripcion"].ToString(),
+                                AreaCategoria   = dr["AreaCategoria"]?.ToString() ?? "-",
+                                Prioridad       = pri,
+                                PrioridadCss    = pri == "ALTA" ? "alta" : pri == "BAJA" ? "baja" : "media",
+                                EstadoDesc      = dr["EstadoDesc"].ToString(),
+                                EstadoCodigo    = est,
+                                EstadoBadgeCss  = est == "PEN" || est == "FPAR" ? "badge-firma" : "badge-estado",
+                                NombreArchivo   = System.IO.Path.GetFileName(ruta),
+                                TipoDocumento   = dr["TipoDocumento"].ToString(),
+                                Registrador     = dr["Registrador"].ToString(),
+                                FechaCreacionStr = fechaCreacion.ToString("d/M/yyyy"),
+                                FechaMaxRevision = maxRevision.ToString("d/M/yyyy HH:mm"),
+                                FechaMaxRevisionTexto = textoRevision,
+                                FechaMaxFirma = maxFirma.ToString("d/M/yyyy HH:mm"),
+                                FechaMaxFirmaTexto = textoFirma,
+                                RevisoresHtml = revisoresHtml,
+                                FirmantesOrdenHtml = ObtenerFirmantesOrdenHtml(idDocumento),
+                                EsConformeRevision = esConformeRevision,
+                                EsObservadoRevision = esObservadoRevision,
+                                PuedeEditarRevision = puedeEditarRevision
+                            });
+                        }
                     }
                 }
                 pnlEmpty.Visible   = lista.Count == 0;
@@ -165,9 +189,10 @@ namespace ZofraTacna.Presentacion
         {
             var revisores = new List<string>();
             string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
-            string sql = @"SELECT dp.LoginUsuario 
+            string sql = @"SELECT dp.LoginUsuario, ISNULL(me.Codigo,'PEN') AS EstadoCod
                           FROM DocumentoParticipante dp
                           JOIN Maestro m ON dp.IdTipoParticipante = m.IdMaestro
+                          LEFT JOIN Maestro me ON dp.EstadoParticipante = me.IdMaestro
                           WHERE dp.IdDocumento = @id AND m.Codigo = 'REV'
                           ORDER BY dp.OrdenSecuencial ASC";
             
@@ -180,7 +205,14 @@ namespace ZofraTacna.Presentacion
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
-                            revisores.Add(dr["LoginUsuario"].ToString());
+                        {
+                            string login = dr["LoginUsuario"].ToString();
+                            string est = dr["EstadoCod"].ToString().ToUpperInvariant();
+                            string css = "revisor-item";
+                            if (est == "OBS") css += " revisor-obs";
+                            else if (est == "REG" || est == "FIR") css += " revisor-ok";
+                            revisores.Add("<div class='" + css + "'>" + System.Web.HttpUtility.HtmlEncode(login) + "</div>");
+                        }
                     }
                 }
             }
@@ -188,14 +220,49 @@ namespace ZofraTacna.Presentacion
             if (revisores.Count == 0)
                 return "";
             
-            // Generar HTML para grid de 2 columnas
-            string html = "";
-            for (int i = 0; i < revisores.Count; i++)
+            return string.Join("", revisores.ToArray());
+        }
+
+        private string ObtenerFirmantesOrdenHtml(int idDocumento)
+        {
+            var firmantes = new List<string>();
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            string sql = @"
+                SELECT fir.LoginUsuario, fir.OrdenSecuencial
+                FROM DocumentoParticipante fir
+                INNER JOIN Maestro mFir ON fir.IdTipoParticipante = mFir.IdMaestro
+                WHERE fir.IdDocumento = @id
+                  AND mFir.Codigo = 'FIR'
+                ORDER BY fir.OrdenSecuencial ASC, fir.IdParticipante ASC";
+
+            using (var cnTemp = new SqlConnection(conn))
             {
-                html += "<div class='revisor-item'>" + revisores[i] + "</div>";
+                cnTemp.Open();
+                using (var cmd = new SqlCommand(sql, cnTemp))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            int orden = dr["OrdenSecuencial"] == DBNull.Value ? 0 : Convert.ToInt32(dr["OrdenSecuencial"]);
+                            string login = dr["LoginUsuario"].ToString();
+                            string css = "firma-item";
+                            string numero = orden > 0 ? orden.ToString() : "-";
+                            string html = "<div class='" + css + "'>" +
+                                          "<span class='firma-num'>" + numero + "</span>" +
+                                          "<span class='firma-login'>" + System.Web.HttpUtility.HtmlEncode(login) + "</span>" +
+                                          "</div>";
+                            firmantes.Add(html);
+                        }
+                    }
+                }
             }
-            
-            return html;
+
+            if (firmantes.Count == 0)
+                return "<span class='firma-empty'>Sin firmantes</span>";
+
+            return string.Join("", firmantes.ToArray());
         }
 
         private void ObtenerEstadoRevisionUsuario(int idDocumento, string login, out bool esConforme, out bool esObservado, out bool puedeEditar)

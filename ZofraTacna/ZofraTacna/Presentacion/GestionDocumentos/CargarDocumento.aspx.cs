@@ -50,6 +50,24 @@ namespace ZofraTacna.Presentacion
             {
                 CargarDatosUsuario();
                 CargarCombos();
+                CargarEmpleadosEnListBoxOculto();  // Cargar empleados para bÃºsqueda local
+            }
+        }
+
+        /// <summary>
+        /// Carga todos los empleados disponibles en el ListBox oculto
+        /// para que JavaScript pueda filtrar localmente sin postback
+        /// </summary>
+        private void CargarEmpleadosEnListBoxOculto()
+        {
+            lstBuscador.Items.Clear();
+            var empleados = _modulo.ObtenerEmpleadosDisponibles();
+            
+            foreach (var emp in empleados)
+            {
+                // Formato: "Login - Nombre (Area)" as text, login as value
+                string texto = $"{emp.LoginUsuario} - {emp.NombreCompleto}";
+                lstBuscador.Items.Add(new ListItem(texto, emp.LoginUsuario));
             }
         }
 
@@ -57,6 +75,9 @@ namespace ZofraTacna.Presentacion
 
         #region Search Methods
 
+        // DEPRECATED: Ya no se usa AutoPostBack
+        // El filtrado ahora se hace con JavaScript en el cliente sin postback
+        /*
         protected void txtBuscador_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtBuscador.Text.Trim()))
@@ -69,23 +90,12 @@ namespace ZofraTacna.Presentacion
             FiltrarEmpleados(txtBuscador.Text);
             lstBuscador.Visible = lstBuscador.Items.Count > 0;
         }
+        */
 
         protected void lstBuscador_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstBuscador.SelectedIndex >= 0)
-            {
-                string selectedText = lstBuscador.SelectedItem.Text;
-                string selectedValue = lstBuscador.SelectedValue;
-
-                // Agregar automáticamente como REVISOR (sin modal)
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "agregarRevisor",
-                    $"agregarParticipanteAuto('{selectedValue}', '{selectedText}');", true);
-
-                // SOLO deseleccionar el item del listbox y ocultarlo
-                // NO limpiar el txtBuscador para mantener el texto escrito
-                lstBuscador.SelectedIndex = -1;
-                lstBuscador.Visible = false;
-            }
+            // Este mÃ©todo ya no se llama desde el cliente (sin AutoPostBack)
+            // Se mantiene por compatibilidad pero no se usa
         }
 
         private void FiltrarEmpleados(string termino)
@@ -106,7 +116,7 @@ namespace ZofraTacna.Presentacion
                 }
             }
 
-            // Máximo 20 resultados
+            // MÃ¡ximo 20 resultados
             while (lstBuscador.Items.Count > 20)
             {
                 lstBuscador.Items.RemoveAt(lstBuscador.Items.Count - 1);
@@ -130,7 +140,7 @@ namespace ZofraTacna.Presentacion
 
         private void CargarCombos()
         {
-            // Categorías
+            // Categorï¿½as
             var categorias = _modulo.ObtenerCategorias();
             ddlCategoria.Items.Clear();
             ddlCategoria.Items.Add(new ListItem("Seleccionar...", ""));
@@ -140,7 +150,7 @@ namespace ZofraTacna.Presentacion
                 ddlCategoria.Items.Add(new ListItem(partes[1], partes[0]));
             }
 
-            // Unidades Orgánicas
+            // Unidades Orgï¿½nicas
             var unidades = _modulo.ObtenerUnidadesOrganicas();
             ddlArea.Items.Clear();
             ddlArea.Items.Add(new ListItem("Seleccionar...", ""));
@@ -150,7 +160,7 @@ namespace ZofraTacna.Presentacion
                 ddlArea.Items.Add(new ListItem(partes[1], partes[0]));
             }
 
-            // Generar lista de años (2024-2080) para el modal
+            // Generar lista de aï¿½os (2024-2080) para el modal
             GenerarListaAnos();
         }
 
@@ -176,12 +186,12 @@ namespace ZofraTacna.Presentacion
         {
             try
             {
-                // Validar los 3 campos del código
+                // Validar los 3 campos del cï¿½digo
                 if (string.IsNullOrWhiteSpace(txtCodigoDoc.Text) ||
                     string.IsNullOrWhiteSpace(txtNumeroDoc.Text) ||
                     string.IsNullOrWhiteSpace(txtAnoDoc.Text))
                 {
-                    MostrarMsg("Complete los campos: Código, Número y Año.", false);
+                    MostrarMsg("Complete los campos: Cï¿½digo, Nï¿½mero y Aï¿½o.", false);
                     return;
                 }
 
@@ -194,7 +204,13 @@ namespace ZofraTacna.Presentacion
 
                 if (string.IsNullOrWhiteSpace(ddlCategoria.SelectedValue))
                 {
-                    MostrarMsg("Debe seleccionar una categoría.", false);
+                    MostrarMsg("Debe seleccionar una categorï¿½a.", false);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(ddlArea.SelectedValue))
+                {
+                    MostrarMsg("Debe seleccionar el Ã¡rea (unidad orgÃ¡nica).", false);
                     return;
                 }
 
@@ -240,13 +256,19 @@ namespace ZofraTacna.Presentacion
 
                 if (pdfBytes.Length == 0)
                 {
-                    MostrarMsg("El PDF está vacío.", false);
+                    MostrarMsg("El PDF estï¿½ vacï¿½o.", false);
                     return;
                 }
 
                 // Parsear plazos
                 int horasRev = int.TryParse(txtPlazoRevision.Text.Trim(), out int hr) ? hr : 24;
                 int horasFirma = int.TryParse(txtPlazoFirma.Text.Trim(), out int hf) ? hf : 48;
+
+                if (!int.TryParse(txtAnoDoc.Text.Trim(), out int anoDocumento))
+                {
+                    MostrarMsg("El aÃ±o del documento no tiene formato vÃ¡lido.", false);
+                    return;
+                }
 
                 // Convertir participantes JSON a lista de objetos
                 var participantes = new List<RegistrarParticipanteItem>();
@@ -265,12 +287,12 @@ namespace ZofraTacna.Presentacion
                     });
                 }
 
-                // Preparar request con los 3 campos del código
+                // Preparar request con los 3 campos del cï¿½digo
                 var request = new RegistrarDocumentoRequest
                 {
                     CodigoDocumento = txtCodigoDoc.Text.Trim().ToUpper(),
                     NumeroDocumento = txtNumeroDoc.Text.Trim().Replace("0", "").PadLeft(4, '0'),
-                    AnoDocumento = int.Parse(txtAnoDoc.Text.Trim()),
+                    AnoDocumento = anoDocumento,
                     Asunto = txtAsunto.Text.Trim(),
                     Descripcion = txtDescripcion.Text.Trim(),
                     IdTipoDocumento = int.Parse(ddlCategoria.SelectedValue),
@@ -283,7 +305,7 @@ namespace ZofraTacna.Presentacion
                     Participantes = participantes
                 };
 
-                // Registrar en lógica de negocio
+                // Registrar en lï¿½gica de negocio
                 string loginUsuario = Session["LoginUsuario"].ToString();
                 int idDocumento = _modulo.RegistrarDocumentoConParticipantes(request, loginUsuario);
                 if (idDocumento > 0)
@@ -299,13 +321,19 @@ namespace ZofraTacna.Presentacion
                 txtAnoDoc.Text = "2026";
                 txtPlazoRevision.Text = "24";
                 txtPlazoFirma.Text = "48";
+                txtBuscador.Text = "";
                 hfParticipantes.Value = "";
+                Session.Remove("FirmantesTemp");
 
-                MostrarMsg("? Documento registrado y participantes asignados correctamente.", true);
+                MostrarMsg("Documento registrado y participantes asignados correctamente.", true);
             }
             catch (ArgumentException ex)
             {
                 MostrarMsg("ERROR: " + ex.Message, false);
+            }
+            catch (FormatException)
+            {
+                MostrarMsg("Verifique los campos numÃ©ricos (aÃ±o, plazos, Ã¡rea y categorÃ­a).", false);
             }
             catch (Exception ex)
             {
@@ -362,6 +390,15 @@ namespace ZofraTacna.Presentacion
             lblMensaje.Text = msg;
             lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
             lblMensaje.Visible = true;
+
+            // Ã‰xito: redirigir; la limpieza de sessionStorage se hace en MisDocumentos
+            if (ok && msg.IndexOf("registrado", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string url = ResolveUrl("~/Presentacion/GestionDocumentos/MisDocumentos.aspx");
+                string script =
+                    "(function(){setTimeout(function(){window.location.href='" + url + "';},2000);})();";
+                ClientScript.RegisterStartupScript(GetType(), "redirectToMisDocumentos", script, true);
+            }
         }
 
         #endregion

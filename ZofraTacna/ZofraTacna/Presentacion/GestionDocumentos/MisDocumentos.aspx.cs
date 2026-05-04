@@ -65,7 +65,16 @@ namespace ZofraTacna.Presentacion
 
             string sql = @"SELECT d.IdDocumento, d.Asunto, d.AreaCategoria, d.RutaArchivoPDF,
                                   d.FechaCreacion, d.FechaLimiteRevision, d.FechaLimiteAprobacion,
-                                  me.Descripcion AS EstadoDesc, me.Codigo AS EstadoCodigo
+                                  me.Descripcion AS EstadoDesc, me.Codigo AS EstadoCodigo,
+                                  CASE WHEN EXISTS (
+                                      SELECT 1
+                                      FROM DocumentoParticipante dpObs
+                                      INNER JOIN Maestro mtObs ON dpObs.IdTipoParticipante = mtObs.IdMaestro
+                                      INNER JOIN RevisionDetalle rd ON rd.IdParticipante = dpObs.IdParticipante
+                                      WHERE dpObs.IdDocumento = d.IdDocumento
+                                        AND mtObs.Tipo='TIPO_PARTICIPANTE' AND mtObs.Codigo='REV'
+                                        AND rd.EsObservacion = 1
+                                  ) THEN 1 ELSE 0 END AS TieneObservacionRevisor
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
                            WHERE d.Activo = 1" + filtroRol + filtroEst + @"
@@ -110,7 +119,8 @@ namespace ZofraTacna.Presentacion
                                 BadgeCss      = badgeCss,
                                 RevisoresHtml = ObtenerRevisoresEstadoHtml(Convert.ToInt32(dr["IdDocumento"])),
                                 PlazosHtml    = plazosHtml,
-                                FechaStr      = Convert.ToDateTime(dr["FechaCreacion"]).ToString("d/M/yyyy")
+                                FechaStr      = Convert.ToDateTime(dr["FechaCreacion"]).ToString("d/M/yyyy"),
+                                PuedeVerObservaciones = dr["TieneObservacionRevisor"] != DBNull.Value && Convert.ToInt32(dr["TieneObservacionRevisor"]) == 1
                             });
                         }
                     }

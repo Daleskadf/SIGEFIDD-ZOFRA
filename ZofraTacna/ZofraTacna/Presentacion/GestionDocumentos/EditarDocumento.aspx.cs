@@ -1,5 +1,4 @@
 using System;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -51,7 +50,7 @@ namespace ZofraTacna.Presentacion
 
         private void CargarCombos()
         {
-            // CategorÌas
+            // Categorùas
             var categorias = _modulo.ObtenerCategorias();
             ddlCategoria.Items.Clear();
             ddlCategoria.Items.Add(new ListItem("Seleccionar...", ""));
@@ -92,11 +91,11 @@ namespace ZofraTacna.Presentacion
                         {
                             if (!dr.Read())
                             {
-                                MostrarMsg("No se encontrÛ el documento.", false);
+                                MostrarMsg("No se encontrù el documento.", false);
                                 return;
                             }
 
-                            // Parsear cÛdigo documento (formato: CODIGO-NUMERO-A—O)
+                            // Parsear cùdigo documento (formato: CODIGO-NUMERO-AùO)
                             string codigoCompleto = dr["CodigoDocumento"].ToString();
                             string[] partes = codigoCompleto.Split('-');
 
@@ -125,7 +124,7 @@ namespace ZofraTacna.Presentacion
                     }
                 }
 
-                // Cargar observaciones en una conexiÛn separada
+                // Cargar observaciones en una conexiùn separada
                 CargarObservaciones(idDocumento);
             }
             catch (Exception ex)
@@ -179,7 +178,7 @@ namespace ZofraTacna.Presentacion
         {
             try
             {
-                // Validaciones b·sicas
+                // Validaciones bùsicas
                 if (string.IsNullOrWhiteSpace(txtAsunto.Text))
                 {
                     MostrarMsg("El asunto es requerido.", false);
@@ -188,14 +187,14 @@ namespace ZofraTacna.Presentacion
 
                 if (string.IsNullOrWhiteSpace(ddlCategoria.SelectedValue))
                 {
-                    MostrarMsg("Debe seleccionar una categorÌa.", false);
+                    MostrarMsg("Debe seleccionar una categorùa.", false);
                     return;
                 }
 
                 string idDocStr = Request.QueryString["id"];
                 if (!int.TryParse(idDocStr, out int idDocumento))
                 {
-                    MostrarMsg("ID de documento inv·lido.", false);
+                    MostrarMsg("ID de documento invùlido.", false);
                     return;
                 }
 
@@ -260,7 +259,7 @@ namespace ZofraTacna.Presentacion
                                 cmd.ExecuteNonQuery();
                             }
 
-                            // Registrar en historial que el registrador levantÛ correcciÛn
+                            // Registrar en historial que el registrador levantù correcciùn
                             string loginUsuario = Session["LoginUsuario"].ToString();
                             string sqlHistorial = @"INSERT INTO HistorialDocumento 
                                 (IdDocumento, IdEstadoAnterior, IdEstadoNuevo, LoginUsuarioAccion, DetalleAccion, FechaCambio)
@@ -272,7 +271,7 @@ namespace ZofraTacna.Presentacion
                                 cmd.Parameters.AddWithValue("@estAnterior", idEstadoActual);
                                 cmd.Parameters.AddWithValue("@estNuevo", idEstadoActual);
                                 cmd.Parameters.AddWithValue("@login", loginUsuario);
-                                cmd.Parameters.AddWithValue("@detalle", "Registrador levantÛ correcciÛn sobre observaciones.");
+                                cmd.Parameters.AddWithValue("@detalle", "Registrador levantù correcciùn sobre observaciones.");
                                 cmd.ExecuteNonQuery();
                             }
 
@@ -340,7 +339,7 @@ namespace ZofraTacna.Presentacion
                 }
 
                 MostrarMsg("? Documento actualizado correctamente.", true);
-                // Redirigir despuÈs de 2 segundos
+                // Redirigir despuùs de 2 segundos
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "redirect",
                     "setTimeout(function() { window.location = 'MisDocumentos.aspx'; }, 2000);", true);
             }
@@ -375,14 +374,27 @@ namespace ZofraTacna.Presentacion
                     "<a href='MisDocumentos.aspx' class='nav-item active'>" + svgMisDocs + "Mis Documentos</a>";
             }
 
+            int badge = GetBadgeCount();
             return
                 "<a href='../../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo</a>" +
+                "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo<span class='nav-badge'>" + badge + "</span></a>" +
                 "<a href='CargarDocumento.aspx' class='nav-item'>" + svgCargar + "Cargar Documento</a>" +
                 "<a href='MisDocumentos.aspx' class='nav-item active'>" + svgMisDocs + "Mis Documentos</a>" +
-                "<a href='../GestionRoles/GestionRoles.aspx' class='nav-item'>" + svgRoles + "GestiÛn de Roles</a>" +
+                "<a href='../GestionRoles/GestionRoles.aspx' class='nav-item'>" + svgRoles + "Gesti&oacute;n de Roles</a>" +
                 "<a href='../VisualizarFirmantes/VisualizarFirmantes.aspx' class='nav-item'>" + svgFirm + "Visualizar Firmantes</a>" +
                 "<a href='#' class='nav-item'>" + svgEstado + "Estado del Sistema</a>";
+        }
+
+        private int GetBadgeCount()
+        {
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                using (var cmd = new SqlCommand(
+                    "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')", cn))
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+            }
         }
 
         private void MostrarMsg(string msg, bool ok)
