@@ -114,17 +114,24 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'daleska')
 PRINT 'Empleados de administracion verificados/insertados.';
 GO
 
--- Insertamos 5 nuevos empleados en un solo bloque
-INSERT INTO dbo.Empleado 
-(CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-VALUES 
-('2024-010', 'Condori Quispe', 'Ricardo', 'rcondori', 'daleskanicolle118@gmail.com', 164, 1), -- Gerencia General
-('2024-011', 'Flores Tapia', 'Claudia', 'cflores', 'daleskafervilla118@gmail.com', 376, 1),              -- Tecnologías de la Información
-('2024-012', 'Mendoza Valdivia', 'Roberto', 'rmendoza', 'roberto_m@outlook.com', 301, 1),     -- Oficina de Administración y Finanzas
-('2024-013', 'Zeballos Luna', 'Patricia', 'pzeballos', 'p.zeballos@upt.pe', 363, 1),          -- Oficina de Asesoría Jurídica
-('2024-014', 'Vargas Machuca', 'Fernando', 'fvargas', 'fernando_vargas@zofra.pe', 332, 1);     -- Área de Logística
+-- Insertamos 5 nuevos empleados con guard de duplicados
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rcondori')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-010', 'Condori Quispe', 'Ricardo', 'rcondori', 'daleskanicolle118@gmail.com', 164, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'cflores')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-011', 'Flores Tapia', 'Claudia', 'cflores', 'daleskafervilla118@gmail.com', 376, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rmendoza')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-012', 'Mendoza Valdivia', 'Roberto', 'rmendoza', 'roberto_m@outlook.com', 301, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'pzeballos')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-013', 'Zeballos Luna', 'Patricia', 'pzeballos', 'p.zeballos@upt.pe', 363, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'fvargas')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-014', 'Vargas Machuca', 'Fernando', 'fvargas', 'fernando_vargas@zofra.pe', 332, 1);
 
-PRINT '5 nuevos empleados insertados correctamente.';
+PRINT '5 nuevos empleados verificados/insertados.';
 GO
 -- ------------------------------------------------------------
 -- Tabla: dbo.UnidadOrganica
@@ -144,8 +151,10 @@ BEGIN
 END
 GO
 -- INSERTANDO REGISTROS A LA TABLA UNIDADORGANICA
+IF NOT EXISTS (SELECT 1 FROM dbo.UnidadOrganica WHERE IDUnidadOrganica = 164)
+BEGIN
 INSERT INTO dbo.UnidadOrganica (IDUnidadOrganica, Descripcion, Abreviatura, CodigoUnidadOrganica)
-VALUES 
+VALUES
 (164, 'GERENCIA GENERAL', 'GG', '2000'),
 (289, 'Área de Fiscalización', 'AFIS', '2200'),
 (385, 'Unidad de Relaciones Públicas e Imagen Institucional', 'URPII', '2300'),
@@ -198,8 +207,10 @@ VALUES
 (377, 'Sección de Desarrollo de Sistemas', 'SDS', '9810'),
 (378, 'Sección de Administración de la Información', 'SAI', '9820'),
 (379, 'Sección de Soporte', 'SST', '9830');
-
-PRINT 'Registros de Unidad Organica insertados correctamente.';
+    PRINT 'Registros de Unidad Organica insertados correctamente.';
+END
+ELSE
+    PRINT 'Registros de Unidad Organica ya existen.';
 GO
 -- ============================================================
 -- PARTE 2: BASE DE DATOS  FirmaDigital
@@ -266,6 +277,7 @@ BEGIN
     CREATE TABLE dbo.UsuarioSistema (
         IdUsuario            INT          IDENTITY(1,1) NOT NULL,
         LoginUsuario         VARCHAR(50)                NOT NULL,
+        Password             VARCHAR(100)               NULL,
         IdRolSistema         INT                        NOT NULL,
         Activo               BIT                        NOT NULL CONSTRAINT df_UsuarioSistema_Activo    DEFAULT 1,
         -- Auditoria ET-003
@@ -280,7 +292,11 @@ BEGIN
     PRINT 'Tabla UsuarioSistema creada.';
 END
 ELSE
-    PRINT 'Tabla UsuarioSistema ya existe.';
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.UsuarioSistema') AND name='Password')
+        ALTER TABLE dbo.UsuarioSistema ADD Password VARCHAR(100) NULL;
+    PRINT 'Tabla UsuarioSistema ya existe - columnas verificadas/agregadas.';
+END
 GO
 
 -- ============================================================
@@ -298,10 +314,12 @@ BEGIN
         IdDocumento             INT          IDENTITY(1,1) NOT NULL,
         CodigoDocumento         VARCHAR(50)                NOT NULL,
         Asunto                  VARCHAR(300)               NOT NULL,
+        Descripcion             VARCHAR(500)               NULL,
         IdTipoDocumento         INT                        NOT NULL,
 		AreaResponsable         INT                        NOT NULL,
         AreaCategoria           VARCHAR(150)               NULL,
         LoginUsuarioRegistrador VARCHAR(50)                NOT NULL,
+        RutaArchivoPDF          VARCHAR(500)               NULL,
         RutaArchivoPDF_Firmado  VARCHAR(500)               NULL,
         IdArchivoPrincipal      INT                        NULL,
         IdEstadoDocumento       INT                        NOT NULL,
@@ -327,6 +345,10 @@ END
 ELSE
 BEGIN
     -- Columnas que pudieron no existir en versiones anteriores
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='Descripcion')
+        ALTER TABLE dbo.Documento ADD Descripcion VARCHAR(500) NULL;
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF')
+        ALTER TABLE dbo.Documento ADD RutaArchivoPDF VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='RutaArchivoPDF_Firmado')
         ALTER TABLE dbo.Documento ADD RutaArchivoPDF_Firmado VARCHAR(500) NULL;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='AreaCategoria')
@@ -361,43 +383,39 @@ BEGIN
         IdParticipante      INT          IDENTITY(1,1) NOT NULL,
         IdDocumento         INT                        NOT NULL,
         LoginUsuario        VARCHAR(50)                NOT NULL,
-        OrdenSecuencial     INT                        NOT NULL CONSTRAINT df_DocParticipante_Orden     DEFAULT 1,
+        CorreoInstitucional VARCHAR(150)               NOT NULL CONSTRAINT df_DocParticipante_Correo DEFAULT '',
         IdTipoParticipante  INT                        NOT NULL,
-        EstadoParticipante  INT                        NOT NULL,
-        FechaAsignacion     DATETIME                   NOT NULL CONSTRAINT df_DocParticipante_Fecha     DEFAULT GETDATE(),
-        -- Auditoria ET-003
-        IDUsuarioCreador    VARCHAR(15)                NULL,
-        FechaCreacion       SMALLDATETIME              NOT NULL CONSTRAINT df_DocParticipante_FechaCrea DEFAULT GETDATE(),
+        IdRolFirmante       INT                        NULL,
+        PlazoDias           INT                        NOT NULL CONSTRAINT df_DocParticipante_Plazo  DEFAULT 5,
+        OrdenSecuencial     INT                        NULL,
+        EstadoParticipante  INT                        NULL,
         CONSTRAINT pk_DocumentoParticipante       PRIMARY KEY CLUSTERED (IdParticipante),
         CONSTRAINT fk_DocParticipante_Documento   FOREIGN KEY (IdDocumento)        REFERENCES dbo.Documento(IdDocumento),
         CONSTRAINT fk_DocParticipante_TipoPartic  FOREIGN KEY (IdTipoParticipante) REFERENCES dbo.Maestro(IdMaestro),
-        CONSTRAINT fk_DocParticipante_Estado      FOREIGN KEY (EstadoParticipante) REFERENCES dbo.Maestro(IdMaestro),
         CONSTRAINT uq_DocParticipante             UNIQUE (IdDocumento, LoginUsuario, IdTipoParticipante)
     );
     PRINT 'Tabla DocumentoParticipante creada.';
 END
 ELSE
 BEGIN
-    -- Agregar EstadoParticipante si no existe (migracion segura)
+    -- Agregar columnas que pueden no existir en versiones anteriores
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='CorreoInstitucional')
+        ALTER TABLE dbo.DocumentoParticipante ADD CorreoInstitucional VARCHAR(150) NOT NULL CONSTRAINT df_DocParticipante_Correo DEFAULT '';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='IdRolFirmante')
+        ALTER TABLE dbo.DocumentoParticipante ADD IdRolFirmante INT NULL;
+
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='PlazoDias')
+        ALTER TABLE dbo.DocumentoParticipante ADD PlazoDias INT NOT NULL CONSTRAINT df_DocParticipante_Plazo DEFAULT 5;
+
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='EstadoParticipante')
     BEGIN
-        ALTER TABLE dbo.DocumentoParticipante
-            ADD EstadoParticipante INT NOT NULL CONSTRAINT df_DocParticipante_EstadoTemp DEFAULT 0;
-
-        -- Actualizar filas existentes al estado PEN
-        UPDATE dbo.DocumentoParticipante
-        SET EstadoParticipante = (
-            SELECT TOP 1 IdMaestro FROM dbo.Maestro
-            WHERE Tipo = 'ESTADO_PARTICIPANTE' AND Codigo = 'PEN'
-        )
-        WHERE EstadoParticipante = 0;
-
-        ALTER TABLE dbo.DocumentoParticipante
-            ADD CONSTRAINT fk_DocParticipante_Estado
-                FOREIGN KEY (EstadoParticipante) REFERENCES dbo.Maestro(IdMaestro);
-
-        ALTER TABLE dbo.DocumentoParticipante
-            DROP CONSTRAINT df_DocParticipante_EstadoTemp;
+        ALTER TABLE dbo.DocumentoParticipante ADD EstadoParticipante INT NULL;
+        -- Usar EXEC para evitar el error de compilacion de batch al referenciar columna nueva
+        EXEC('UPDATE dbo.DocumentoParticipante SET EstadoParticipante = (
+                  SELECT TOP 1 IdMaestro FROM dbo.Maestro
+                  WHERE Tipo = ''ESTADO_PARTICIPANTE'' AND Codigo = ''PEN'')
+              WHERE EstadoParticipante IS NULL');
     END
 
     IF NOT EXISTS (
@@ -406,7 +424,7 @@ BEGIN
         ALTER TABLE dbo.DocumentoParticipante
             ADD CONSTRAINT uq_DocParticipante UNIQUE (IdDocumento, LoginUsuario, IdTipoParticipante);
 
-    PRINT 'Tabla DocumentoParticipante ya existe - columnas nuevas verificadas/agregadas.';
+    PRINT 'Tabla DocumentoParticipante ya existe - columnas verificadas/agregadas.';
 END
 GO
 
@@ -533,11 +551,11 @@ GO
 -- 3.1  Roles del Sistema
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('ROL_SISTEMA', 'ADM', 'Administrador', 1, 'SISTEMA'),
-    ('ROL_SISTEMA', 'REG', 'Registrador',   2, 'SISTEMA'),
-    ('ROL_SISTEMA', 'REV', 'Revisor',       3, 'SISTEMA'),
-    ('ROL_SISTEMA', 'FIR', 'Firmante',      4, 'SISTEMA');
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('ROL_SISTEMA', 'ADM', 'Administrador', 1),
+    ('ROL_SISTEMA', 'REG', 'Registrador',   2),
+    ('ROL_SISTEMA', 'REV', 'Revisor',       3),
+    ('ROL_SISTEMA', 'FIR', 'Firmante',      4);
     PRINT 'ROL_SISTEMA insertado.';
 END
 ELSE
@@ -553,13 +571,13 @@ GO
 --   FCOM -> firmado completamente (estado final)
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'ESTADO_DOC')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('ESTADO_DOC', 'REG',  'Registrado',        1, 'SISTEMA'),
-    ('ESTADO_DOC', 'REV',  'En Revision',        2, 'SISTEMA'),
-    ('ESTADO_DOC', 'OBS',  'Observado',          3, 'SISTEMA'),
-    ('ESTADO_DOC', 'PEN',  'Pendiente de Firma', 4, 'SISTEMA'),
-    ('ESTADO_DOC', 'FPAR', 'Firma Parcial',      5, 'SISTEMA'),
-    ('ESTADO_DOC', 'FCOM', 'Firmado Completo',   6, 'SISTEMA');
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('ESTADO_DOC', 'REG',  'Registrado',        1),
+    ('ESTADO_DOC', 'REV',  'En Revision',        2),
+    ('ESTADO_DOC', 'OBS',  'Observado',          3),
+    ('ESTADO_DOC', 'PEN',  'Pendiente de Firma', 4),
+    ('ESTADO_DOC', 'FPAR', 'Firma Parcial',      5),
+    ('ESTADO_DOC', 'FCOM', 'Firmado Completo',   6);
     PRINT 'ESTADO_DOC insertado.';
 END
 ELSE
@@ -569,17 +587,17 @@ GO
 -- 3.3  Tipos de Documento
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'TIPO_DOC')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('TIPO_DOC', 'MEM', 'Memorando',      1, 'SISTEMA'),
-    ('TIPO_DOC', 'OFI', 'Oficio',         2, 'SISTEMA'),
-    ('TIPO_DOC', 'RES', 'Resolucion',     3, 'SISTEMA'),
-    ('TIPO_DOC', 'INF', 'Informe',        4, 'SISTEMA'),
-    ('TIPO_DOC', 'ACT', 'Acta',           5, 'SISTEMA'),
-    ('TIPO_DOC', 'CON', 'Contrato',       6, 'SISTEMA'),
-    ('TIPO_DOC', 'DIR', 'Directiva',      7, 'SISTEMA'),
-    ('TIPO_DOC', 'CIR', 'Circular',       8, 'SISTEMA'),
-    ('TIPO_DOC', 'PLA', 'Plan',           9, 'SISTEMA'),
-    ('TIPO_DOC', 'PRO', 'Procedimiento', 10, 'SISTEMA');
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('TIPO_DOC', 'MEM', 'Memorando',      1),
+    ('TIPO_DOC', 'OFI', 'Oficio',         2),
+    ('TIPO_DOC', 'RES', 'Resolucion',     3),
+    ('TIPO_DOC', 'INF', 'Informe',        4),
+    ('TIPO_DOC', 'ACT', 'Acta',           5),
+    ('TIPO_DOC', 'CON', 'Contrato',       6),
+    ('TIPO_DOC', 'DIR', 'Directiva',      7),
+    ('TIPO_DOC', 'CIR', 'Circular',       8),
+    ('TIPO_DOC', 'PLA', 'Plan',           9),
+    ('TIPO_DOC', 'PRO', 'Procedimiento', 10);
     PRINT 'TIPO_DOC insertado.';
 END
 ELSE
@@ -589,11 +607,11 @@ GO
 -- 3.4  Estados de Firma
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'ESTADO_FIRMA')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('ESTADO_FIRMA', 'PEN',  'Pendiente de Firma', 1, 'SISTEMA'),
-    ('ESTADO_FIRMA', 'FIR',  'Firmado',            2, 'SISTEMA'),
-    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3, 'SISTEMA'),
-	('ESTADO_FIRMA', 'OBS', 'Observado',           4, 'SISTEMA');  
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('ESTADO_FIRMA', 'PEN',  'Pendiente de Firma', 1),
+    ('ESTADO_FIRMA', 'FIR',  'Firmado',            2),
+    ('ESTADO_FIRMA', 'FCOM', 'Firma Completa',     3),
+    ('ESTADO_FIRMA', 'OBS',  'Observado',          4);
     PRINT 'ESTADO_FIRMA insertado.';
 END
 ELSE
@@ -603,9 +621,9 @@ GO
 -- 3.5  Tipos de Participante
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'TIPO_PARTICIPANTE')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('TIPO_PARTICIPANTE', 'REV', 'Revisor',  1, 'SISTEMA'),
-    ('TIPO_PARTICIPANTE', 'FIR', 'Firmante', 2, 'SISTEMA');
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('TIPO_PARTICIPANTE', 'REV', 'Revisor',  1),
+    ('TIPO_PARTICIPANTE', 'FIR', 'Firmante', 2);
     PRINT 'TIPO_PARTICIPANTE insertado.';
 END
 ELSE
@@ -617,11 +635,11 @@ GO
 --   dentro de un documento especifico.
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'ESTADO_PARTICIPANTE')
 BEGIN
-    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden, IDUsuarioCreador) VALUES
-    ('ESTADO_PARTICIPANTE', 'PEN', 'Pendiente',   1, 'SISTEMA'),
-    ('ESTADO_PARTICIPANTE', 'REV', 'En Revision', 2, 'SISTEMA'),
-    ('ESTADO_PARTICIPANTE', 'OBS', 'Observado',   3, 'SISTEMA'),
-    ('ESTADO_PARTICIPANTE', 'FIR', 'Firmado',     4, 'SISTEMA');
+    INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
+    ('ESTADO_PARTICIPANTE', 'PEN', 'Pendiente',   1),
+    ('ESTADO_PARTICIPANTE', 'REV', 'En Revision', 2),
+    ('ESTADO_PARTICIPANTE', 'OBS', 'Observado',   3),
+    ('ESTADO_PARTICIPANTE', 'FIR', 'Firmado',     4);
     PRINT 'ESTADO_PARTICIPANTE insertado.';
 END
 ELSE
@@ -639,23 +657,23 @@ PRINT '--- Insertando usuarios del sistema ---';
 GO
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'augusto')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
-    SELECT 'augusto', NULL, IdMaestro, 1, 'SISTEMA'
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
+    SELECT 'augusto', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'ADM';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'angel')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
-    SELECT 'angel', NULL, IdMaestro, 1, 'SISTEMA'
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
+    SELECT 'angel', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REG';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'wsalas')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
-    SELECT 'wsalas', NULL, IdMaestro, 1, 'SISTEMA'
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
+    SELECT 'wsalas', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REV';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'daleska')
-    INSERT INTO dbo.UsuarioSistema (LoginUsuario, IdRolSistema, Activo, IDUsuarioCreador)
-    SELECT 'daleska', NULL, IdMaestro, 1, 'SISTEMA'
+    INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
+    SELECT 'daleska', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'FIR';
 
 PRINT 'Usuarios del sistema verificados/insertados.';
@@ -749,7 +767,92 @@ GO
 PRINT 'Procedimiento sp_InsertarParticipante creado/actualizado.';
 GO
 
--- Creamos el procedimiento de estructura y permisos para el correo 
+-- ============================================================
+-- 7.  CONFIGURACION DE DATABASE MAIL (SMTP)
+--   Necesario para que GEN_X_EnviarMail y los SP de
+--   notificacion puedan enviar correos via SQL Server.
+--
+--   ANTES DE EJECUTAR:
+--     - Cambia @email_address y @username por tu correo Gmail
+--     - Cambia @password por la Contrasena de Aplicacion Gmail
+--       (Panel Google -> Seguridad -> Verificacion en 2 pasos
+--        -> Contrasenas de aplicacion -> generar una nueva)
+--     - El perfil debe llamarse 'Administrador SQL' (ya usado
+--       en GEN_X_EnviarMail con ese nombre fijo).
+-- ============================================================
+USE msdb;
+GO
+
+-- 7.1  Habilitar Database Mail XPs en el servidor
+IF NOT EXISTS (
+    SELECT 1 FROM sys.configurations
+    WHERE name = 'Database Mail XPs' AND value_in_use = 1)
+BEGIN
+    EXEC sp_configure 'show advanced options', 1;
+    RECONFIGURE WITH OVERRIDE;
+    EXEC sp_configure 'Database Mail XPs', 1;
+    RECONFIGURE WITH OVERRIDE;
+    PRINT 'Database Mail XPs habilitado.';
+END
+ELSE
+    PRINT 'Database Mail XPs ya estaba habilitado.';
+GO
+
+-- 7.2  Cuenta SMTP
+IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysmail_account WHERE name = 'ZofraMailAccount')
+BEGIN
+    EXEC msdb.dbo.sysmail_add_account_sp
+        @account_name    = 'ZofraMailAccount',
+        @description     = 'Cuenta SMTP SIGEFIDD-ZOFRA',
+        @email_address   = 'billang48004@gmail.com',
+        @display_name    = 'SIGEFIDD-ZOFRA Notificaciones',
+        @mailserver_name = 'smtp.gmail.com',
+        @port            = 587,
+        @enable_ssl      = 1,
+        @username        = 'billang48004@gmail.com',
+        @password        = 'tlcosxwnmnqootru';
+    PRINT 'Cuenta ZofraMailAccount creada.';
+END
+ELSE
+    PRINT 'Cuenta ZofraMailAccount ya existe.';
+GO
+
+-- 7.3  Perfil de correo  (nombre fijo: 'Administrador SQL')
+IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysmail_profile WHERE name = 'Administrador SQL')
+BEGIN
+    EXEC msdb.dbo.sysmail_add_profile_sp
+        @profile_name = 'Administrador SQL',
+        @description  = 'Perfil de correo institucional ZOFRATACNA';
+    PRINT 'Perfil Administrador SQL creado.';
+END
+ELSE
+    PRINT 'Perfil Administrador SQL ya existe.';
+GO
+
+-- 7.4  Asociar cuenta al perfil
+IF NOT EXISTS (
+    SELECT 1 FROM msdb.dbo.sysmail_profileaccount pa
+    INNER JOIN msdb.dbo.sysmail_profile  p ON pa.profile_id  = p.profile_id
+    INNER JOIN msdb.dbo.sysmail_account  a ON pa.account_id  = a.account_id
+    WHERE p.name = 'Administrador SQL' AND a.name = 'ZofraMailAccount')
+BEGIN
+    EXEC msdb.dbo.sysmail_add_profileaccount_sp
+        @profile_name    = 'Administrador SQL',
+        @account_name    = 'ZofraMailAccount',
+        @sequence_number = 1;
+    PRINT 'Cuenta asociada al perfil.';
+END
+ELSE
+    PRINT 'Cuenta ya estaba asociada al perfil.';
+GO
+
+USE FirmaDigital;
+GO
+
+-- Creamos el procedimiento de estructura y permisos para el correo
+IF OBJECT_ID('dbo.GEN_X_EnviarMail', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.GEN_X_EnviarMail;
+GO
 CREATE PROCEDURE [dbo].[GEN_X_EnviarMail] 
     @Para nVarChar(100), 
     @Asunto nVarChar(250), 
@@ -791,7 +894,7 @@ BEGIN
         @FechaReg = CONVERT(VARCHAR, d.FechaCreacion, 103)
     FROM dbo.Documento d
     INNER JOIN dbo.Maestro m ON d.IdTipoDocumento = m.IdMaestro
-    LEFT JOIN administracion.dbo.UnidadOrganica uo ON d.AreaResponsable = uo.IDUnidadOrganica
+    LEFT JOIN administracion.dbo.UnidadOrganica uo ON TRY_CONVERT(INT, d.AreaResponsable) = uo.IDUnidadOrganica
     WHERE d.IdDocumento = @IdDocumento;
 
     -- 2. Cursor: Jalamos el Email, Nombre y su Plazo específico
@@ -978,23 +1081,12 @@ GO
 
 
 
--- ============================================================
--- EJECUTAR
--- ============================================================
--- TENER CUIDADO CON ESTO SE DEBE ARREGLAR ESTA ASIGNANDO POR DEFECTO 3 PERO NO DEBE SER ASI
-ALTER TABLE dbo.DocumentoParticipante
-ADD CONSTRAINT df_PlazoDias 
-DEFAULT 3 FOR PlazoDias;
-
-ALTER TABLE dbo.Documento
-ADD Descripcion VARCHAR(1000) NULL;
-
-
-
 
 -- ============================================================
--- PLANTILLAS DE CORREOS
+-- PLANTILLAS DE CORREOS (ejemplos / pruebas manuales)
 -- ============================================================
+USE FirmaDigital;
+GO
 -- Cambiamos @Cuerpo HTML por @Cuerpo NVARCHAR(MAX)
 --  [ACCIÓN REQUERIDA] Documento pendiente de firma
 DECLARE @Cuerpo NVARCHAR(MAX) = '
@@ -1051,7 +1143,8 @@ EXEC [dbo].[GEN_X_EnviarMail]
 
 
 
--- Correo 2 — Revisión asignada 
+GO
+-- Correo 2 — Revisión asignada
 DECLARE @Cuerpo NVARCHAR(MAX) = '
 <div style="font-family: Segoe UI, Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">
     
@@ -1130,7 +1223,8 @@ EXEC [dbo].[GEN_X_EnviarMail]
     @Mensaje = @Cuerpo;
 
 
---	Correo 3 — Documento corregido, nueva revisión
+GO
+-- Correo 3 — Documento corregido, nueva revisión
 DECLARE @Cuerpo NVARCHAR(MAX) = '
 <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">
     
@@ -1215,6 +1309,7 @@ EXEC [dbo].[GEN_X_EnviarMail]
 
 
 
+GO
 -- Correo 4 — Aprobado para firma
 DECLARE @Cuerpo NVARCHAR(MAX) = '
 <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">
@@ -1314,6 +1409,7 @@ EXEC [dbo].[GEN_X_EnviarMail]
 
 
 
+GO
 -- Correo 5 — Recordatorio de revisión pendiente
 DECLARE @Cuerpo NVARCHAR(MAX) = '
 <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">
@@ -1393,7 +1489,8 @@ EXEC [dbo].[GEN_X_EnviarMail]
 
 
 
--- Correo 6 — Recordatorio de firma pendiente 
+GO
+-- Correo 6 — Recordatorio de firma pendiente
 DECLARE @Cuerpo NVARCHAR(MAX) = '
 <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">
     
@@ -1489,8 +1586,9 @@ EXEC [dbo].[GEN_X_EnviarMail]
     @Mensaje = @Cuerpo;
 
 
+/*
 -- ============================================================
--- SOLO SON CONSULTAS EXTERNAS NADA QUE VER NO EJECUTAR
+-- CONSULTAS DE PRUEBA (NO EJECUTAR EN INSTALACION)
 -- ============================================================
 select * from empleado
 select * from usuariosistema
@@ -1502,38 +1600,30 @@ SELECT * FROM maestro
 SELECT * FROM unidadorganica
 SELECT * FROM HISTORIALDOCUMENTO
 
--- Consultamos el "diccionario" usando el nombre correcto de la columna
-SELECT IdMaestro, Codigo, Descripcion 
-FROM dbo.Maestro 
+SELECT IdMaestro, Codigo, Descripcion
+FROM dbo.Maestro
 WHERE IdMaestro IN (23, 24, 25, 26, 27, 28, 29, 30);
 
+DECLARE @IdDocumento INT = 1013;
 
-USE FirmaDigital;
-GO
-
-DECLARE @IdDocumento INT = 1013; 
-
-SELECT 
+SELECT
     d.CodigoDocumento,
     v.NombreCompleto AS Persona,
     v.Email,
     p.OrdenSecuencial AS Orden,
-    m.Codigo AS CodigoRol,    -- Aquí verás si es 'REV' o 'FIR'
+    m.Codigo AS CodigoRol,
     m.Descripcion AS RolEnDocumento
 FROM dbo.DocumentoParticipante p
 INNER JOIN dbo.Documento d ON p.IdDocumento = d.IdDocumento
 INNER JOIN dbo.VW_EmpleadosActivos v ON p.LoginUsuario = v.LoginUsuario
 INNER JOIN dbo.Maestro m ON p.IdTipoParticipante = m.IdMaestro
-WHERE d.IdDocumento = @IdDocumento 
-  AND m.Codigo IN ('REV', 'FIR') -- <--- AQUÍ: Buscamos ambos códigos
-ORDER BY m.Codigo DESC, p.OrdenSecuencial ASC; 
--- El ORDER BY hará que primero salgan los REVISORES (REV) 
--- y luego los FIRMANTES (FIR) por su orden de firma.
-
+WHERE d.IdDocumento = @IdDocumento
+  AND m.Codigo IN ('REV', 'FIR')
+ORDER BY m.Codigo DESC, p.OrdenSecuencial ASC;
 
 UPDATE dbo.UsuarioSistema
-SET IdRolSistema = 3  -- <--- Aquí pones el nuevo número de ID de rol que quieras asignar
+SET IdRolSistema = 3
 WHERE IdUsuario = 1008;
 
--- Verificamos el cambio
 SELECT * FROM dbo.UsuarioSistema WHERE IdUsuario = 1008;
+*/
