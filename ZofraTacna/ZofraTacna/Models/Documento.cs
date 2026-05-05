@@ -40,7 +40,7 @@ namespace ZofraTacna.Models
         public byte[]   ContenidoPDF            { get; set; }
         public string   NombreArchivo           { get; set; }
         public string   TipoMime                { get; set; }
-        public int      TamañoBytes             { get; set; }
+        public int      TamanioBytes             { get; set; }
         public string   UsuarioCreacion         { get; set; }
     }
 

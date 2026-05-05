@@ -55,23 +55,33 @@ namespace ZofraTacna.Presentacion
             DateTime ahora = DateTime.Now;
 
             string filtroEst = FiltroActivo == "TODOS" ? "" : " AND me.Codigo = @filtro";
+            bool esAdm = string.Equals(rol, "ADM", StringComparison.OrdinalIgnoreCase);
+            string filtroVis = esAdm
+                ? ""
+                : @" AND (d.LoginUsuarioRegistrador = @login
+                    OR EXISTS (
+                        SELECT 1 FROM dbo.DocumentoParticipante p
+                        WHERE p.IdDocumento = d.IdDocumento AND p.LoginUsuario = @login
+                    ))";
 
             string sql = @"SELECT d.IdDocumento, d.Asunto, d.AreaCategoria, d.RutaArchivoPDF,
                                   d.FechaCreacion, d.FechaLimiteRevision, d.FechaLimiteAprobacion,
                                   me.Descripcion AS EstadoDesc, me.Codigo AS EstadoCodigo
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
-                           WHERE d.Activo = 1" + filtroEst + @"
+                           WHERE d.Activo = 1" + filtroEst + filtroVis + @"
                            ORDER BY d.FechaCreacion DESC";
 
             using (var cn = new SqlConnection(connStr))
             {
                 cn.Open();
-                int badge = GetBadgeCount(cn);
+                int badge = GetBadgeCount(cn, login, rol);
                 litSidebarNav.Text = BuildNav(rol, badge);
 
                 using (var cmd = new SqlCommand(sql, cn))
                 {
+                    if (!esAdm)
+                        cmd.Parameters.AddWithValue("@login", login);
                     if (FiltroActivo != "TODOS") cmd.Parameters.AddWithValue("@filtro", FiltroActivo);
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -138,11 +148,23 @@ namespace ZofraTacna.Presentacion
             return string.IsNullOrEmpty(html) ? "<span class='plazo-ok'>-</span>" : html;
         }
 
-        private int GetBadgeCount(SqlConnection cn)
+        private int GetBadgeCount(SqlConnection cn, string login, string rol)
         {
-            using (var cmd = new SqlCommand(
-                "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')", cn))
+            bool esAdm = string.Equals(rol, "ADM", StringComparison.OrdinalIgnoreCase);
+            string filtroVis = esAdm
+                ? ""
+                : @" AND (d.LoginUsuarioRegistrador = @login
+                    OR EXISTS (
+                        SELECT 1 FROM dbo.DocumentoParticipante p
+                        WHERE p.IdDocumento = d.IdDocumento AND p.LoginUsuario = @login
+                    ))";
+            string sql = "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')" + filtroVis;
+            using (var cmd = new SqlCommand(sql, cn))
+            {
+                if (!esAdm)
+                    cmd.Parameters.AddWithValue("@login", login);
                 return Convert.ToInt32(cmd.ExecuteScalar());
+            }
         }
 
         private string BuildNav(string rol, int badge)

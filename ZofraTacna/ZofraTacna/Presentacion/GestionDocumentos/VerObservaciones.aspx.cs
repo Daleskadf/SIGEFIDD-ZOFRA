@@ -66,7 +66,7 @@ namespace ZofraTacna.Presentacion
 
             int badge = GetBadgeCount();
             return
-                "<a href='../../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
                 "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo<span class='nav-badge'>" + badge + "</span></a>" +
                 "<a href='CargarDocumento.aspx' class='nav-item'>" + svgCargar + "Cargar Documento</a>" +
                 "<a href='MisDocumentos.aspx' class='nav-item active'>" + svgMisDocs + "Mis Documentos</a>" +

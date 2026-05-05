@@ -376,7 +376,7 @@ namespace ZofraTacna.Presentacion
             }
 
             return
-                "<a href='../../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
                 "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo</a>" +
                 "<a href='CargarDocumento.aspx' class='nav-item active'>" + svgCargar + "Cargar Documento</a>" +
                 "<a href='MisDocumentos.aspx' class='nav-item'>" + svgMisDocs + "Mis Documentos</a>" +

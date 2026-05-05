@@ -69,15 +69,15 @@ namespace ZofraTacna.Datos
         }
 
         /// <summary>Primer PDF adjunto al documento en FirmaDigital_Files.</summary>
-        public bool IntentarAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out int tamañoBytes)
+        public bool IntentarAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out int tamanioBytes)
         {
             idAdjunto = 0;
             nombreArchivo = null;
-            tamañoBytes = 0;
+            tamanioBytes = 0;
             using (var conn = new SqlConnection(_connFiles))
             {
                 conn.Open();
-                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, TamañoBytes
+                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, TamanioBytes
                                FROM DocumentoAdjunto WHERE IdDocumento=@id ORDER BY IdAdjunto ASC";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -87,7 +87,7 @@ namespace ZofraTacna.Datos
                         if (!dr.Read()) return false;
                         idAdjunto = (int)dr["IdAdjunto"];
                         nombreArchivo = dr["NombreArchivo"].ToString();
-                        tamañoBytes = Convert.ToInt32(dr["TamañoBytes"]);
+                        tamanioBytes = Convert.ToInt32(dr["TamanioBytes"]);
                         return true;
                     }
                 }
@@ -345,7 +345,7 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 string sql = @"INSERT INTO DocumentoAdjunto
-                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamañoBytes,UsuarioCreacion)
+                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
                     VALUES (@id,@pdf,@nom,@mime,@size,@user)";
 
                 using (var cmd = new SqlCommand(sql, conn))
@@ -767,9 +767,9 @@ namespace ZofraTacna.Datos
                 conn.Open();
                 string sql = existe
                     ? @"UPDATE DocumentoAdjunto
-                        SET ContenidoPDF=@pdf, NombreArchivo=@nom, TipoMime='application/pdf', TamañoBytes=@tam
+                        SET ContenidoPDF=@pdf, NombreArchivo=@nom, TipoMime='application/pdf', TamanioBytes=@tam
                         WHERE IdAdjunto=@idAdj"
-                    : @"INSERT INTO DocumentoAdjunto (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamañoBytes,UsuarioCreacion)
+                    : @"INSERT INTO DocumentoAdjunto (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
                         VALUES (@idDoc,@pdf,@nom,'application/pdf',@tam,@usr)";
                 using (var cmd = new SqlCommand(sql, conn))
                 {

@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -87,14 +86,16 @@ namespace ZofraTacna.LogicaNegocio
         #region Validaciones para Registro/Asignación de Rol
 
         /// <summary>
-        /// Valida si un LoginUsuario puede ser registrado con un rol en el sistema.
+        /// Valida si un LoginUsuario puede ser registrado o gestionado en el sistema.
         /// Retorna null si es válido, o un mensaje de error si hay problemas.
         /// 
         /// Validaciones:
         /// 1. El usuario existe en BD administracion (VW_EmpleadosActivos)
-        /// 2. El usuario NO tiene rol asignado ya en UsuarioSistema
+        /// 2. Solo en alta nueva: el usuario NO debe tener ya fila en UsuarioSistema (un login = un rol).
+        ///    En cambio de rol (GestionRoles edición) no aplica: se actualiza IdRolSistema en FirmaDigital.
         /// </summary>
-        public string ValidarRegistroUsuario(string loginUsuario)
+        /// <param name="validarQueNoTengaRolAsignado">true para alta en UsuarioSistema; false al editar rol existente.</param>
+        public string ValidarRegistroUsuario(string loginUsuario, bool validarQueNoTengaRolAsignado = true)
         {
             if (string.IsNullOrWhiteSpace(loginUsuario))
                 return "El login de usuario es requerido.";
@@ -103,11 +104,12 @@ namespace ZofraTacna.LogicaNegocio
             if (!_conectorSAS.ValidarEmpleadoActivo(loginUsuario))
                 return "El usuario no existe en el registro institucional.";
 
-            // Validación 2: Verificar si ya tiene rol asignado
-            if (!_conectorSAS.ValidarNoTieneRolAsignado(loginUsuario))
-                return "El usuario ya tiene un rol asignado.";
+            if (validarQueNoTengaRolAsignado)
+            {
+                if (!_conectorSAS.ValidarNoTieneRolAsignado(loginUsuario))
+                    return "El usuario ya tiene un rol asignado.";
+            }
 
-            // Todas las validaciones pasaron
             return null;
         }
 

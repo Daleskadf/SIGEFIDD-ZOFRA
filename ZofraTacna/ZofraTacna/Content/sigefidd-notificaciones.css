@@ -1,0 +1,72 @@
+/* Campana + panel (SIGEFIDD-ZOFRA) */
+.topbar-right { position: relative; }
+.zfn-bell-wrap { position: relative; flex-shrink: 0; }
+.zfn-bell-btn {
+    position: relative;
+    width: 40px; height: 40px;
+    border: none; border-radius: 10px;
+    background: #f4f6fb;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #1a2a4a;
+    transition: background .2s, color .2s;
+}
+.zfn-bell-btn:hover { background: #e8ecf5; color: #8b1a1a; }
+.zfn-bell-btn svg { width: 20px; height: 20px; fill: currentColor; }
+.zfn-bell-badge {
+    position: absolute; top: 4px; right: 4px;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 8px; background: #c0392b; color: #fff;
+    font-size: 10px; font-weight: 700; line-height: 16px;
+    text-align: center; display: none;
+}
+.zfn-bell-badge.zfn-on { display: block; }
+.zfn-bell-panel {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    width: min(380px, 92vw); max-height: min(420px, 70vh);
+    background: #fff; border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(26, 42, 74, .18);
+    border: 1px solid #e8eaf0;
+    z-index: 2000;
+    display: none; flex-direction: column;
+    overflow: hidden;
+}
+.zfn-bell-panel.zfn-open { display: flex; }
+.zfn-bell-panel-head {
+    padding: 12px 16px; font-size: 13px; font-weight: 700;
+    color: #1a2a4a; border-bottom: 1px solid #eef0f8;
+    background: linear-gradient(90deg, #fafbfd, #fff);
+}
+.zfn-bell-panel-body { overflow-y: auto; flex: 1; }
+.zfn-bell-item {
+    padding: 12px 16px; border-bottom: 1px solid #f4f5fa;
+    font-size: 12px; color: #444; line-height: 1.45;
+}
+.zfn-bell-item:last-child { border-bottom: none; }
+.zfn-bell-item:hover { background: #fafbff; }
+.zfn-bell-item-meta {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: 10px; color: #999; margin-bottom: 6px;
+}
+.zfn-bell-item-meta strong { color: #1a2a4a; font-weight: 600; }
+.zfn-bell-item-doc { font-size: 11px; color: #8b1a1a; font-weight: 600; margin-bottom: 4px; }
+.zfn-bell-empty { padding: 28px 16px; text-align: center; color: #aaa; font-size: 13px; }
+
+/* Toasts */
+.zfn-toast-host {
+    position: fixed; top: 64px; right: 20px; z-index: 3000;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    pointer-events: none; max-width: min(400px, 94vw);
+}
+.zfn-toast {
+    pointer-events: none;
+    background: #1a2a4a; color: #fff;
+    padding: 12px 16px; border-radius: 10px;
+    font-size: 13px; line-height: 1.4;
+    box-shadow: 0 8px 28px rgba(26, 42, 74, .35);
+    max-width: 100%; word-break: break-word;
+    opacity: 0; transform: translateX(12px);
+    transition: opacity .35s ease, transform .35s ease;
+}
+.zfn-toast--in { opacity: 1; transform: translateX(0); }
+.zfn-toast--out { opacity: 0; transform: translateX(16px); }

@@ -6,6 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SIGEFIDD-ZOFRA | Editar Documento</title>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+    <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -197,10 +199,7 @@
             font-size: 14px;
         }
         .upload-zone input[type=file] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
+            display: none;
         }
         .alert-ok {
             background: #d4edda;
@@ -221,7 +220,47 @@
         .actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-visualizar {
+            padding: 12px 22px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            border: 1.5px solid #1a2a4a;
+            background: linear-gradient(90deg, #1a2a4a, #2a3f6f);
+            box-shadow: 0 4px 12px rgba(26, 42, 74, .22);
+        }
+        .btn-visualizar:hover { filter: brightness(1.05); }
+        .btn-visualizar:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: none;
+        }
+        .upload-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        .msg-bajo-pdf {
+            margin-top: 12px;
+            min-height: 0;
+        }
+        .lbl-archivo-ok {
+            font-size: 13px;
+            color: #1e7e34;
+            font-weight: 600;
+            display: block;
+            margin-top: 8px;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         .btn-submit {
             padding: 12px 24px;
@@ -241,10 +280,10 @@
             font-size: 14px;
             border-radius: 10px;
         }
-        #lblMensaje { display: block; margin-bottom: 12px; }
+        #lblMensaje { display: block; }
     </style>
 </head>
-<body>
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
     <form id="form1" runat="server" enctype="multipart/form-data" style="display:flex;width:100%;height:100vh;overflow:hidden;">
         <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
             <!-- SIDEBAR -->
@@ -272,6 +311,16 @@
                 <div class="topbar">
                     <div class="breadcrumb"><strong>SIGEFIDD-ZOFRA</strong> / Editar Documento</div>
                     <div class="topbar-right">
+                        <div class="zfn-bell-wrap">
+                            <button type="button" class="zfn-bell-btn" id="zfnBellBtn" aria-label="Notificaciones" aria-expanded="false" aria-controls="zfnBellPanel">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                                <span class="zfn-bell-badge" id="zfnBellBadge"></span>
+                            </button>
+                            <div id="zfnBellPanel" class="zfn-bell-panel" role="dialog" aria-hidden="true">
+                                <div class="zfn-bell-panel-head">Alertas de documentos</div>
+                                <div class="zfn-bell-panel-body" id="zfnBellPanelBody"></div>
+                            </div>
+                        </div>
                         <div class="user-info">
                             <div class="user-avatar"><asp:Literal ID="litAvatar" runat="server"/></div>
                             <span class="user-name"><asp:Literal ID="litNombre" runat="server"/></span>
@@ -282,8 +331,6 @@
 
                 <!-- CONTENT -->
                 <div class="content">
-                    <asp:Label ID="lblMensaje" runat="server" Visible="false" />
-
                     <div class="head">
                         <h1>Editar Documento</h1>
                         <a class="btn-back" href='VerObservaciones.aspx?id=<%= Request.QueryString["id"] %>'><span class="btn-back-arrow" aria-hidden="true">&#8592;</span> Regresar</a>
@@ -349,19 +396,157 @@
                     <!-- NUEVO PDF -->
                     <div class="box">
                         <div class="form-label" style="margin-bottom:12px">NUEVO PDF (OPCIONAL)</div>
-                        <div class="upload-zone">
+                        <div class="upload-zone" onclick="var el=document.getElementById('<%= filePDF.ClientID %>'); if(el) el.click();">
                             📄 Clic para seleccionar un nuevo PDF
-                            <asp:FileUpload ID="filePDF" runat="server" Accept=".pdf" />
+                            <asp:FileUpload ID="filePDF" runat="server" Accept=".pdf" onchange="editDocMostrarArchivoYVisor();" />
+                        </div>
+                        <p class="upload-hint">Si adjunta un PDF, puede previsualizarlo antes de enviar la corrección.</p>
+                        <div class="msg-bajo-pdf">
+                            <span id="editDocLblArchivo" class="lbl-archivo-ok" style="display:none;" aria-live="polite"></span>
+                            <div id="editDocMsgCliente" class="alert-err" style="display:none;margin-top:8px;"></div>
+                            <asp:Label ID="lblMensaje" runat="server" EnableViewState="true" Style="display:none;" />
                         </div>
                     </div>
 
                     <!-- BOTONES ACCIÓN -->
                     <div class="actions">
-                        <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección" CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click" />
+                        <button type="button" id="btnVisualizarPdf" class="btn-visualizar" style="display:none;" onclick="editDocAbrirVisorPdf();">📄 Visualizar documento</button>
+                        <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección" CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click" OnClientClick="return editDocValidarAntesEnviar();" />
+                    </div>
+
+                    <!-- Modal visor PDF (mismo criterio que CargarDocumento) -->
+                    <div id="modalVisorPDFEdit" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;">
+                        <div style="background:white;border-radius:12px;width:95%;height:95%;max-width:900px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1.5px solid #e8eaf0;background:#f8f9fc;">
+                                <div style="font-size:16px;font-weight:700;color:#1a2a4a;">Previsualización de documento PDF</div>
+                                <button type="button" onclick="editDocCerrarVisorPdf()" style="background:none;border:none;font-size:28px;cursor:pointer;color:#999;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;line-height:1;" title="Cerrar" aria-label="Cerrar">✕</button>
+                            </div>
+                            <div id="visorPDFEditContenedor" style="flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#3a3a42;min-height:200px;">
+                                <div id="pdfSpinnerEdit" style="text-align:center;padding:24px;">
+                                    <div style="font-size:14px;color:#ccc;margin-bottom:16px;">Cargando documento…</div>
+                                    <div style="width:40px;height:40px;border:4px solid #555;border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>
+                                </div>
+                                <iframe id="pdfIframeEdit" style="width:100%;height:100%;border:none;display:none;min-height:400px;"></iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div id="zfnToastHost" class="zfn-toast-host"></div>
     </form>
+    <script type="text/javascript">
+        window.editDocPdfArchivo = null;
+        window.editDocPdfBlobUrl = null;
+
+        function editDocGet(id) { return document.getElementById(id); }
+
+        function editDocMostrarArchivoYVisor() {
+            var fileInput = editDocGet('<%= filePDF.ClientID %>');
+            var lblArchivo = editDocGet('editDocLblArchivo');
+            var btnVis = editDocGet('btnVisualizarPdf');
+            var msgCli = editDocGet('editDocMsgCliente');
+            if (msgCli) { msgCli.style.display = 'none'; msgCli.textContent = ''; }
+            if (!fileInput || !lblArchivo) return;
+            if (fileInput.files.length > 0) {
+                var archivo = fileInput.files[0];
+                var mb = (archivo.size / (1024 * 1024)).toFixed(2);
+                lblArchivo.innerHTML = '✓ <strong>Archivo listo:</strong> ' + archivo.name.replace(/</g, '&lt;') + ' (' + mb + ' MB). Puede enviar la corrección o cambiar el archivo.';
+                lblArchivo.style.display = 'block';
+                lblArchivo.style.color = '#1e7e34';
+                if (btnVis) btnVis.style.display = 'inline-block';
+                window.editDocPdfArchivo = archivo;
+            } else {
+                lblArchivo.innerHTML = '';
+                lblArchivo.style.display = 'none';
+                if (btnVis) btnVis.style.display = 'none';
+                window.editDocPdfArchivo = null;
+            }
+        }
+
+        function editDocAbrirVisorPdf() {
+            if (!window.editDocPdfArchivo) {
+                alert('Seleccione un archivo PDF primero.');
+                return;
+            }
+            var modal = editDocGet('modalVisorPDFEdit');
+            var iframe = editDocGet('pdfIframeEdit');
+            var spinner = editDocGet('pdfSpinnerEdit');
+            if (!modal || !iframe || !spinner) return;
+            modal.style.display = 'flex';
+            spinner.style.display = 'block';
+            iframe.style.display = 'none';
+            if (window.editDocPdfBlobUrl) {
+                try { URL.revokeObjectURL(window.editDocPdfBlobUrl); } catch (e) { }
+            }
+            try {
+                window.editDocPdfBlobUrl = URL.createObjectURL(window.editDocPdfArchivo);
+                iframe.src = window.editDocPdfBlobUrl;
+                setTimeout(function () {
+                    spinner.style.display = 'none';
+                    iframe.style.display = 'block';
+                }, 400);
+            } catch (ex) {
+                spinner.innerHTML = '<div style="color:#ffb4b4;font-size:14px;">No se pudo abrir la vista previa.</div>';
+            }
+        }
+
+        function editDocCerrarVisorPdf() {
+            var modal = editDocGet('modalVisorPDFEdit');
+            var iframe = editDocGet('pdfIframeEdit');
+            var spinner = editDocGet('pdfSpinnerEdit');
+            if (modal) modal.style.display = 'none';
+            if (iframe) {
+                iframe.onload = null;
+                iframe.src = '';
+                iframe.style.display = 'none';
+            }
+            if (spinner) {
+                spinner.style.display = 'block';
+                spinner.innerHTML = '<div style="font-size:14px;color:#ccc;margin-bottom:16px;">Cargando documento…</div><div style="width:40px;height:40px;border:4px solid #555;border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>';
+            }
+            if (window.editDocPdfBlobUrl) {
+                try { URL.revokeObjectURL(window.editDocPdfBlobUrl); } catch (e) { }
+                window.editDocPdfBlobUrl = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = editDocGet('modalVisorPDFEdit');
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) editDocCerrarVisorPdf();
+                });
+            }
+        });
+
+        function editDocValidarAntesEnviar() {
+            var msgCli = editDocGet('editDocMsgCliente');
+            var lblSrv = editDocGet('<%= lblMensaje.ClientID %>');
+            if (lblSrv) { lblSrv.style.display = 'none'; }
+            var errores = [];
+            var cod = (editDocGet('<%= txtCodigoDoc.ClientID %>') || {}).value || '';
+            var num = (editDocGet('<%= txtNumeroDoc.ClientID %>') || {}).value || '';
+            var ano = (editDocGet('<%= txtAnoDoc.ClientID %>') || {}).value || '';
+            var asunto = (editDocGet('<%= txtAsunto.ClientID %>') || {}).value || '';
+            var cat = (editDocGet('<%= ddlCategoria.ClientID %>') || {}).value || '';
+            var pri = (editDocGet('<%= ddlPrioridad.ClientID %>') || {}).value || '';
+            if (!cod.trim()) errores.push('Código del documento');
+            if (!num.trim()) errores.push('Número del documento');
+            if (!ano.trim()) errores.push('Año del documento');
+            if (!asunto.trim()) errores.push('Asunto');
+            if (!cat) errores.push('Categoría');
+            if (!pri) errores.push('Prioridad');
+            if (errores.length > 0) {
+                if (msgCli) {
+                    msgCli.style.display = 'block';
+                    msgCli.innerHTML = 'Complete los siguientes campos: <strong>' + errores.join('</strong>, <strong>') + '</strong>.';
+                }
+                return false;
+            }
+            if (msgCli) { msgCli.style.display = 'none'; msgCli.textContent = ''; }
+            return true;
+        }
+    </script>
 </body>
 </html>

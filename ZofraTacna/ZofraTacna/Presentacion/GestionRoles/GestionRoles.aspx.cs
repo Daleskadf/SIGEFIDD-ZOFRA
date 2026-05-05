@@ -163,8 +163,10 @@ namespace ZofraTacna.Presentacion
                 return;
             }
 
-            // Usar módulo para validar
-            string validationError = _moduloAuth.ValidarRegistroUsuario(loginNuevo);
+            // Alta: empleado en administracion y aún sin fila en UsuarioSistema.
+            // Edición: mismo empleado; se cambia solo IdRolSistema (no bloquear por "ya tiene rol").
+            bool esAltaNueva = idUsuario == 0;
+            string validationError = _moduloAuth.ValidarRegistroUsuario(loginNuevo, esAltaNueva);
             if (validationError != null)
             {
                 MostrarMsgForm(validationError, false);

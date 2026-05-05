@@ -50,7 +50,7 @@ namespace ZofraTacna.Presentacion
 
         private void CargarCombos()
         {
-            // Categorùas
+            // CategorÔøΩas
             var categorias = _modulo.ObtenerCategorias();
             ddlCategoria.Items.Clear();
             ddlCategoria.Items.Add(new ListItem("Seleccionar...", ""));
@@ -91,11 +91,11 @@ namespace ZofraTacna.Presentacion
                         {
                             if (!dr.Read())
                             {
-                                MostrarMsg("No se encontrù el documento.", false);
+                                MostrarMsg("No se encontrÔøΩ el documento.", false);
                                 return;
                             }
 
-                            // Parsear cùdigo documento (formato: CODIGO-NUMERO-AùO)
+                            // Parsear cÔøΩdigo documento (formato: CODIGO-NUMERO-AÔøΩO)
                             string codigoCompleto = dr["CodigoDocumento"].ToString();
                             string[] partes = codigoCompleto.Split('-');
 
@@ -124,7 +124,7 @@ namespace ZofraTacna.Presentacion
                     }
                 }
 
-                // Cargar observaciones en una conexiùn separada
+                // Cargar observaciones en una conexiÔøΩn separada
                 CargarObservaciones(idDocumento);
             }
             catch (Exception ex)
@@ -178,23 +178,47 @@ namespace ZofraTacna.Presentacion
         {
             try
             {
-                // Validaciones bùsicas
+                // Validaciones
+                if (string.IsNullOrWhiteSpace(txtCodigoDoc.Text))
+                {
+                    MostrarMsg("Indique el codigo del documento (letras).", false);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtNumeroDoc.Text))
+                {
+                    MostrarMsg("Indique el numero del documento.", false);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtAnoDoc.Text))
+                {
+                    MostrarMsg("Indique el anio del documento.", false);
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(txtAsunto.Text))
                 {
-                    MostrarMsg("El asunto es requerido.", false);
+                    MostrarMsg("El asunto es obligatorio.", false);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(ddlCategoria.SelectedValue))
                 {
-                    MostrarMsg("Debe seleccionar una categorùa.", false);
+                    MostrarMsg("Debe seleccionar una categoria.", false);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(ddlPrioridad.SelectedValue))
+                {
+                    MostrarMsg("Debe seleccionar una prioridad.", false);
                     return;
                 }
 
                 string idDocStr = Request.QueryString["id"];
                 if (!int.TryParse(idDocStr, out int idDocumento))
                 {
-                    MostrarMsg("ID de documento invùlido.", false);
+                    MostrarMsg("ID de documento invalido.", false);
                     return;
                 }
 
@@ -259,7 +283,7 @@ namespace ZofraTacna.Presentacion
                                 cmd.ExecuteNonQuery();
                             }
 
-                            // Registrar en historial que el registrador levantù correcciùn
+                            // Registrar en historial que el registrador levantÔøΩ correcciÔøΩn
                             string loginUsuario = Session["LoginUsuario"].ToString();
                             string sqlHistorial = @"INSERT INTO HistorialDocumento 
                                 (IdDocumento, IdEstadoAnterior, IdEstadoNuevo, LoginUsuarioAccion, DetalleAccion, FechaCambio)
@@ -271,7 +295,7 @@ namespace ZofraTacna.Presentacion
                                 cmd.Parameters.AddWithValue("@estAnterior", idEstadoActual);
                                 cmd.Parameters.AddWithValue("@estNuevo", idEstadoActual);
                                 cmd.Parameters.AddWithValue("@login", loginUsuario);
-                                cmd.Parameters.AddWithValue("@detalle", "Registrador levantù correcciùn sobre observaciones.");
+                                cmd.Parameters.AddWithValue("@detalle", "Registrador levantÔøΩ correcciÔøΩn sobre observaciones.");
                                 cmd.ExecuteNonQuery();
                             }
 
@@ -321,7 +345,7 @@ namespace ZofraTacna.Presentacion
 
                         // Insertar nuevo PDF
                         string sqlInsert = @"INSERT INTO DocumentoAdjunto 
-                            (IdDocumento, ContenidoPDF, NombreArchivo, TipoMime, TamaÒoBytes, UsuarioCreacion, FechaCreacion)
+                            (IdDocumento, ContenidoPDF, NombreArchivo, TipoMime, TamanioBytes, UsuarioCreacion, FechaCreacion)
                             VALUES (@id, @pdf, @nom, @mime, @size, @user, GETDATE())";
 
                         using (var cmd = new SqlCommand(sqlInsert, cnFiles))
@@ -338,10 +362,9 @@ namespace ZofraTacna.Presentacion
                     }
                 }
 
-                MostrarMsg("? Documento actualizado correctamente.", true);
-                // Redirigir despuùs de 2 segundos
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "redirect",
-                    "setTimeout(function() { window.location = 'MisDocumentos.aspx'; }, 2000);", true);
+                MostrarMsg("Documento actualizado correctamente. Redirigiendo a Mis documentos...", true);
+                ClientScript.RegisterStartupScript(GetType(), "redirectEditDoc",
+                    "setTimeout(function(){ window.location = 'MisDocumentos.aspx'; }, 2000);", true);
             }
             catch (Exception ex)
             {
@@ -376,7 +399,7 @@ namespace ZofraTacna.Presentacion
 
             int badge = GetBadgeCount();
             return
-                "<a href='../../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
                 "<a href='../BandejaTrabajo/BandejaTrabajo.aspx' class='nav-item'>" + svgBandeja + "Bandeja de Trabajo<span class='nav-badge'>" + badge + "</span></a>" +
                 "<a href='CargarDocumento.aspx' class='nav-item'>" + svgCargar + "Cargar Documento</a>" +
                 "<a href='MisDocumentos.aspx' class='nav-item active'>" + svgMisDocs + "Mis Documentos</a>" +
@@ -401,7 +424,7 @@ namespace ZofraTacna.Presentacion
         {
             lblMensaje.Text = msg;
             lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
-            lblMensaje.Visible = true;
+            lblMensaje.Style["display"] = "block";
         }
     }
 }

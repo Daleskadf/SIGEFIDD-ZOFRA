@@ -4,6 +4,8 @@
 <head runat="server">
     <meta charset="utf-8"/><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>SIGEFIDD-ZOFRA | Cargar Documento</title>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+    <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}
         body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:100vh}
@@ -136,7 +138,7 @@
             }
         </style>
 </head>
-<body>
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" enctype="multipart/form-data" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <div class="sidebar">
@@ -155,6 +157,16 @@
         <div class="topbar">
             <div class="breadcrumb"><strong>SIGEFIDD-ZOFRA</strong> / Cargar Documento</div>
             <div class="topbar-right">
+                <div class="zfn-bell-wrap">
+                    <button type="button" class="zfn-bell-btn" id="zfnBellBtn" aria-label="Notificaciones" aria-expanded="false" aria-controls="zfnBellPanel">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span class="zfn-bell-badge" id="zfnBellBadge"></span>
+                    </button>
+                    <div id="zfnBellPanel" class="zfn-bell-panel" role="dialog" aria-hidden="true">
+                        <div class="zfn-bell-panel-head">Alertas de documentos</div>
+                        <div class="zfn-bell-panel-body" id="zfnBellPanelBody"></div>
+                    </div>
+                </div>
                 <div class="user-info">
                     <div class="user-avatar"><asp:Literal ID="litAvatar" runat="server"/></div>
                     <span class="user-name"><asp:Literal ID="litNombre" runat="server"/></span>
@@ -923,6 +935,7 @@
         // sessionStorage persiste en la pestaña hasta limpiar explícitamente
     });
 </script>
+<div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 </body>
 </html>

@@ -210,6 +210,10 @@
     <Compile Include="Datos\RepositorioDocumentos.cs" />
     <Compile Include="Datos\RepositorioUsuariosRoles.cs" />
     <Compile Include="Datos\RepositorioAuditoria.cs" />
+    <Compile Include="Datos\RepositorioNotificacionesApp.cs" />
+    <Compile Include="Presentacion\Notificaciones.ashx.cs">
+      <DependentUpon>Notificaciones.ashx</DependentUpon>
+    </Compile>
     <!-- Models -->
     <Compile Include="Models\Documento.cs" />
     <!-- ServiciosExternos -->
@@ -235,6 +239,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
+    <Content Include="Presentacion\Notificaciones.ashx" />
+    <Content Include="Content\sigefidd-notificaciones.css" />
+    <Content Include="Scripts\sigefidd-notificaciones.js" />
     <Content Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

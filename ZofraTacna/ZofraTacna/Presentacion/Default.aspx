@@ -6,6 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SIGEFIDD-ZOFRA | Inicio</title>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+    <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -186,7 +188,7 @@
         .tool-sub   { font-size: 11px; color: #aaa; margin-top: 2px; }
     </style>
 </head>
-<body>
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" style="display:flex; width:100%; height:100vh; overflow:hidden;">
 <div style="display:flex; width:100%; height:100vh; overflow:hidden;">
 
@@ -243,6 +245,16 @@
         <div class="topbar">
             <div class="breadcrumb"><strong>SIGEFIDD-ZOFRA</strong> / Inicio</div>
             <div class="topbar-right">
+                <div class="zfn-bell-wrap">
+                    <button type="button" class="zfn-bell-btn" id="zfnBellBtn" aria-label="Notificaciones" aria-expanded="false" aria-controls="zfnBellPanel">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span class="zfn-bell-badge" id="zfnBellBadge"></span>
+                    </button>
+                    <div id="zfnBellPanel" class="zfn-bell-panel" role="dialog" aria-hidden="true">
+                        <div class="zfn-bell-panel-head">Alertas de documentos</div>
+                        <div class="zfn-bell-panel-body" id="zfnBellPanelBody"></div>
+                    </div>
+                </div>
                 <div class="user-info">
                     <div class="user-avatar">
                         <asp:Literal ID="litAvatar" runat="server" />
@@ -361,6 +373,7 @@
         </div>
     </div>
 </div>
+<div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 </body>
 </html>

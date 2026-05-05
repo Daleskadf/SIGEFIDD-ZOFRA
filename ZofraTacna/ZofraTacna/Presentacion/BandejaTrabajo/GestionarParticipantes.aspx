@@ -4,6 +4,8 @@
 <head runat="server">
     <meta charset="utf-8" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>SIGEFIDD-ZOFRA | Gestionar Participantes</title>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+    <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}
         body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:100vh}
@@ -69,7 +71,7 @@
         .divider{border:none;border-top:1px solid #eef0f8;margin:12px 0}
     </style>
 </head>
-<body>
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <asp:HiddenField ID="hfDocId" runat="server"/>
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
@@ -81,7 +83,7 @@
         </div>
         <nav class="sidebar-nav" style="display:flex;flex-direction:column;height:100%;">
             <div style="flex:1;overflow-y:auto;">
-                <a href="../../Default.aspx" class="nav-item"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Inicio</a>
+                <a href="../Default.aspx" class="nav-item"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Inicio</a>
                 <a href="BandejaTrabajo.aspx" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.96.5 13.34.5c-1.3 0-2.48.54-3.34 1.4L9 3l-1-.94C7.12 1.04 5.94.5 4.66.5 2.04.5 0 2.54 0 4.66 0 5.12.11 5.56.18 6H0v14h20V6z"/></svg>Bandeja de Trabajo</a>
                 <a href="../GestionDocumentos/CargarDocumento.aspx" class="nav-item"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>Cargar Documento</a>
                 <a href="../GestionDocumentos/MisDocumentos.aspx" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Mis Documentos</a>
@@ -95,6 +97,16 @@
         <div class="topbar">
             <div class="breadcrumb"><strong>SIGEFIDD-ZOFRA</strong> / <a href="BandejaTrabajo.aspx" style="color:#999;text-decoration:none">Bandeja de Trabajo</a> / Gestionar Participantes</div>
             <div class="topbar-right">
+                <div class="zfn-bell-wrap">
+                    <button type="button" class="zfn-bell-btn" id="zfnBellBtn" aria-label="Notificaciones" aria-expanded="false" aria-controls="zfnBellPanel">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span class="zfn-bell-badge" id="zfnBellBadge"></span>
+                    </button>
+                    <div id="zfnBellPanel" class="zfn-bell-panel" role="dialog" aria-hidden="true">
+                        <div class="zfn-bell-panel-head">Alertas de documentos</div>
+                        <div class="zfn-bell-panel-body" id="zfnBellPanelBody"></div>
+                    </div>
+                </div>
                 <div class="user-info">
                     <div class="user-avatar"><asp:Literal ID="litAvatar" runat="server"/></div>
                     <span class="user-name"><asp:Literal ID="litNombre" runat="server"/></span>
@@ -191,6 +203,7 @@
         </div>
     </div>
 </div>
+<div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 </body>
 </html>
