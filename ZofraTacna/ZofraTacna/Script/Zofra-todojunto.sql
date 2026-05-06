@@ -313,7 +313,7 @@ BEGIN
     CREATE TABLE dbo.Documento (
         IdDocumento             INT          IDENTITY(1,1) NOT NULL,
         CodigoDocumento         VARCHAR(50)                NOT NULL,
-        Asunto                  VARCHAR(300)               NOT NULL,
+        Asunto                  VARCHAR(300)               NOT NULL,  -- ampliado de 255
         Descripcion             VARCHAR(500)               NULL,
         IdTipoDocumento         INT                        NOT NULL,
 		AreaResponsable         INT                        NOT NULL,
@@ -389,6 +389,8 @@ BEGIN
         PlazoDias           INT                        NOT NULL CONSTRAINT df_DocParticipante_Plazo  DEFAULT 5,
         OrdenSecuencial     INT                        NULL,
         EstadoParticipante  INT                        NULL,
+        FechaAsignacion     DATETIME                   NULL,
+        Activo              BIT                        NOT NULL CONSTRAINT df_DocParticipante_Activo DEFAULT 1,
         CONSTRAINT pk_DocumentoParticipante       PRIMARY KEY CLUSTERED (IdParticipante),
         CONSTRAINT fk_DocParticipante_Documento   FOREIGN KEY (IdDocumento)        REFERENCES dbo.Documento(IdDocumento),
         CONSTRAINT fk_DocParticipante_TipoPartic  FOREIGN KEY (IdTipoParticipante) REFERENCES dbo.Maestro(IdMaestro),
@@ -407,6 +409,12 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='PlazoDias')
         ALTER TABLE dbo.DocumentoParticipante ADD PlazoDias INT NOT NULL CONSTRAINT df_DocParticipante_Plazo DEFAULT 5;
+
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='FechaAsignacion')
+        ALTER TABLE dbo.DocumentoParticipante ADD FechaAsignacion DATETIME NULL;
+
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='Activo')
+        ALTER TABLE dbo.DocumentoParticipante ADD Activo BIT NOT NULL CONSTRAINT df_DocParticipante_Activo DEFAULT 1;
 
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoParticipante') AND name='EstadoParticipante')
     BEGIN
@@ -636,11 +644,19 @@ GO
 IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo = 'ESTADO_PARTICIPANTE')
 BEGIN
     INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden) VALUES
-    ('ESTADO_PARTICIPANTE', 'PEN', 'Pendiente',   1),
-    ('ESTADO_PARTICIPANTE', 'REV', 'En Revision', 2),
-    ('ESTADO_PARTICIPANTE', 'OBS', 'Observado',   3),
-    ('ESTADO_PARTICIPANTE', 'FIR', 'Firmado',     4);
+    ('ESTADO_PARTICIPANTE', 'PEN', 'Pendiente',          1),
+    ('ESTADO_PARTICIPANTE', 'REV', 'En Revision',        2),
+    ('ESTADO_PARTICIPANTE', 'OBS', 'Observado',          3),
+    ('ESTADO_PARTICIPANTE', 'FIR', 'Firmado',            4),
+    ('ESTADO_PARTICIPANTE', 'REG', 'Revisado/Conforme',  5);
     PRINT 'ESTADO_PARTICIPANTE insertado.';
+END
+ELSE
+BEGIN
+    -- Agregar REG si falta (versiones anteriores no lo tenian)
+    IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='REG')
+        INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden)
+        VALUES ('ESTADO_PARTICIPANTE', 'REG', 'Revisado/Conforme', 5);
 END
 ELSE
     PRINT 'ESTADO_PARTICIPANTE ya tiene datos.';
