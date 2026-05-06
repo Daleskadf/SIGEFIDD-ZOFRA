@@ -95,21 +95,21 @@ GO
 
 
 -- Seed: 4 empleados (coinciden 1-a-1 con UsuarioSistema en FirmaDigital)
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'augusto')
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'arivera')
     INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('001', 'Administrador', 'Augusto', 'augusto', 'augusto@zofratacna.com.pe');
+    VALUES ('001', 'Rivera', 'Augusto', 'arivera', 'arivera@zofratacna.com.pe');
 
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'angel')
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'avargas')
     INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('002', 'Vargas Gutierrez', 'Angel', 'angel', 'angel@zofratacna.com.pe');
+    VALUES ('002', 'Vargas Gutierrez', 'Angel', 'avargas', 'avargas@zofratacna.com.pe');
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'wsalas')
     INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('003', 'Salas', 'W.', 'wsalas', 'wsalas@zofratacna.com.pe');
+    VALUES ('003', 'Salas', 'Walter', 'wsalas', 'wsalas@zofratacna.com.pe');
 
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'daleska')
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'dfernandez')
     INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('004', 'Firmante', 'Daleska', 'daleska', 'daleska@zofratacna.com.pe');
+    VALUES ('004', 'Fernandez', 'Daleska', 'dfernandez', 'dfernandez@zofratacna.com.pe');
 
 PRINT 'Empleados de administracion verificados/insertados.';
 GO
@@ -672,14 +672,14 @@ PRINT '';
 PRINT '--- Insertando usuarios del sistema ---';
 GO
 
-IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'augusto')
+IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'arivera')
     INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
-    SELECT 'augusto', NULL, IdMaestro, 1
+    SELECT 'arivera', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'ADM';
 
-IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'angel')
+IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'avargas')
     INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
-    SELECT 'angel', NULL, IdMaestro, 1
+    SELECT 'avargas', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REG';
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'wsalas')
@@ -687,9 +687,9 @@ IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'wsalas')
     SELECT 'wsalas', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'REV';
 
-IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'daleska')
+IF NOT EXISTS (SELECT 1 FROM dbo.UsuarioSistema WHERE LoginUsuario = 'dfernandez')
     INSERT INTO dbo.UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo)
-    SELECT 'daleska', NULL, IdMaestro, 1
+    SELECT 'dfernandez', NULL, IdMaestro, 1
     FROM dbo.Maestro WHERE Tipo = 'ROL_SISTEMA' AND Codigo = 'FIR';
 
 PRINT 'Usuarios del sistema verificados/insertados.';

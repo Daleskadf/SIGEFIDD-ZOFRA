@@ -58,6 +58,20 @@
             color: #555;
             margin-bottom: 8px;
         }
+        .search-wrap { position: relative; margin-bottom: 6px; }
+        .search-wrap input {
+            width: 100%; padding: 10px 14px 10px 36px;
+            border: 1.5px solid #e0e0e0; border-radius: 8px;
+            font-size: 13px; color: #333; outline: none;
+            font-family: 'Segoe UI', sans-serif; transition: border-color .2s;
+        }
+        .search-wrap input:focus { border-color: #1a2a4a; }
+        .search-wrap input::placeholder { color: #bbb; }
+        .search-icon {
+            position: absolute; left: 11px; top: 50%;
+            transform: translateY(-50%); color: #bbb; font-size: 14px;
+            pointer-events: none;
+        }
         .ddl-wrap { position: relative; }
         .ddl-wrap select {
             width: 100%;
@@ -146,6 +160,10 @@
 
             <div class="form-group">
                 <label>SELECCIONE UN USUARIO</label>
+                <div class="search-wrap">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" id="txtBuscar" placeholder="Buscar usuario..." autocomplete="off" oninput="filtrar(this.value)" />
+                </div>
                 <div class="ddl-wrap">
                     <asp:DropDownList ID="ddlUsuario" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlUsuario_SelectedIndexChanged"/>
                     <span class="ddl-arrow">&#9660;</span>
@@ -168,5 +186,31 @@
             </div>
         </div>
     </form>
+    <script type="text/javascript">
+        var _opts = [];
+        window.addEventListener('load', function () {
+            var sel = document.getElementById('<%= ddlUsuario.ClientID %>');
+            for (var i = 0; i < sel.options.length; i++)
+                _opts.push({ v: sel.options[i].value, t: sel.options[i].text });
+        });
+
+        function filtrar(q) {
+            q = q.toLowerCase().trim();
+            var sel = document.getElementById('<%= ddlUsuario.ClientID %>');
+            var prev = sel.value;
+            var res = q === '' ? _opts : _opts.filter(function (o) {
+                return o.t.toLowerCase().indexOf(q) >= 0;
+            });
+            sel.innerHTML = '';
+            var found = false;
+            for (var i = 0; i < res.length; i++) {
+                var opt = document.createElement('option');
+                opt.value = res[i].v; opt.text = res[i].t;
+                if (res[i].v === prev) { opt.selected = true; found = true; }
+                sel.appendChild(opt);
+            }
+            if (!found && res.length > 0) sel.selectedIndex = 0;
+        }
+    </script>
 </body>
 </html>
