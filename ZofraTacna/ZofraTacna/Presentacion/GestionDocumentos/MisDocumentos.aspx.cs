@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
+using ZofraTacna.Datos;
 
 namespace ZofraTacna.Presentacion
 {
@@ -21,6 +22,10 @@ namespace ZofraTacna.Presentacion
             string rol = Session["RolCodigo"].ToString();
             if (rol != "ADM" && rol != "REG") { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
 
+            string loginUsuario = Session["LoginUsuario"].ToString();
+            var repoBloqueo = new RepositorioBloqueoFlujo();
+            repoBloqueo.LiberarBloqueosUsuario(loginUsuario, "REG_EDIT");
+
             if (!IsPostBack)
             {
                 FiltroActivo = "TODOS";
@@ -33,17 +38,21 @@ namespace ZofraTacna.Presentacion
         {
             string f = FiltroActivo;
             lbTodos.CssClass      = f == "TODOS" ? "tab-btn tab-active" : "tab-btn";
-            lbPendiente.CssClass  = f == "PEN"   ? "tab-btn tab-active" : "tab-btn";
+            lbRegistrado.CssClass = f == "REG"   ? "tab-btn tab-active" : "tab-btn";
             lbRevision.CssClass   = f == "REV"   ? "tab-btn tab-active" : "tab-btn";
-            lbFirma.CssClass      = f == "FPAR"  ? "tab-btn tab-active" : "tab-btn";
-            lbCompletado.CssClass = f == "FCOM"  ? "tab-btn tab-active" : "tab-btn";
+            lbObservado.CssClass  = f == "OBS"   ? "tab-btn tab-active" : "tab-btn";
+            lbPendiente.CssClass  = f == "PEN"   ? "tab-btn tab-active" : "tab-btn";
+            lbFParcial.CssClass   = f == "FPAR"  ? "tab-btn tab-active" : "tab-btn";
+            lbFCompleto.CssClass  = f == "FCOM"  ? "tab-btn tab-active" : "tab-btn";
         }
 
         protected void lbTodos_Click(object sender, EventArgs e)      { FiltroActivo = "TODOS"; CargarDatos(); ActualizarTabsUI(); }
-        protected void lbPendiente_Click(object sender, EventArgs e)  { FiltroActivo = "PEN";   CargarDatos(); ActualizarTabsUI(); }
+        protected void lbRegistrado_Click(object sender, EventArgs e) { FiltroActivo = "REG";   CargarDatos(); ActualizarTabsUI(); }
         protected void lbRevision_Click(object sender, EventArgs e)   { FiltroActivo = "REV";   CargarDatos(); ActualizarTabsUI(); }
-        protected void lbFirma_Click(object sender, EventArgs e)      { FiltroActivo = "FPAR";  CargarDatos(); ActualizarTabsUI(); }
-        protected void lbCompletado_Click(object sender, EventArgs e) { FiltroActivo = "FCOM";  CargarDatos(); ActualizarTabsUI(); }
+        protected void lbObservado_Click(object sender, EventArgs e)  { FiltroActivo = "OBS";   CargarDatos(); ActualizarTabsUI(); }
+        protected void lbPendiente_Click(object sender, EventArgs e)  { FiltroActivo = "PEN";   CargarDatos(); ActualizarTabsUI(); }
+        protected void lbFParcial_Click(object sender, EventArgs e)   { FiltroActivo = "FPAR";  CargarDatos(); ActualizarTabsUI(); }
+        protected void lbFCompleto_Click(object sender, EventArgs e)  { FiltroActivo = "FCOM";  CargarDatos(); ActualizarTabsUI(); }
 
         private void CargarDatos()
         {

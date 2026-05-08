@@ -148,7 +148,7 @@
                 <div class="emitir-right">
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <div class="pdf-frame-wrap">
-                        <div class="pdf-float-actions">
+                        <div class="pdf-float-actions" style="<%= ModoBloqueado ? "display:none;" : "" %>">
                             <button class="pdf-float-btn btn-conformidad" type="button" onclick="mostrarConfirmacionConformidad()">Emitir Conformidad</button>
                             <button class="pdf-float-btn btn-observacion" type="button" onclick="mostrarModalObservacion()">Emitir Observaci&oacute;n</button>
                         </div>
@@ -189,9 +189,22 @@
         </div>
     </div>
 </div>
+<div id="modalBloqueoRevision" class="modal-overlay" aria-hidden="true" style="<%= ModoBloqueado ? "display:flex;" : "display:none;" %>">
+    <div class="modal-box">
+        <div class="modal-head">Documento en edición</div>
+        <div class="modal-body"><%= System.Web.HttpUtility.HtmlEncode(MensajeBloqueo) %>.</div>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal btn-modal-ok" onclick="window.location.href='BandejaTrabajo.aspx'">Ok</button>
+        </div>
+    </div>
+</div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 <script type="text/javascript">
+    var emRevIdDocumento = parseInt('<%= Request.QueryString["id"] ?? "0" %>', 10) || 0;
+    var emRevToken = '<%= LockToken %>';
+    var emRevBloqueado = '<%= ModoBloqueado ? "1" : "0" %>' === '1';
+    var emRevHeartbeat = null;
     function mostrarConfirmacionConformidad() {
         var modal = document.getElementById('modalConformidad');
         if (!modal) return;
@@ -233,6 +246,31 @@
         if (modal && e.target === modal) cerrarModalConformidad();
         var modalObs = document.getElementById('modalObservacion');
         if (modalObs && e.target === modalObs) cerrarModalObservacion();
+    });
+
+    function emRevEnviarBloqueo(accion) {
+        if (emRevBloqueado || !emRevIdDocumento || !emRevToken) return;
+        var url = '<%= ResolveUrl("~/Presentacion/BloqueoFlujo.ashx") %>'
+            + '?accion=' + encodeURIComponent(accion)
+            + '&idDocumento=' + encodeURIComponent(emRevIdDocumento)
+            + '&tipo=REV_EDIT'
+            + '&token=' + encodeURIComponent(emRevToken);
+        try { fetch(url, { method: 'GET', credentials: 'same-origin', keepalive: accion === 'release' }); } catch (e) { }
+    }
+
+    window.addEventListener('load', function () {
+        if (!emRevBloqueado) {
+            emRevEnviarBloqueo('touch');
+            emRevHeartbeat = setInterval(function () { emRevEnviarBloqueo('touch'); }, 15000);
+        }
+    });
+
+    window.addEventListener('beforeunload', function () {
+        if (emRevHeartbeat) {
+            clearInterval(emRevHeartbeat);
+            emRevHeartbeat = null;
+        }
+        emRevEnviarBloqueo('release');
     });
 </script>
 </body>

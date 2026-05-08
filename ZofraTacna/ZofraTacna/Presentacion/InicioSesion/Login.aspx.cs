@@ -39,55 +39,9 @@ namespace ZofraTacna
                         string rol   = dr["RolCodigo"].ToString();
                         string nombre = dr["RolNombre"].ToString();
                         var item = new ListItem(login + " (" + nombre + ")", login);
-                        item.Attributes["data-rol"]    = rol;
-                        item.Attributes["data-nombre"] = nombre;
+                        item.Attributes["data-rol"]       = rol;
+                        item.Attributes["data-rolnombre"] = nombre;
                         ddlUsuario.Items.Add(item);
-                    }
-                }
-            }
-            ActualizarPreview();
-        }
-
-        protected void ddlUsuario_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ActualizarPreview();
-        }
-
-        private void ActualizarPreview()
-        {
-            string login = ddlUsuario.SelectedValue;
-            if (string.IsNullOrEmpty(login))
-            {
-                litPreviewAvatar.Text  = "?";
-                litPreviewNombre.Text  = "Seleccione un usuario";
-                litPreviewRol.Text     = "&nbsp;";
-                litPreviewCodigo.Text  = "";
-                litBadgeDisplay.Text   = "none";
-                return;
-            }
-
-            string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
-            using (var cn = new SqlConnection(connStr))
-            {
-                cn.Open();
-                string sql = @"SELECT u.LoginUsuario, m.Codigo AS RolCodigo, m.Descripcion AS RolNombre
-                               FROM UsuarioSistema u
-                               JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
-                               WHERE u.LoginUsuario = @login AND u.Activo = 1";
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.Parameters.AddWithValue("@login", login);
-                    using (var dr = cmd.ExecuteReader())
-                    {
-                        if (dr.Read())
-                        {
-                            string l = dr["LoginUsuario"].ToString();
-                            litPreviewAvatar.Text  = l.Length >= 2 ? l.Substring(0, 2).ToUpper() : l.ToUpper();
-                            litPreviewNombre.Text  = l;
-                            litPreviewRol.Text     = dr["RolNombre"].ToString();
-                            litPreviewCodigo.Text  = dr["RolCodigo"].ToString();
-                            litBadgeDisplay.Text   = "inline-block";
-                        }
                     }
                 }
             }
@@ -136,3 +90,4 @@ namespace ZofraTacna
         }
     }
 }
+

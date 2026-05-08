@@ -165,16 +165,16 @@
                     <input type="text" id="txtBuscar" placeholder="Buscar usuario..." autocomplete="off" oninput="filtrar(this.value)" />
                 </div>
                 <div class="ddl-wrap">
-                    <asp:DropDownList ID="ddlUsuario" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlUsuario_SelectedIndexChanged"/>
+                    <asp:DropDownList ID="ddlUsuario" runat="server" />
                     <span class="ddl-arrow">&#9660;</span>
                 </div>
-                <div class="user-preview">
-                    <div class="preview-avatar"><asp:Literal ID="litPreviewAvatar" runat="server">?</asp:Literal></div>
+                <div class="user-preview" id="userPreview">
+                    <div class="preview-avatar" id="pvAvatar">?</div>
                     <div class="preview-info">
-                        <div class="preview-name"><asp:Literal ID="litPreviewNombre" runat="server">Seleccione un usuario</asp:Literal></div>
-                        <div class="preview-rol"><asp:Literal ID="litPreviewRol" runat="server">&nbsp;</asp:Literal></div>
+                        <div class="preview-name" id="pvNombre">Seleccione un usuario</div>
+                        <div class="preview-rol" id="pvRol">&nbsp;</div>
                     </div>
-                    <span class="preview-badge" style="display:<asp:Literal ID="litBadgeDisplay" runat="server">none</asp:Literal>"><asp:Literal ID="litPreviewCodigo" runat="server"/></span>
+                    <span class="preview-badge" id="pvBadge" style="display:none"></span>
                 </div>
             </div>
 
@@ -188,28 +188,76 @@
     </form>
     <script type="text/javascript">
         var _opts = [];
+        var _selId = '<%= ddlUsuario.ClientID %>';
+
         window.addEventListener('load', function () {
-            var sel = document.getElementById('<%= ddlUsuario.ClientID %>');
-            for (var i = 0; i < sel.options.length; i++)
-                _opts.push({ v: sel.options[i].value, t: sel.options[i].text });
+            var sel = document.getElementById(_selId);
+            for (var i = 0; i < sel.options.length; i++) {
+                var o = sel.options[i];
+                _opts.push({
+                    v: o.value,
+                    t: o.text,
+                    rol: o.getAttribute('data-rol') || '',
+                    rolNombre: o.getAttribute('data-rolnombre') || ''
+                });
+            }
+            sel.addEventListener('change', actualizarPreview);
+            actualizarPreview();
         });
 
         function filtrar(q) {
             q = q.toLowerCase().trim();
-            var sel = document.getElementById('<%= ddlUsuario.ClientID %>');
+            var sel = document.getElementById(_selId);
             var prev = sel.value;
-            var res = q === '' ? _opts : _opts.filter(function (o) {
-                return o.t.toLowerCase().indexOf(q) >= 0;
+            // Solo filtrar items reales (excluir placeholder con value vacio)
+            var usuarios = _opts.filter(function (o) { return o.v !== ''; });
+            var res = q === '' ? _opts : usuarios.filter(function (o) {
+                return o.v.toLowerCase().indexOf(q) >= 0;
             });
             sel.innerHTML = '';
             var found = false;
             for (var i = 0; i < res.length; i++) {
                 var opt = document.createElement('option');
-                opt.value = res[i].v; opt.text = res[i].t;
+                opt.value = res[i].v;
+                opt.text = res[i].t;
+                opt.setAttribute('data-rol', res[i].rol);
+                opt.setAttribute('data-rolnombre', res[i].rolNombre);
                 if (res[i].v === prev) { opt.selected = true; found = true; }
                 sel.appendChild(opt);
             }
             if (!found && res.length > 0) sel.selectedIndex = 0;
+            actualizarPreview();
+        }
+
+        function actualizarPreview() {
+            var sel = document.getElementById(_selId);
+            var av = document.getElementById('pvAvatar');
+            var nm = document.getElementById('pvNombre');
+            var rl = document.getElementById('pvRol');
+            var bg = document.getElementById('pvBadge');
+
+            if (!sel || sel.selectedIndex < 0 || !sel.value) {
+                av.textContent = '?';
+                nm.textContent = 'Seleccione un usuario';
+                rl.innerHTML = '\u00a0';
+                bg.style.display = 'none';
+                bg.textContent = '';
+                return;
+            }
+            var opt = sel.options[sel.selectedIndex];
+            var login = sel.value;
+            var rol = opt.getAttribute('data-rol') || '';
+            var rolNombre = opt.getAttribute('data-rolnombre') || '';
+
+            av.textContent = login.length >= 2 ? login.substring(0, 2).toUpperCase() : login.toUpperCase();
+            nm.textContent = login;
+            rl.textContent = rolNombre;
+            if (rol) {
+                bg.textContent = rol;
+                bg.style.display = 'inline-block';
+            } else {
+                bg.style.display = 'none';
+            }
         }
     </script>
 </body>

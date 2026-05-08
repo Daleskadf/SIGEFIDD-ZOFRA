@@ -56,8 +56,9 @@
         .btn-detalle-activo{background:linear-gradient(135deg,#8b1a1a,#c0392b);color:white;border:1px solid #7d1717;box-shadow:0 6px 16px rgba(139,26,26,.22)}
         .btn-detalle.btn-detalle-activo:hover{background:linear-gradient(135deg,#a32121,#d44736);color:white;border-color:#7d1717;transform:translateY(-1px)}
         /* Firma: verde — distinto del flujo revisión */
-        .btn-firma{background:#1b5e20;color:white;border:1px solid #145418}
-        .btn-firma:hover{background:#145418}
+        .btn-firma{background:linear-gradient(135deg,#8b1a1a,#c0392b);color:white;border:1px solid #7d1717;box-shadow:0 6px 16px rgba(139,26,26,.22)}
+        .btn-firma:hover:not(:disabled){background:linear-gradient(135deg,#a32121,#d44736)}
+        .btn-firma:disabled{opacity:0.55;cursor:not-allowed;box-shadow:none}
         /* Revisión: mismo azul institucional que la barra lateral */
         .btn-revision{background:#1a2a4a;color:white;border:1px solid #152238}
         .btn-revision:hover{background:#243a62}
@@ -166,7 +167,8 @@
                                             (bool)Eval("PuedeEditarRevision"),
                                             (bool)Eval("EsConformeRevision"),
                                             (bool)Eval("EsObservadoRevision"),
-                                            (string)Eval("EstadoCodigo")) %>
+                                            (string)Eval("EstadoCodigo"),
+                                            (bool)Eval("PuedeFirmarDocumento")) %>
                                 </div>
                             </div>
                         </div>
@@ -199,6 +201,50 @@
     </div>
 </div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
+<script>
+(function () {
+    var lastHash = null;
+    var isReloading = false;
+    
+    function checkBandejaChanges() {
+        if (isReloading) return;
+        
+        fetch('BandejaData.ashx', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data || !data.ok) return;
+            
+            if (lastHash === null) {
+                lastHash = data.hash;
+                return;
+            }
+            
+            if (data.hash !== lastHash) {
+                // Los documentos cambiaron, recargar la página
+                isReloading = true;
+                lastHash = data.hash;
+                window.location.reload();
+            }
+        })
+        .catch(function(err) {
+            // Silenciar errores de red
+        });
+    }
+    
+    // Iniciar polling cada 5 segundos
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setInterval(checkBandejaChanges, 5000);
+        });
+    } else {
+        setInterval(checkBandejaChanges, 5000);
+    }
+})();
+</script>
 </form>
 </body>
 </html>

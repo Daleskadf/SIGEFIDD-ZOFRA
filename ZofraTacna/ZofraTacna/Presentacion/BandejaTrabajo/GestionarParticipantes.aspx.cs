@@ -278,35 +278,71 @@ namespace ZofraTacna.Presentacion
             string login = ddlFirmante.SelectedValue;
             if (string.IsNullOrEmpty(login)) { MostrarMsg("Seleccione un firmante.", false); return; }
 
-            string sql = @"INSERT INTO DocumentoParticipante
-                               (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
-                                EstadoParticipante, FechaAsignacion, Activo)
-                           VALUES (
-                               @idDoc, @login,
-                               (SELECT IdMaestro FROM Maestro WHERE Codigo='FIR' AND Tipo='TIPO_PARTICIPANTE'),
-                               ISNULL((SELECT MAX(dp2.OrdenSecuencial)
-                                       FROM DocumentoParticipante dp2
-                                       JOIN Maestro mt2 ON dp2.IdTipoParticipante=mt2.IdMaestro
-                                       WHERE dp2.IdDocumento=@idDoc AND mt2.Codigo='FIR'), 0) + 1,
-                               (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
-                               GETDATE(), 1)";
+            // Los firmantes se agregan DOS VECES en la BD:
+            // 1. Como REV (Orden=0) para que puedan revisar en fase REV
+            // 2. Como FIR (Orden=secuencial) para que puedan firmar en fase PEN/FPAR
 
-            try
+            using (var cn = new SqlConnection(ConnStr))
             {
-                using (var cn = new SqlConnection(ConnStr))
+                try
                 {
                     cn.Open();
-                    using (var cmd = new SqlCommand(sql, cn))
+                    using (var tx = cn.BeginTransaction())
                     {
-                        cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                        cmd.Parameters.AddWithValue("@login", login);
-                        cmd.ExecuteNonQuery();
+                        try
+                        {
+                            // PRIMERA INSERCIÓN: Como REVISOR (Orden=0)
+                            string sqlRev = @"INSERT INTO DocumentoParticipante
+                                           (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
+                                            EstadoParticipante, FechaAsignacion, Activo)
+                                       VALUES (
+                                           @idDoc, @login,
+                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='REV' AND Tipo='TIPO_PARTICIPANTE'),
+                                           0,
+                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
+                                           GETDATE(), 1)";
+
+                            using (var cmd = new SqlCommand(sqlRev, cn, tx))
+                            {
+                                cmd.Parameters.AddWithValue("@idDoc", idDoc);
+                                cmd.Parameters.AddWithValue("@login", login);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // SEGUNDA INSERCIÓN: Como FIRMANTE (Orden=secuencial)
+                            string sqlFir = @"INSERT INTO DocumentoParticipante
+                                           (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
+                                            EstadoParticipante, FechaAsignacion, Activo)
+                                       VALUES (
+                                           @idDoc, @login,
+                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='FIR' AND Tipo='TIPO_PARTICIPANTE'),
+                                           ISNULL((SELECT MAX(dp2.OrdenSecuencial)
+                                                   FROM DocumentoParticipante dp2
+                                                   JOIN Maestro mt2 ON dp2.IdTipoParticipante=mt2.IdMaestro
+                                                   WHERE dp2.IdDocumento=@idDoc AND mt2.Codigo='FIR'), 0) + 1,
+                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
+                                           GETDATE(), 1)";
+
+                            using (var cmd = new SqlCommand(sqlFir, cn, tx))
+                            {
+                                cmd.Parameters.AddWithValue("@idDoc", idDoc);
+                                cmd.Parameters.AddWithValue("@login", login);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            tx.Commit();
+                            CargarDropdowns(idDoc);
+                            MostrarMsg("Firmante agregado correctamente (como revisor y firmante).", true);
+                        }
+                        catch
+                        {
+                            tx.Rollback();
+                            throw;
+                        }
                     }
                 }
-                CargarDropdowns(idDoc);
-                MostrarMsg("Firmante agregado correctamente.", true);
+                catch (Exception ex) { MostrarMsg("Error al agregar firmante: " + ex.Message, false); }
             }
-            catch (Exception ex) { MostrarMsg("Error al agregar firmante: " + ex.Message, false); }
         }
 
         protected void rptFirmantes_ItemCommand(object source, RepeaterCommandEventArgs e)

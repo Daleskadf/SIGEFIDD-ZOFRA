@@ -9,6 +9,7 @@
         protected global::System.Web.UI.WebControls.Literal litObservaciones;
         protected global::System.Web.UI.WebControls.Literal litNombreArchivo;
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdf;
+        protected global::System.Web.UI.WebControls.Button btnEditarDocumento;
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
     }
 }

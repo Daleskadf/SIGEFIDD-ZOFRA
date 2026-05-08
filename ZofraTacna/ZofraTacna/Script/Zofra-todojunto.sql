@@ -63,80 +63,9 @@ USE administracion;
 GO
 
 -- ------------------------------------------------------------
--- Tabla: dbo.Empleado
+-- Tabla: dbo.UnidadOrganica  (DEBE crearse ANTES que Empleado
+--   porque Empleado tiene FK a esta tabla)
 --   Estructura simulada de la BD institucional.
---   ActivoAsist = 1  ->  empleado activo visible al sistema.
--- ------------------------------------------------------------
-IF OBJECT_ID('dbo.Empleado', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.Empleado (
-        IDEmpleado       INT          IDENTITY(1,1) NOT NULL,
-        CodigoPersonal   VARCHAR(20)                NULL,
-        Apellido         VARCHAR(100)               NULL,
-        Nombre           VARCHAR(100)               NULL,
-        LoginUsuario     VARCHAR(50)                NOT NULL,
-        Email            VARCHAR(100)               NULL,
-        IDUnidadOrganica INT                        NULL,
-        IDCargo          INT                        NULL,
-        IDSede           INT                        NULL,
-        IdRol            INT                        NULL,
-        ActivoAsist      BIT                        NOT NULL
-            CONSTRAINT df_Empleado_ActivoAsist DEFAULT 1,
-        CONSTRAINT pk_Empleado PRIMARY KEY CLUSTERED (IDEmpleado),
-        CONSTRAINT uq_Empleado_Login UNIQUE (LoginUsuario),
-		CONSTRAINT fk_Empleado_UnidadOrganica FOREIGN KEY (IDUnidadOrganica) 
-            REFERENCES dbo.UnidadOrganica(IDUnidadOrganica)
-    );
-    PRINT 'Tabla administracion.dbo.Empleado creada.';
-END
-ELSE
-    PRINT 'Tabla administracion.dbo.Empleado ya existe.';
-GO
-
-
--- Seed: 4 empleados (coinciden 1-a-1 con UsuarioSistema en FirmaDigital)
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'arivera')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('001', 'Rivera', 'Augusto', 'arivera', 'arivera@zofratacna.com.pe');
-
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'avargas')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('002', 'Vargas Gutierrez', 'Angel', 'avargas', 'avargas@zofratacna.com.pe');
-
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'wsalas')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('003', 'Salas', 'Walter', 'wsalas', 'wsalas@zofratacna.com.pe');
-
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'dfernandez')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
-    VALUES ('004', 'Fernandez', 'Daleska', 'dfernandez', 'dfernandez@zofratacna.com.pe');
-
-PRINT 'Empleados de administracion verificados/insertados.';
-GO
-
--- Insertamos 5 nuevos empleados con guard de duplicados
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rcondori')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-    VALUES ('2024-010', 'Condori Quispe', 'Ricardo', 'rcondori', 'daleskanicolle118@gmail.com', 164, 1);
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'cflores')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-    VALUES ('2024-011', 'Flores Tapia', 'Claudia', 'cflores', 'daleskafervilla118@gmail.com', 376, 1);
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rmendoza')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-    VALUES ('2024-012', 'Mendoza Valdivia', 'Roberto', 'rmendoza', 'roberto_m@outlook.com', 301, 1);
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'pzeballos')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-    VALUES ('2024-013', 'Zeballos Luna', 'Patricia', 'pzeballos', 'p.zeballos@upt.pe', 363, 1);
-IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'fvargas')
-    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
-    VALUES ('2024-014', 'Vargas Machuca', 'Fernando', 'fvargas', 'fernando_vargas@zofra.pe', 332, 1);
-
-PRINT '5 nuevos empleados verificados/insertados.';
-GO
--- ------------------------------------------------------------
--- Tabla: dbo.UnidadOrganica
---   Estructura simulada de la BD institucional.
---   ActivoAsist = 1  ->  empleado activo visible al sistema.
 -- ------------------------------------------------------------
 IF OBJECT_ID('dbo.UnidadOrganica', 'U') IS NULL
 BEGIN
@@ -211,6 +140,78 @@ VALUES
 END
 ELSE
     PRINT 'Registros de Unidad Organica ya existen.';
+GO
+
+-- ------------------------------------------------------------
+-- Tabla: dbo.Empleado
+--   Estructura simulada de la BD institucional.
+--   ActivoAsist = 1  ->  empleado activo visible al sistema.
+-- ------------------------------------------------------------
+IF OBJECT_ID('dbo.Empleado', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Empleado (
+        IDEmpleado       INT          IDENTITY(1,1) NOT NULL,
+        CodigoPersonal   VARCHAR(20)                NULL,
+        Apellido         VARCHAR(100)               NULL,
+        Nombre           VARCHAR(100)               NULL,
+        LoginUsuario     VARCHAR(50)                NOT NULL,
+        Email            VARCHAR(100)               NULL,
+        IDUnidadOrganica INT                        NULL,
+        IDCargo          INT                        NULL,
+        IDSede           INT                        NULL,
+        IdRol            INT                        NULL,
+        ActivoAsist      BIT                        NOT NULL
+            CONSTRAINT df_Empleado_ActivoAsist DEFAULT 1,
+        CONSTRAINT pk_Empleado PRIMARY KEY CLUSTERED (IDEmpleado),
+        CONSTRAINT uq_Empleado_Login UNIQUE (LoginUsuario),
+		CONSTRAINT fk_Empleado_UnidadOrganica FOREIGN KEY (IDUnidadOrganica) 
+            REFERENCES dbo.UnidadOrganica(IDUnidadOrganica)
+    );
+    PRINT 'Tabla administracion.dbo.Empleado creada.';
+END
+ELSE
+    PRINT 'Tabla administracion.dbo.Empleado ya existe.';
+GO
+
+
+-- Seed: 4 empleados (coinciden 1-a-1 con UsuarioSistema en FirmaDigital)
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'arivera')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
+    VALUES ('001', 'Rivera', 'Augusto', 'arivera', 'arivera@zofratacna.com.pe');
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'avargas')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
+    VALUES ('002', 'Vargas Gutierrez', 'Angel', 'avargas', 'avargas@zofratacna.com.pe');
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'wsalas')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
+    VALUES ('003', 'Salas', 'Walter', 'wsalas', 'wsalas@zofratacna.com.pe');
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'dfernandez')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email)
+    VALUES ('004', 'Fernandez', 'Daleska', 'dfernandez', 'dfernandez@zofratacna.com.pe');
+
+PRINT 'Empleados de administracion verificados/insertados.';
+GO
+
+-- Insertamos 5 nuevos empleados con guard de duplicados
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rcondori')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-010', 'Condori Quispe', 'Ricardo', 'rcondori', 'daleskanicolle118@gmail.com', 164, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'cflores')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-011', 'Flores Tapia', 'Claudia', 'cflores', 'daleskafervilla118@gmail.com', 376, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'rmendoza')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-012', 'Mendoza Valdivia', 'Roberto', 'rmendoza', 'roberto_m@outlook.com', 301, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'pzeballos')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-013', 'Zeballos Luna', 'Patricia', 'pzeballos', 'p.zeballos@upt.pe', 363, 1);
+IF NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE LoginUsuario = 'fvargas')
+    INSERT INTO dbo.Empleado (CodigoPersonal, Apellido, Nombre, LoginUsuario, Email, IDUnidadOrganica, ActivoAsist)
+    VALUES ('2024-014', 'Vargas Machuca', 'Fernando', 'fvargas', 'fernando_vargas@zofra.pe', 332, 1);
+
+PRINT '5 nuevos empleados verificados/insertados.';
 GO
 -- ============================================================
 -- PARTE 2: BASE DE DATOS  FirmaDigital
@@ -657,9 +658,8 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM dbo.Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='REG')
         INSERT INTO dbo.Maestro (Tipo, Codigo, Descripcion, Orden)
         VALUES ('ESTADO_PARTICIPANTE', 'REG', 'Revisado/Conforme', 5);
+    PRINT 'ESTADO_PARTICIPANTE ya tiene datos (REG verificado).';
 END
-ELSE
-    PRINT 'ESTADO_PARTICIPANTE ya tiene datos.';
 GO
 
 -- ============================================================
@@ -946,7 +946,7 @@ BEGIN
             N'<tr><td style="color: #4a5568; padding: 4px 0;">Área responsable</td><td>', @AreaDoc, N'</td></tr>',
             N'<tr><td style="color: #4a5568; padding: 4px 0;">Código</td><td>', @CodigoDoc, N'</td></tr>',
             N'<tr><td style="color: #4a5568; padding: 4px 0;">Fecha de registro</td><td>', @FechaReg, N'</td></tr>',
-            N'<tr><td style="color: #4a5568; padding: 4px 0;">Plazo para revisar</td><td><span style="background-color: #bee3f8; color: #2c5282; padding: 2px 8px; border-radius: 12px; font-size: 11px;">Hasta 5 días</span></td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Plazo para revisar</td><td><span style="background-color: #bee3f8; color: #2c5282; padding: 2px 8px; border-radius: 12px; font-size: 11px;">Hasta ', CAST(@DiasPlazo AS VARCHAR(10)), N' días</span></td></tr>',
             N'</table></div>',
             N'<div style="text-align: center; margin-top: 30px;">',
             N'<a href="https://zofratacna.com.pe" style="background-color: #1a335d; color: white; padding: 12px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px; display: inline-block;">Revisar documento ahora</a>',
@@ -1029,6 +1029,38 @@ END
 ELSE
     PRINT 'Tabla FirmaDigital_Files.dbo.DocumentoAdjunto ya existe.';
 GO
+---------------------------------------------------------------------------------------
+
+USE [FirmaDigital];
+GO
+IF OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.DocumentoBloqueoEdicion (
+        IdBloqueo             INT IDENTITY(1,1)          NOT NULL,
+        IdDocumento           INT                        NOT NULL,
+        TipoBloqueo           VARCHAR(20)                NOT NULL, -- REG_EDIT / REV_EDIT
+        LoginUsuario          VARCHAR(60)                NOT NULL,
+        TokenSesion           VARCHAR(80)                NOT NULL,
+        FechaInicio           DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaInicio DEFAULT GETDATE(),
+        FechaUltimaActividad  DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaAct    DEFAULT GETDATE(),
+        Activo                BIT                        NOT NULL CONSTRAINT df_DocBloq_Activo      DEFAULT 1,
+        CONSTRAINT pk_DocumentoBloqueoEdicion PRIMARY KEY CLUSTERED (IdBloqueo),
+        CONSTRAINT fk_DocBloq_Documento FOREIGN KEY (IdDocumento) REFERENCES dbo.Documento(IdDocumento)
+    );
+
+    CREATE INDEX ix_DocBloq_DocTipoActivo
+        ON dbo.DocumentoBloqueoEdicion (IdDocumento, TipoBloqueo, Activo, FechaUltimaActividad);
+
+    CREATE INDEX ix_DocBloq_LoginTipoActivo
+        ON dbo.DocumentoBloqueoEdicion (LoginUsuario, TipoBloqueo, Activo);
+
+    PRINT 'Tabla DocumentoBloqueoEdicion creada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabla DocumentoBloqueoEdicion ya existe.';
+END
+GO
 
 -- ============================================================
 -- VERIFICACION FINAL
@@ -1100,7 +1132,10 @@ GO
 
 -- ============================================================
 -- PLANTILLAS DE CORREOS (ejemplos / pruebas manuales)
+-- NOTA: Comentado para evitar envio de correos en cada ejecucion.
+--       Para probar, descomentar manualmente y ejecutar por separado.
 -- ============================================================
+/*
 USE FirmaDigital;
 GO
 -- Cambiamos @Cuerpo HTML por @Cuerpo NVARCHAR(MAX)
@@ -1600,7 +1635,7 @@ EXEC [dbo].[GEN_X_EnviarMail]
     @Para = 'daleskanicole118@gmail.com', 
     @Asunto = 'Recordatorio urgente — firma digital sin completar - RGG-045-2025', 
     @Mensaje = @Cuerpo;
-
+-- FIN de plantillas de prueba */
 
 /*
 -- ============================================================

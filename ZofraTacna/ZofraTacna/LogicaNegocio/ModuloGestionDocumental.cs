@@ -60,8 +60,8 @@ namespace ZofraTacna.LogicaNegocio
         }
 
         /// <summary>
-        /// Obtiene todos los empleados activos para la búsqueda/autocomplete
-        /// en la asignación de firmantes.
+        /// Obtiene todos los empleados activos para la bï¿½squeda/autocomplete
+        /// en la asignaciï¿½n de firmantes.
         /// </summary>
         public List<EmpleadoDTO> ObtenerEmpleadosDisponibles()
         {
@@ -77,7 +77,7 @@ namespace ZofraTacna.LogicaNegocio
         }
 
         /// <summary>
-        /// Obtiene todas las unidades orgánicas de la BD administracion.
+        /// Obtiene todas las unidades orgï¿½nicas de la BD administracion.
         /// Formato: IDUnidadOrganica|Descripcion
         /// </summary>
         public List<string> ObtenerUnidadesOrganicas()
@@ -90,8 +90,8 @@ namespace ZofraTacna.LogicaNegocio
             {
                 cn.Open();
 
-                // CORRECCIÓN 2: Consultar a la VISTA dbo.VW_UnidadesOrganicas
-                // No olvides el "dbo." para seguir el estándar de Zofra
+                // CORRECCIï¿½N 2: Consultar a la VISTA dbo.VW_UnidadesOrganicas
+                // No olvides el "dbo." para seguir el estï¿½ndar de Zofra
                 string sql = "SELECT IDUnidadOrganica, Descripcion FROM dbo.VW_UnidadesOrganicas ORDER BY Descripcion";
 
                 using (var cmd = new SqlCommand(sql, cn))
@@ -112,13 +112,13 @@ namespace ZofraTacna.LogicaNegocio
 
         public int RegistrarDocumentoConParticipantes(RegistrarDocumentoRequest request, string loginUsuario)
         {
-            // Validar los 3 componentes del código de documento
+            // Validar los 3 componentes del cï¿½digo de documento
             if (string.IsNullOrWhiteSpace(request.CodigoDocumento))
-                throw new ArgumentException("El código del documento es requerido (ej: RS, ADMIN).");
+                throw new ArgumentException("El cï¿½digo del documento es requerido (ej: RS, ADMIN).");
             if (string.IsNullOrWhiteSpace(request.NumeroDocumento))
-                throw new ArgumentException("El número del documento es requerido.");
+                throw new ArgumentException("El nï¿½mero del documento es requerido.");
             if (request.AnoDocumento < 2000 || request.AnoDocumento > 2100)
-                throw new ArgumentException("El año debe estar entre 2000 y 2100.");
+                throw new ArgumentException("El aï¿½o debe estar entre 2000 y 2100.");
 
             // Validar ASUNTO
             if (string.IsNullOrWhiteSpace(request.Asunto))
@@ -126,16 +126,16 @@ namespace ZofraTacna.LogicaNegocio
 
             // Validar otros campos
             if (request.IdTipoDocumento <= 0)
-                throw new ArgumentException("Debe seleccionar una categoría válida.");
+                throw new ArgumentException("Debe seleccionar una categorï¿½a vï¿½lida.");
             if (request.ContenidoPDF == null || request.ContenidoPDF.Length == 0)
-                throw new ArgumentException("El PDF está vacío.");
+                throw new ArgumentException("El PDF estï¿½ vacï¿½o.");
             if (request.Participantes == null || request.Participantes.Count == 0)
                 throw new ArgumentException("Debe agregar al menos un participante.");
 
             // PASO PREVIO: Crear usuarios en UsuarioSistema si no existen
             CrearUsuariosParticipantes(request.Participantes);
 
-            // Formar el código completo en CodigoDocumento: CODIGO-NUMERO-AÑO (ej: RS-0001-2026)
+            // Formar el cï¿½digo completo en CodigoDocumento: CODIGO-NUMERO-Aï¿½O (ej: RS-0001-2026)
             string codigoCompleto = $"{request.CodigoDocumento}-{request.NumeroDocumento.PadLeft(4, '0')}-{request.AnoDocumento}";
             request.CodigoDocumento = codigoCompleto;
 
@@ -145,7 +145,7 @@ namespace ZofraTacna.LogicaNegocio
 
         /// <summary>
         /// Crea usuarios en UsuarioSistema para los participantes si no existen.
-        /// Asigna el rol correcto (Revisor o Firmante) según su tipo.
+        /// Asigna el rol correcto (Revisor o Firmante) segï¿½n su tipo.
         /// </summary>
         private void CrearUsuariosParticipantes(List<RegistrarParticipanteItem> participantes)
         {
@@ -159,7 +159,7 @@ namespace ZofraTacna.LogicaNegocio
 
         public void NotificarRevisores(int idDocumento)
         {
-            // Usamos la misma conexión de FirmaDigital que ya tienes configurada
+            // Usamos la misma conexiï¿½n de FirmaDigital que ya tienes configurada
             string connString = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
 
             using (SqlConnection cn = new SqlConnection(connString))
@@ -170,7 +170,7 @@ namespace ZofraTacna.LogicaNegocio
                     cmd.Parameters.AddWithValue("@IdDocumento", idDocumento);
 
                     cn.Open();
-                    cmd.ExecuteNonQuery(); // Dispara el procedimiento de SQL que envía los correos
+                    cmd.ExecuteNonQuery(); // Dispara el procedimiento de SQL que envï¿½a los correos
                 }
             }
         }
@@ -207,6 +207,17 @@ namespace ZofraTacna.LogicaNegocio
                 FirmaDigitalHash = hashFirma
             };
             return _repo.InsertarFirma(firma);
+        }
+
+        /// <summary>
+        /// Registra una firma y actualiza automÃ¡ticamente el estado del documento si es necesario.
+        /// Cambia de PEN a FPAR cuando firma el primero, y a FCOM cuando todos firman.
+        /// AdemÃ¡s, revierte los roles de FIR a REV cuando el documento se completa.
+        /// </summary>
+        public bool RegistrarFirmaConEstado(int idDocumento, int idParticipante, string loginFirmante, 
+            string hashFirma, out string mensaje)
+        {
+            return _repo.RegistrarFirmaYActualizarEstado(idDocumento, idParticipante, loginFirmante, hashFirma, out mensaje);
         }
 
         #endregion

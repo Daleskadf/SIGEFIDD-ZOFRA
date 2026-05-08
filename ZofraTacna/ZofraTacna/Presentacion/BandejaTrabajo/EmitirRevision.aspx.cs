@@ -12,10 +12,25 @@ namespace ZofraTacna.Presentacion
 {
     public partial class EmitirRevision : Page
     {
+        private readonly RepositorioBloqueoFlujo _repoBloqueo = new RepositorioBloqueoFlujo();
         private int IdDocumentoActual
         {
             get { return ViewState["IdDocumentoActual"] != null ? Convert.ToInt32(ViewState["IdDocumentoActual"]) : 0; }
             set { ViewState["IdDocumentoActual"] = value; }
+        }
+        protected string LockToken
+        {
+            get { return (ViewState["LockToken"] as string) ?? ""; }
+        }
+        protected bool ModoBloqueado
+        {
+            get { return ViewState["ModoBloqueado"] != null && (bool)ViewState["ModoBloqueado"]; }
+            set { ViewState["ModoBloqueado"] = value; }
+        }
+        protected string MensajeBloqueo
+        {
+            get { return (ViewState["MensajeBloqueo"] as string) ?? ""; }
+            set { ViewState["MensajeBloqueo"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -31,7 +46,21 @@ namespace ZofraTacna.Presentacion
                 return;
             }
 
+            if (!IsPostBack)
+                ViewState["LockToken"] = Guid.NewGuid().ToString("N");
+
             IdDocumentoActual = idDoc;
+            string login = Session["LoginUsuario"].ToString();
+            if (_repoBloqueo.ExisteBloqueoActivo(idDoc, "REG_EDIT", ""))
+            {
+                ModoBloqueado = true;
+                MensajeBloqueo = "El registador se encuentra editando el documento";
+                return;
+            }
+
+            ModoBloqueado = false;
+            MensajeBloqueo = "";
+            _repoBloqueo.RegistrarOTocarBloqueo(idDoc, "REV_EDIT", login, LockToken);
             CargarVista(idDoc, rol);
         }
 
@@ -72,6 +101,7 @@ namespace ZofraTacna.Presentacion
             pnlMensajeError.Visible = false;
             if (ok)
             {
+                _repoBloqueo.LiberarBloqueo(idDoc, "REV_EDIT", LockToken);
                 litMensajeOk.Text = HttpUtility.HtmlEncode(mensaje);
                 pnlMensajeOk.Visible = true;
                 if (!esObservacion)

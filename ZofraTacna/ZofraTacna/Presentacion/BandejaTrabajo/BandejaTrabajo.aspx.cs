@@ -55,7 +55,7 @@ namespace ZofraTacna.Presentacion
                                LEFT JOIN Maestro mt ON d.IdTipoDocumento = mt.IdMaestro
                                WHERE d.Activo = 1 AND me.Codigo IN ('REG','REV','PEN','FPAR','OBS')
                                " + filtroRol + @"
-                               ORDER BY d.FechaCreacion ASC";
+                               ORDER BY d.FechaCreacion DESC";
 
                 var lista = new List<object>();
                 using (var cmd = new SqlCommand(sql, cn))
@@ -100,8 +100,14 @@ namespace ZofraTacna.Presentacion
                             bool esConformeRevision = false;
                             bool esObservadoRevision = false;
                             bool puedeEditarRevision = false;
+                            bool puedeFirmarDocumento = false;
                             if (rol == "REV")
+                            {
                                 ObtenerEstadoRevisionUsuario(idDocumento, login, out esConformeRevision, out esObservadoRevision, out puedeEditarRevision);
+                                // Los revisores también pueden firmar si el documento está en PEN o FPAR
+                                if (est == "PEN" || est == "FPAR")
+                                    puedeFirmarDocumento = PuedeFirmarSecuencial(idDocumento, login, est);
+                            }
 
                             lista.Add(new {
                                 IdDocumento     = idDocumento,
@@ -126,6 +132,7 @@ namespace ZofraTacna.Presentacion
                                 EsConformeRevision = esConformeRevision,
                                 EsObservadoRevision = esObservadoRevision,
                                 PuedeEditarRevision = puedeEditarRevision,
+                                PuedeFirmarDocumento = puedeFirmarDocumento,
                                 EsAdministrador = (rol == "ADM")
                             });
                         }
@@ -227,6 +234,7 @@ namespace ZofraTacna.Presentacion
         {
             var firmantes = new List<string>();
             string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            // Obtener participantes tipo FIR (los que tienen orden de firma)
             string sql = @"
                 SELECT fir.LoginUsuario, fir.OrdenSecuencial
                 FROM DocumentoParticipante fir
@@ -260,14 +268,14 @@ namespace ZofraTacna.Presentacion
             }
 
             if (firmantes.Count == 0)
-                return "<span class='firma-empty'>Sin firmantes</span>";
+                return "<span class='firma-empty'>Sin participantes de firma</span>";
 
             return string.Join("", firmantes.ToArray());
         }
 
-        protected string GenerarBotonesAccion(bool esAdmin, int idDoc, bool puedeEditarRevision, bool esConforme, bool esObservado, string estadoCodigo)
+        protected string GenerarBotonesAccion(bool esAdmin, int idDoc, bool puedeEditarRevision, bool esConforme, bool esObservado, string estadoCodigo, bool puedeFirmarDocumento)
         {
-            string svgOjo    = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/></svg>";
+            string svgOjo    = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:#1a2a4a'><path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/></svg>";
             string svgGrupo  = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/></svg>";
             string svgEdit   = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z'/></svg>";
             string svgOjoGris = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:currentColor'><path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/></svg>";
@@ -275,12 +283,26 @@ namespace ZofraTacna.Presentacion
             if (esAdmin)
             {
                 return string.Format(
-                    "<button type='button' class='btn-detalle btn-detalle-activo' onclick=\"window.open('ServirPdf.ashx?idDoc={0}','_blank')\">{1}Ver Documento</button>" +
+                    "<button type='button' class='btn-detalle btn-detalle-activo' onclick=\"window.open('../GestionDocumentos/ServirPdf.ashx?idDoc={0}','_blank')\">{1}Ver Documento</button>" +
                     "<button type='button' class='btn-revision' onclick=\"window.location.href='GestionarParticipantes.aspx?id={0}'\">{2}Gestionar Participantes</button>",
                     idDoc, svgOjo, svgGrupo);
             }
 
-            // Lógica original para REV / FIR
+            string rolActual = Session["RolCodigo"] != null ? Session["RolCodigo"].ToString() : "";
+            
+            // Si es revisor (REV) y el documento está en PEN o FPAR, mostrar botones de firma
+            if (rolActual == "REV" && (estadoCodigo == "PEN" || estadoCodigo == "FPAR"))
+            {
+                string verBtn = string.Format(
+                    "<button type='button' class='btn-detalle' onclick=\"window.location.href='VerDocumento.aspx?id={0}'\">{1}Ver</button>",
+                    idDoc, svgOjo);
+                string firmarBtn = puedeFirmarDocumento
+                    ? string.Format("<button type='button' class='btn-firma' onclick=\"window.location.href='EmitirFirma.aspx?id={0}'\">{1}Firmar Documento</button>", idDoc, svgEdit)
+                    : string.Format("<button type='button' class='btn-firma' disabled>{0}Firmar Documento</button>", svgEdit);
+                return verBtn + firmarBtn;
+            }
+
+            // Lógica para estado REV o FIR cuando el documento está en revisión
             string boton1 = puedeEditarRevision
                 ? string.Format("<button class='btn-detalle btn-detalle-activo' type='button' onclick=\"window.location.href='EmitirRevision.aspx?id={0}'\">{1}Editar Revisión</button>", idDoc, svgEdit)
                 : string.Format("<button class='btn-detalle' type='button' disabled>{0}Editar Revisión</button>", svgOjoGris);
@@ -290,12 +312,79 @@ namespace ZofraTacna.Presentacion
                 boton2 = "<span class='estado-conforme'>Conforme</span>";
             else if (esObservado)
                 boton2 = "<span class='estado-observado'>Observado</span>";
-            else if (estadoCodigo == "PEN" || estadoCodigo == "FPAR")
-                boton2 = string.Format("<button class='btn-firma' type='button'>{0}Firmar Documento</button>", svgEdit);
             else
                 boton2 = string.Format("<button type='button' class='btn-revision' onclick=\"window.location.href='EmitirRevision.aspx?id={0}'\">{1}Emitir Revisión</button>", idDoc, svgEdit);
 
             return boton1 + boton2;
+        }
+
+        private bool PuedeFirmarSecuencial(int idDocumento, string loginFirmante, string estadoDocumento)
+        {
+            if (estadoDocumento != "PEN" && estadoDocumento != "FPAR")
+                return false;
+
+            string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            using (var cn = new SqlConnection(conn))
+            {
+                cn.Open();
+                // Buscar al firmante actual (tipo FIR)
+                string sqlActual = @"SELECT TOP (1) dp.IdParticipante, ISNULL(dp.OrdenSecuencial, 0) AS OrdenSecuencial
+                                     FROM DocumentoParticipante dp
+                                     INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                                     WHERE dp.IdDocumento = @id
+                                       AND dp.LoginUsuario = @login
+                                       AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
+                                     ORDER BY dp.OrdenSecuencial ASC, dp.IdParticipante ASC";
+                int idParticipante = 0;
+                int ordenActual = 0;
+                using (var cmd = new SqlCommand(sqlActual, cn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.AddWithValue("@login", loginFirmante);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read()) return false;
+                        idParticipante = Convert.ToInt32(dr["IdParticipante"]);
+                        ordenActual = Convert.ToInt32(dr["OrdenSecuencial"]);
+                    }
+                }
+
+                // Verificar si ya firmó
+                string sqlYaFirmo = @"SELECT COUNT(1)
+                                      FROM FirmaDetalle fd
+                                      INNER JOIN Maestro mf ON fd.IdEstadoFirma = mf.IdMaestro
+                                      WHERE fd.IdParticipante = @idp
+                                        AND mf.Tipo = 'ESTADO_FIRMA'
+                                        AND mf.Codigo = 'FIR'";
+                using (var cmd = new SqlCommand(sqlYaFirmo, cn))
+                {
+                    cmd.Parameters.AddWithValue("@idp", idParticipante);
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) > 0)
+                        return false;
+                }
+
+                // Verificar si hay firmantes anteriores sin firmar
+                string sqlPendientesAnteriores = @"SELECT COUNT(1)
+                                                  FROM DocumentoParticipante dpPrev
+                                                  INNER JOIN Maestro mtPrev ON dpPrev.IdTipoParticipante = mtPrev.IdMaestro
+                                                  WHERE dpPrev.IdDocumento = @id
+                                                    AND mtPrev.Tipo='TIPO_PARTICIPANTE' AND mtPrev.Codigo='FIR'
+                                                    AND ISNULL(dpPrev.OrdenSecuencial, 0) < @ordenActual
+                                                    AND NOT EXISTS (
+                                                        SELECT 1
+                                                        FROM FirmaDetalle fd
+                                                        INNER JOIN Maestro mf ON fd.IdEstadoFirma = mf.IdMaestro
+                                                        WHERE fd.IdParticipante = dpPrev.IdParticipante
+                                                          AND mf.Tipo='ESTADO_FIRMA'
+                                                          AND mf.Codigo='FIR'
+                                                    )";
+                using (var cmd = new SqlCommand(sqlPendientesAnteriores, cn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.AddWithValue("@ordenActual", ordenActual);
+                    return Convert.ToInt32(cmd.ExecuteScalar()) == 0;
+                }
+            }
         }
 
         private void ObtenerEstadoRevisionUsuario(int idDocumento, string login, out bool esConforme, out bool esObservado, out bool puedeEditar)

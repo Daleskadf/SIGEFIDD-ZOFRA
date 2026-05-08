@@ -1,8 +1,8 @@
 # ANÁLISIS COMPLETO - PROYECTO SIGEFIDD-ZOFRA
 ## Sistema de Gestión de Firma Digital de Documentos - Zona Franca de Tacna
 
-**Fecha de Análisis:** 29 de Abril de 2026  
-**Versión:** 1.0  
+**Fecha de Análisis:** 29 de Abril de 2026 (Actualizado: 8 de Mayo de 2026)  
+**Versión:** 1.1  
 **Estándar:** ET-003 Rev.4 ZOFRATACNA
 
 ---
@@ -61,7 +61,8 @@ ZofraTacna/
 ├── Datos/                       # Capa de acceso a datos
 │   ├── RepositorioDocumentos.cs
 │   ├── RepositorioAuditoria.cs
-│   └── RepositorioUsuariosRoles.cs
+│   ├── RepositorioUsuariosRoles.cs
+│   └── RepositorioNotificacionesApp.cs  # Notificaciones in-app
 ├── LogicaNegocio/              # Capa de lógica de negocio
 │   ├── ModuloGestionDocumental.cs
 │   ├── ModuloAutenticacion.cs
@@ -78,6 +79,7 @@ ZofraTacna/
 │   ├── Firmante.aspx
 │   ├── Registrador.aspx
 │   ├── Revisor.aspx
+│   ├── Notificaciones.ashx    # Handler AJAX para notificaciones in-app
 │   ├── BandejaTrabajo/
 │   ├── GestionDocumentos/
 │   ├── GestionRoles/
@@ -85,6 +87,8 @@ ZofraTacna/
 │   └── VisualizarFirmantes/
 ├── Script/
 │   └── Zofra-todojunto.sql    # Script completo de BD
+├── Scripts/
+│   └── sigefidd-notificaciones.js  # JS polling de notificaciones
 ├── Documentos/                # Almacenamiento local de PDFs
 ├── Web.config                 # Configuración de conexiones
 └── Global.asax               # Ciclo de vida de aplicación
@@ -100,14 +104,20 @@ ZofraTacna/
 Emula la BD de ZOFRATACNA. El sistema consulta esta BD via JOIN cross-database para obtener datos de empleados.
 
 **Tablas:**
-- `Empleado` - Datos de empleados institucionales
+- `UnidadOrganica` - Catálogo de áreas organizacionales (45+ registros)
+- `Empleado` - Datos de empleados institucionales (FK a UnidadOrganica)
 
-**Registro de Empleados (Seed):**
+**Registro de Empleados (Seed - 9 usuarios):**
 ```sql
-augusto   | Administrador | ADM    | augusto@zofratacna.com.pe
-angel     | Vargas        | REG    | angel@zofratacna.com.pe
-wsalas    | Salas, W.     | REV    | wsalas@zofratacna.com.pe
-daleska   | Firmante      | FIR    | daleska@zofratacna.com.pe
+arivera     | Rivera, Augusto        | ADM | arivera@zofratacna.com.pe
+avargas     | Vargas Gutierrez, Angel | REG | avargas@zofratacna.com.pe
+wsalas      | Salas, Walter           | REV | wsalas@zofratacna.com.pe
+dfernandez  | Fernandez, Daleska     | FIR | dfernandez@zofratacna.com.pe
+rcondori    | Condori Quispe, Ricardo | --  | daleskanicolle118@gmail.com
+cflores     | Flores Tapia, Claudia   | --  | daleskafervilla118@gmail.com
+rmendoza    | Mendoza Valdivia, Roberto | -- | roberto_m@outlook.com
+pzeballos   | Zeballos Luna, Patricia | --  | p.zeballos@upt.pe
+fvargas     | Vargas Machuca, Fernando | -- | fernando_vargas@zofra.pe
 ```
 
 ---
@@ -168,7 +178,7 @@ Documento (TABLA PRINCIPAL)
 ├── CodigoDocumento (UNIQUE)
 ├── Asunto
 ├── IdTipoDocumento (FK → Maestro)
-├── AreaResponsable
+├── AreaResponsable (INT, FK lógico → administracion.UnidadOrganica)
 ├── AreaCategoria
 ├── LoginUsuarioRegistrador
 ├── RutaArchivoPDF
@@ -189,10 +199,13 @@ DocumentoParticipante
 ├── IdDocumento (FK)
 ├── LoginUsuario
 ├── CorreoInstitucional
-├── OrdenSecuencial (orden de firma)
 ├── IdTipoParticipante (FK → Maestro: REV/FIR)
+├── IdRolFirmante (FK → Maestro, NULL)
+├── PlazoDias (DEFAULT 5)
+├── OrdenSecuencial (orden de firma)
 ├── EstadoParticipante (FK → Maestro)
 ├── FechaAsignacion
+├── Activo (BIT)
 └── Auditoria
 
 RevisionDetalle
@@ -232,11 +245,13 @@ LogErrorSistema
 ```
 
 **Vistas:**
-- `VW_EmpleadosActivos` - JOIN cross-database con `administracion.dbo.Empleado`
+- `VW_EmpleadosActivos` - JOIN cross-database con `administracion.dbo.Empleado` + `UnidadOrganica`
+- `VW_UnidadesOrganicas` - Consulta cross-database de unidades orgánicas
 
 **Procedimientos Almacenados:**
 - `sp_InsertarParticipante(@IdDocumento, @LoginUsuario, @IdTipoParticipante)` - Inserta revisores/firmantes
 - `GEN_X_EnviarMail(@Para, @Asunto, @Mensaje, @Adjunto)` - Envío de correos vía Database Mail
+- `USP_NotificarAsignacionRevision(@IdDocumento)` - Envía correos HTML a revisores asignados con plazo dinámico
 
 ---
 
@@ -248,13 +263,15 @@ Almacena archivos PDF en `VARBINARY(MAX)` para mantener todo dentro del servidor
 DocumentoAdjunto
 ├── IdAdjunto (PK)
 ├── IdDocumento
-├── NombreArchivo
-├── ContentType
-├── TamanoBytes
 ├── ContenidoPDF (VARBINARY(MAX))
-├── EsOriginal (BIT)
-├── FechaSubida
-└── Auditoria
+├── NombreArchivo
+├── TipoMime (DEFAULT 'application/pdf')
+├── TamanioBytes
+├── EsVersionFinal (BIT, DEFAULT 0)
+├── EsEliminado (BIT, soft delete)
+├── UsuarioCreacion / FechaCreacion
+├── UsuarioModificacion / FechaModificacion
+└── UsuarioEliminacion / FechaEliminacion
 ```
 
 ---
@@ -548,29 +565,34 @@ CREATE VIEW dbo.VW_EmpleadosActivos AS
 
 ### ✅ COMPLETADO
 - ✓ Estructura de BD (3 bases de datos)
-- ✓ Tablas y relaciones
-- ✓ Catálogo maestro (roles, estados, tipos)
+- ✓ Tablas y relaciones (incluye UnidadOrganica con 45+ áreas)
+- ✓ Catálogo maestro (roles, estados, tipos, participantes)
 - ✓ Autenticación simulada (DropDownList)
 - ✓ Capa de datos con ADO.NET
 - ✓ Módulos de negocio básicos
 - ✓ Interfaz web (ASPX)
 - ✓ Auditoria (historial de cambios)
 - ✓ Configuración de conexiones
+- ✓ Notificaciones in-app (polling JS + handler ASHX)
+- ✓ Database Mail configurado (Gmail SMTP)
+- ✓ SP de notificación por correo a revisores (USP_NotificarAsignacionRevision)
+- ✓ 6 plantillas de correo HTML profesionales
 
 ### 🔨 EN DESARROLLO / PENDIENTE
 - ⏳ Integración con componente de firma digital (ReFirma)
 - ⏳ Validación de firmas
-- ⏳ Configuración Database Mail (SMTP)
-- ⏳ Notificaciones por correo
+- ⏳ SP de notificación por correo a firmantes
 - ⏳ Interfaz de firmantes mejorada
 - ⏳ Reportes y estadísticas
 - ⏳ Gestión de certificados
 
 ### ⚠️ PROBLEMAS IDENTIFICADOS
 1. **ComponenteFirma.cs** - Solo es un stub, sin lógica real
-2. **Database Mail** - No configurado en SQL Server
-3. **Permisos de Roles** - Falta implementación granular
-4. **Validación de Entrada** - Podría mejorar sanitización
+2. **RepositorioDocumentos.cs** - God Object (41.5 KB), necesita refactoring
+3. **ModuloGestionDocumental.cs** - Contiene SQL inline que salta la capa de datos
+4. **Permisos de Roles** - Falta implementación granular
+5. **Validación de Entrada** - Podría mejorar sanitización
+6. **Seguridad** - Autenticación sin contraseña, sin CSRF
 
 ---
 
@@ -642,5 +664,5 @@ El proyecto está en etapa **beta-funcional** y listo para pilotaje con las mejo
 ---
 
 **Documento elaborado automáticamente**  
-**Última actualización:** 2026-04-29  
+**Última actualización:** 2026-05-08 (v1.1 — correcciones de discrepancias)  
 **Próxima revisión recomendada:** 2026-06-30

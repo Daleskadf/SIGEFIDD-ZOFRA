@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ZofraTacna.Datos;
 using ZofraTacna.LogicaNegocio;
 using ZofraTacna.Models;
 
@@ -13,6 +14,8 @@ namespace ZofraTacna.Presentacion
     public partial class EditarDocumento : Page
     {
         private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();
+        private readonly RepositorioBloqueoFlujo _repoBloqueo = new RepositorioBloqueoFlujo();
+        protected string LockToken => (ViewState["LockToken"] as string) ?? "";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -31,9 +34,15 @@ namespace ZofraTacna.Presentacion
 
             if (!IsPostBack)
             {
+                ViewState["LockToken"] = Guid.NewGuid().ToString("N");
                 CargarDatosUsuario();
                 CargarCombos();
                 CargarDocumento();
+                RegistrarBloqueoEdicionRegistrador();
+            }
+            else
+            {
+                TocarBloqueoEdicionRegistrador();
             }
         }
 
@@ -265,6 +274,9 @@ namespace ZofraTacna.Presentacion
                                     idEstadoActual = (int)result;
                             }
 
+                            int idEstadoReg = ObtenerIdMaestro(conn: cn, tx: transaction, tipo: "ESTADO_DOC", codigo: "REG");
+                            int idEstadoParticipantePen = ObtenerIdMaestro(conn: cn, tx: transaction, tipo: "ESTADO_PARTICIPANTE", codigo: "PEN");
+
                             // Actualizar documento
                             string sql = @"UPDATE Documento 
                                            SET Asunto = @asunto,
@@ -283,6 +295,46 @@ namespace ZofraTacna.Presentacion
                                 cmd.ExecuteNonQuery();
                             }
 
+                            if (idEstadoReg > 0)
+                            {
+                                using (var cmd = new SqlCommand("UPDATE Documento SET IdEstadoDocumento = @estado WHERE IdDocumento = @id", cn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@estado", idEstadoReg);
+                                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            if (idEstadoParticipantePen > 0)
+                            {
+                                string sqlResetParticipantes = @"UPDATE dp
+                                                                 SET dp.EstadoParticipante = @estadoPen
+                                                                 FROM DocumentoParticipante dp
+                                                                 INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                                                                 WHERE dp.IdDocumento = @id
+                                                                   AND mt.Tipo = 'TIPO_PARTICIPANTE'
+                                                                   AND mt.Codigo = 'REV'";
+                                using (var cmd = new SqlCommand(sqlResetParticipantes, cn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@estadoPen", idEstadoParticipantePen);
+                                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            string sqlLimpiarRevisiones = @"DELETE rd
+                                                            FROM RevisionDetalle rd
+                                                            INNER JOIN DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
+                                                            INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                                                            WHERE dp.IdDocumento = @id
+                                                              AND mt.Tipo = 'TIPO_PARTICIPANTE'
+                                                              AND mt.Codigo = 'REV'";
+                            using (var cmd = new SqlCommand(sqlLimpiarRevisiones, cn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@id", idDocumento);
+                                cmd.ExecuteNonQuery();
+                            }
+
                             // Registrar en historial que el registrador levant� correcci�n
                             string loginUsuario = Session["LoginUsuario"].ToString();
                             string sqlHistorial = @"INSERT INTO HistorialDocumento 
@@ -293,9 +345,9 @@ namespace ZofraTacna.Presentacion
                             {
                                 cmd.Parameters.AddWithValue("@idDoc", idDocumento);
                                 cmd.Parameters.AddWithValue("@estAnterior", idEstadoActual);
-                                cmd.Parameters.AddWithValue("@estNuevo", idEstadoActual);
+                                cmd.Parameters.AddWithValue("@estNuevo", idEstadoReg > 0 ? idEstadoReg : idEstadoActual);
                                 cmd.Parameters.AddWithValue("@login", loginUsuario);
-                                cmd.Parameters.AddWithValue("@detalle", "Registrador levant� correcci�n sobre observaciones.");
+                                cmd.Parameters.AddWithValue("@detalle", "Registrador envio correccion; se reinicio el flujo de revision.");
                                 cmd.ExecuteNonQuery();
                             }
 
@@ -310,7 +362,7 @@ namespace ZofraTacna.Presentacion
                                 {
                                     cmd.Parameters.AddWithValue("@idDoc", idDocumento);
                                     cmd.Parameters.AddWithValue("@estAnterior", idEstadoActual);
-                                    cmd.Parameters.AddWithValue("@estNuevo", idEstadoActual);
+                                    cmd.Parameters.AddWithValue("@estNuevo", idEstadoReg > 0 ? idEstadoReg : idEstadoActual);
                                     cmd.Parameters.AddWithValue("@login", loginUsuario);
                                     cmd.Parameters.AddWithValue("@detalle", "Nuevo PDF cargado: " + pdfNombre);
                                     cmd.ExecuteNonQuery();
@@ -361,6 +413,8 @@ namespace ZofraTacna.Presentacion
                         }
                     }
                 }
+
+                LiberarBloqueoEdicionRegistrador();
 
                 MostrarMsg("Documento actualizado correctamente. Redirigiendo a Mis documentos...", true);
                 ClientScript.RegisterStartupScript(GetType(), "redirectEditDoc",
@@ -425,6 +479,40 @@ namespace ZofraTacna.Presentacion
             lblMensaje.Text = msg;
             lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
             lblMensaje.Style["display"] = "block";
+        }
+
+        private int ObtenerIdMaestro(SqlConnection conn, SqlTransaction tx, string tipo, string codigo)
+        {
+            const string sql = "SELECT IdMaestro FROM Maestro WHERE Tipo = @tipo AND Codigo = @codigo";
+            using (var cmd = new SqlCommand(sql, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@tipo", tipo);
+                cmd.Parameters.AddWithValue("@codigo", codigo);
+                object result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 0;
+            }
+        }
+
+        private void RegistrarBloqueoEdicionRegistrador()
+        {
+            int idDocumento;
+            if (!int.TryParse(Request.QueryString["id"], out idDocumento) || idDocumento <= 0) return;
+            if (string.IsNullOrWhiteSpace(LockToken)) return;
+            string login = Session["LoginUsuario"] != null ? Session["LoginUsuario"].ToString() : "";
+            _repoBloqueo.RegistrarOTocarBloqueo(idDocumento, "REG_EDIT", login, LockToken);
+        }
+
+        private void TocarBloqueoEdicionRegistrador()
+        {
+            RegistrarBloqueoEdicionRegistrador();
+        }
+
+        private void LiberarBloqueoEdicionRegistrador()
+        {
+            int idDocumento;
+            if (!int.TryParse(Request.QueryString["id"], out idDocumento) || idDocumento <= 0) return;
+            if (string.IsNullOrWhiteSpace(LockToken)) return;
+            _repoBloqueo.LiberarBloqueo(idDocumento, "REG_EDIT", LockToken);
         }
     }
 }

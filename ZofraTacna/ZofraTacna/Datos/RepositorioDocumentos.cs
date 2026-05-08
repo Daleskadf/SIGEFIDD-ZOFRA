@@ -239,7 +239,7 @@ namespace ZofraTacna.Datos
 
         #endregion
 
-        #region Inserci�n de Documentos
+        #region Inserci�n de Documentos
 
         public int InsertarDocumentoConParticipantes(RegistrarDocumentoRequest request, string loginUsuario)
         {
@@ -293,13 +293,21 @@ namespace ZofraTacna.Datos
                         int idTipoRevisor = ObtenerIdMaestro(conn, transaction, "TIPO_PARTICIPANTE", "REV");
                         int idEstadoPen = ObtenerIdMaestro(conn, transaction, "ESTADO_PARTICIPANTE", "PEN");
 
-                        // PASO 4: Insertar participantes
+                        // PASO 4: Insertar participantes (DOS VECES por cada uno)
+                        // 1ª entrada: Como REVISOR (Orden=0) para fase REV
+                        // 2ª entrada: Como FIRMANTE (Orden=su_posicion) para fase PEN/FPAR (si tiene orden > 0)
                         foreach (var participante in request.Participantes)
                         {
-                            // El JavaScript env�a "FIR" o "REV"
-                            int idTipo = participante.Tipo == "FIR" ? idTipoFirmante : idTipoRevisor;
+                            // PRIMERA INSERCIÓN: Siempre como REVISOR (Orden = 0)
                             InsertarParticipante(conn, transaction, idDocumento, participante.Login, 
-                                participante.Orden, idTipo, idEstadoPen);
+                                0, idTipoRevisor, idEstadoPen);
+
+                            // SEGUNDA INSERCIÓN: Como FIRMANTE si tiene orden de firma (Orden > 0)
+                            if (participante.Orden > 0)
+                            {
+                                InsertarParticipante(conn, transaction, idDocumento, participante.Login, 
+                                    participante.Orden, idTipoFirmante, idEstadoPen);
+                            }
                         }
 
                         transaction.Commit();
@@ -312,7 +320,19 @@ namespace ZofraTacna.Datos
                 }
             }
 
-            // PASO 5: Guardar PDF en BD de archivos
+            // PASO 5: Registrar historial del documento creado
+            if (idDocumento > 0)
+            {
+                using (var connHist = new SqlConnection(_connDoc))
+                {
+                    connHist.Open();
+                    int idEstadoReg = ObtenerIdMaestro(connHist, null, "ESTADO_DOC", "REG");
+                    InsertarHistorial(connHist, null, idDocumento, null, idEstadoReg, loginUsuario,
+                        "Documento registrado y participantes asignados correctamente.");
+                }
+            }
+
+            // PASO 6: Guardar PDF en BD de archivos
             if (request.ContenidoPDF != null && request.ContenidoPDF.Length > 0)
             {
                 InsertarAdjuntoPDF(idDocumento, request.ContenidoPDF, request.NombreArchivoPDF, loginUsuario);
@@ -364,7 +384,7 @@ namespace ZofraTacna.Datos
 
         #endregion
 
-        #region Actualizaci�n
+        #region Actualizaci�n
 
         public bool ActualizarEstado(int idDocumento, int idEstado)
         {
@@ -502,6 +522,131 @@ namespace ZofraTacna.Datos
                     cmd.Parameters.AddWithValue("@idp", firma.IdParticipante);
                     cmd.Parameters.AddWithValue("@hash", firma.FirmaDigitalHash ?? (object)DBNull.Value);
                     return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registra una firma y verifica si todos los revisores han completado su firma.
+        /// Si es así, actualiza el estado del documento a FCOM.
+        /// Los participantes siempre se mantienen como REV, los permisos se controlan por estado del documento.
+        /// </summary>
+        public bool RegistrarFirmaYActualizarEstado(int idDocumento, int idParticipante, string loginFirmante, 
+            string hashFirma, out string mensaje)
+        {
+            mensaje = "";
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // Insertar firma
+                        string sqlInsertFirma = @"INSERT INTO FirmaDetalle (IdParticipante,IdEstadoFirma,FirmaDigitalHash,FechaFirma)
+                                                  VALUES (@idp,
+                                                    (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_FIRMA' AND Codigo='FIR'),
+                                                    @hash, GETDATE())";
+                        using (var cmd = new SqlCommand(sqlInsertFirma, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idp", idParticipante);
+                            cmd.Parameters.AddWithValue("@hash", hashFirma ?? (object)DBNull.Value);
+                            if (cmd.ExecuteNonQuery() <= 0)
+                            {
+                                mensaje = "No se pudo registrar la firma.";
+                                tx.Rollback();
+                                return false;
+                            }
+                        }
+
+                        // Contar firmantes que deben firmar (participantes tipo FIR)
+                        string sqlContarFirmantes = @"
+                            SELECT COUNT(1) FROM DocumentoParticipante dp
+                            INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                            WHERE dp.IdDocumento = @idDoc
+                              AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'";
+                        
+                        // Contar firmas completadas de firmantes
+                        string sqlContarFirmas = @"
+                            SELECT COUNT(1) FROM FirmaDetalle fd
+                            INNER JOIN DocumentoParticipante dp ON fd.IdParticipante = dp.IdParticipante
+                            INNER JOIN Maestro mf ON fd.IdEstadoFirma = mf.IdMaestro
+                            INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                            WHERE dp.IdDocumento = @idDoc
+                              AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
+                              AND mf.Tipo='ESTADO_FIRMA' AND mf.Codigo='FIR'";
+
+                        int totalFirmantes = 0;
+                        int firmasCompletadas = 0;
+
+                        using (var cmd = new SqlCommand(sqlContarFirmantes, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                totalFirmantes = Convert.ToInt32(result);
+                        }
+
+                        using (var cmd = new SqlCommand(sqlContarFirmas, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                firmasCompletadas = Convert.ToInt32(result);
+                        }
+
+                        // Obtener estado actual del documento
+                        int idEstadoActual = ObtenerEstadoDocumentoActual(conn, tx, idDocumento);
+                        string estadoActualCodigo = "";
+                        using (var cmd = new SqlCommand(
+                            "SELECT Codigo FROM Maestro WHERE IdMaestro=@id", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idEstadoActual);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                                estadoActualCodigo = result.ToString();
+                        }
+
+                        // Si es el primer firmante en estado PEN, cambiar a FPAR
+                        if (estadoActualCodigo == "PEN")
+                        {
+                            int idEstadoFpar = ObtenerIdMaestro(conn, tx, "ESTADO_DOC", "FPAR");
+                            if (idEstadoFpar > 0)
+                                ActualizarEstadoDocumentoInterno(conn, tx, idDocumento, idEstadoFpar);
+
+                            InsertarHistorial(conn, tx, idDocumento, idEstadoActual, idEstadoFpar, loginFirmante,
+                                "Primer revisor ha firmado el documento. Estado: FPAR (Firma Parcial).");
+                        }
+
+                        // Si todos los firmantes han firmado, cambiar estado a FCOM
+                        if (totalFirmantes > 0 && firmasCompletadas >= totalFirmantes)
+                        {
+                            int idEstadoFcom = ObtenerIdMaestro(conn, tx, "ESTADO_DOC", "FCOM");
+                            if (idEstadoFcom > 0)
+                            {
+                                ActualizarEstadoDocumentoInterno(conn, tx, idDocumento, idEstadoFcom);
+
+                                InsertarHistorial(conn, tx, idDocumento, idEstadoActual, idEstadoFcom, loginFirmante,
+                                    "Todos los firmantes han completado sus firmas. Documento finalizado (FCOM).");
+                            }
+                        }
+                        else if (estadoActualCodigo == "FPAR")
+                        {
+                            // Actualizar historial de firma parcial
+                            InsertarHistorial(conn, tx, idDocumento, idEstadoActual, idEstadoActual, loginFirmante,
+                                string.Format("Firmante registró su firma ({0} de {1} completadas).", firmasCompletadas, totalFirmantes));
+                        }
+
+                        tx.Commit();
+                        mensaje = "Firma registrada correctamente.";
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        tx.Rollback();
+                        mensaje = "Error al registrar la firma: " + ex.Message;
+                        return false;
+                    }
                 }
             }
         }
@@ -740,15 +885,19 @@ namespace ZofraTacna.Datos
             }
         }
 
-        private void InsertarHistorial(SqlConnection conn, SqlTransaction tx, int idDocumento, int idEstadoAnterior, int idEstadoNuevo, string login, string detalle)
+        private void InsertarHistorial(SqlConnection conn, SqlTransaction tx, int idDocumento, int? idEstadoAnterior, int idEstadoNuevo, string login, string detalle)
         {
             string sql = @"INSERT INTO HistorialDocumento
                            (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion)
                            VALUES (@doc,@ant,@nue,@login,@detalle)";
-            using (var cmd = new SqlCommand(sql, conn, tx))
+            // SqlCommand(sql, conn, tx) lanza ArgumentNullException si tx es null
+            SqlCommand cmd = tx != null
+                ? new SqlCommand(sql, conn, tx)
+                : new SqlCommand(sql, conn);
+            using (cmd)
             {
                 cmd.Parameters.AddWithValue("@doc", idDocumento);
-                cmd.Parameters.AddWithValue("@ant", idEstadoAnterior);
+                cmd.Parameters.AddWithValue("@ant", idEstadoAnterior.HasValue ? (object)idEstadoAnterior.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@nue", idEstadoNuevo);
                 cmd.Parameters.AddWithValue("@login", login);
                 cmd.Parameters.AddWithValue("@detalle", detalle ?? "");
@@ -790,7 +939,10 @@ namespace ZofraTacna.Datos
         private int ObtenerIdMaestro(SqlConnection conn, SqlTransaction transaction, string tipo, string codigo)
         {
             string sql = "SELECT IdMaestro FROM Maestro WHERE Tipo=@tipo AND Codigo=@cod";
-            using (var cmd = new SqlCommand(sql, conn, transaction))
+            SqlCommand cmd = transaction != null
+                ? new SqlCommand(sql, conn, transaction)
+                : new SqlCommand(sql, conn);
+            using (cmd)
             {
                 cmd.Parameters.AddWithValue("@tipo", tipo);
                 cmd.Parameters.AddWithValue("@cod", codigo);
@@ -819,6 +971,74 @@ namespace ZofraTacna.Datos
                 FechaLimiteAprobacion = dr["FechaLimiteAprobacion"] != DBNull.Value ? (DateTime)dr["FechaLimiteAprobacion"] : DateTime.MinValue,
                 Activo = (bool)dr["Activo"]
             };
+        }
+
+        #endregion
+
+        #region Cambio de Roles
+
+        /// <summary>
+        /// Cambia todos los participantes de tipo REV a FIR para un documento específico.
+        /// Se invoca cuando todos los revisores emiten conformidad (documento pasa a PEN).
+        /// </summary>
+        public bool CambiarRevisoresAFirmantes(int idDocumento, SqlConnection conn, SqlTransaction tx)
+        {
+            try
+            {
+                int idTipoFir = ObtenerIdMaestro(conn, tx, "TIPO_PARTICIPANTE", "FIR");
+                if (idTipoFir <= 0)
+                    return false;
+
+                string sql = @"UPDATE DocumentoParticipante
+                               SET IdTipoParticipante = @idFir
+                               WHERE IdDocumento = @idDoc
+                                 AND IdTipoParticipante = (SELECT IdMaestro FROM Maestro WHERE Tipo='TIPO_PARTICIPANTE' AND Codigo='REV')";
+
+                using (var cmd = new SqlCommand(sql, conn, tx))
+                {
+                    cmd.Parameters.AddWithValue("@idFir", idTipoFir);
+                    cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                    cmd.ExecuteNonQuery();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Cambia todos los participantes de tipo FIR de vuelta a REV para un documento específico.
+        /// Se invoca cuando todos los firmantes han firmado (documento pasa a FCOM).
+        /// </summary>
+        public bool CambiarFirmantesARevisores(int idDocumento, SqlConnection conn, SqlTransaction tx)
+        {
+            try
+            {
+                int idTipoRev = ObtenerIdMaestro(conn, tx, "TIPO_PARTICIPANTE", "REV");
+                if (idTipoRev <= 0)
+                    return false;
+
+                string sql = @"UPDATE DocumentoParticipante
+                               SET IdTipoParticipante = @idRev
+                               WHERE IdDocumento = @idDoc
+                                 AND IdTipoParticipante = (SELECT IdMaestro FROM Maestro WHERE Tipo='TIPO_PARTICIPANTE' AND Codigo='FIR')";
+
+                using (var cmd = new SqlCommand(sql, conn, tx))
+                {
+                    cmd.Parameters.AddWithValue("@idRev", idTipoRev);
+                    cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                    cmd.ExecuteNonQuery();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         #endregion

@@ -7,10 +7,12 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Literal litNombre;
         protected global::System.Web.UI.WebControls.Literal litRol;
         protected global::System.Web.UI.WebControls.LinkButton lbTodos;
-        protected global::System.Web.UI.WebControls.LinkButton lbPendiente;
+        protected global::System.Web.UI.WebControls.LinkButton lbRegistrado;
         protected global::System.Web.UI.WebControls.LinkButton lbRevision;
-        protected global::System.Web.UI.WebControls.LinkButton lbFirma;
-        protected global::System.Web.UI.WebControls.LinkButton lbCompletado;
+        protected global::System.Web.UI.WebControls.LinkButton lbObservado;
+        protected global::System.Web.UI.WebControls.LinkButton lbPendiente;
+        protected global::System.Web.UI.WebControls.LinkButton lbFParcial;
+        protected global::System.Web.UI.WebControls.LinkButton lbFCompleto;
         protected global::System.Web.UI.WebControls.Panel pnlEmpty;
         protected global::System.Web.UI.WebControls.Panel pnlTable;
         protected global::System.Web.UI.WebControls.Repeater rptDocs;

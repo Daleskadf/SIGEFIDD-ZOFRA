@@ -438,6 +438,9 @@
     <script type="text/javascript">
         window.editDocPdfArchivo = null;
         window.editDocPdfBlobUrl = null;
+        window.editDocLockTimer = null;
+        window.editDocId = parseInt('<%= Request.QueryString["id"] ?? "0" %>', 10) || 0;
+        window.editDocLockToken = '<%= LockToken %>';
 
         function editDocGet(id) { return document.getElementById(id); }
 
@@ -518,6 +521,10 @@
                     if (e.target === modal) editDocCerrarVisorPdf();
                 });
             }
+            if (window.editDocId > 0 && window.editDocLockToken) {
+                editDocEnviarBloqueo('touch');
+                window.editDocLockTimer = setInterval(function () { editDocEnviarBloqueo('touch'); }, 15000);
+            }
         });
 
         function editDocValidarAntesEnviar() {
@@ -547,6 +554,24 @@
             if (msgCli) { msgCli.style.display = 'none'; msgCli.textContent = ''; }
             return true;
         }
+
+        function editDocEnviarBloqueo(accion) {
+            if (!window.editDocId || !window.editDocLockToken) return;
+            var url = '<%= ResolveUrl("~/Presentacion/BloqueoFlujo.ashx") %>'
+                + '?accion=' + encodeURIComponent(accion)
+                + '&idDocumento=' + encodeURIComponent(window.editDocId)
+                + '&tipo=REG_EDIT'
+                + '&token=' + encodeURIComponent(window.editDocLockToken);
+            try { fetch(url, { method: 'GET', credentials: 'same-origin', keepalive: accion === 'release' }); } catch (e) { }
+        }
+
+        window.addEventListener('beforeunload', function () {
+            if (window.editDocLockTimer) {
+                clearInterval(window.editDocLockTimer);
+                window.editDocLockTimer = null;
+            }
+            editDocEnviarBloqueo('release');
+        });
     </script>
 </body>
 </html>

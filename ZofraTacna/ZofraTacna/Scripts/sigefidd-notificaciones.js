@@ -72,12 +72,28 @@
         return m;
     }
 
+    function getLoginKey() {
+        // Lee el login del elemento ya renderizado en el topbar (presente en todas las vistas)
+        var el = document.querySelector('.user-name');
+        var login = el ? (el.textContent || el.innerText || '').trim() : 'default';
+        return 'zfn_ack_' + (login || 'default');
+    }
+
+    function loadAck() {
+        try { return parseInt(localStorage.getItem(getLoginKey()) || '0', 10) || 0; }
+        catch (e) { return 0; }
+    }
+
+    function saveAck(v) {
+        try { localStorage.setItem(getLoginKey(), String(v)); } catch (e) { }
+    }
+
     function boot() {
         var ep = getEndpoint();
         if (!ep || !qs('zfnBellBtn')) return;
 
         var toastSince = 0;
-        var ackBell = 0;
+        var ackBell = loadAck();   // <-- persiste entre sesiones
         var panel = qs('zfnBellPanel');
         var bodyEl = qs('zfnBellPanelBody');
         var btn = qs('zfnBellBtn');
@@ -86,10 +102,17 @@
             .then(function (data) {
                 if (!data || !data.ok) return;
                 toastSince = data.cursor || data.Cursor || 0;
-                ackBell = toastSince;
+                // NO sobreescribir ackBell con el cursor: el usuario puede tener no-leidas
                 var items0 = data.items || data.Items;
                 if (items0 && bodyEl) renderList(items0, bodyEl);
-                setBadge(0);
+                // Contar cuantos items hay desde ackBell guardado
+                var unread = 0;
+                if (items0) {
+                    items0.forEach(function (it) {
+                        if (it.IdHistorial > ackBell) unread++;
+                    });
+                }
+                setBadge(unread);
             })
             .catch(function () { });
 
@@ -102,7 +125,7 @@
                     var news = data.news || data.News || [];
                     if (news.length) {
                         news.forEach(function (n) {
-                            showToast(n.ToastText || (n.LoginUsuarioAccion + ' · ' + n.CodigoDocumento));
+                            showToast(n.ToastText || n.toastText || (n.LoginUsuarioAccion + ' · ' + n.CodigoDocumento));
                         });
                     }
                     var next = (typeof data.nextSince === 'number') ? data.nextSince : data.NextSince;
@@ -126,11 +149,15 @@
                         var listItems = data.items || data.Items;
                         renderList(listItems, bodyEl);
                         var maxC = (typeof data.maxCursor === 'number') ? data.maxCursor : data.MaxCursor;
-                        if (typeof maxC === 'number' && maxC > ackBell)
+                        if (typeof maxC === 'number' && maxC > ackBell) {
                             ackBell = maxC;
-                        else {
+                            saveAck(ackBell);   // <-- guardar al leer
+                        } else {
                             var mx = maxIdFromItems(listItems);
-                            if (mx > ackBell) ackBell = mx;
+                            if (mx > ackBell) {
+                                ackBell = mx;
+                                saveAck(ackBell);
+                            }
                         }
                         setBadge(0);
                         poll();

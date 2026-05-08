@@ -115,10 +115,12 @@
             <!-- FILTER TABS -->
             <div class="filter-tabs">
                 <asp:LinkButton ID="lbTodos"      runat="server" OnClick="lbTodos_Click"      CssClass="tab-btn">Todos</asp:LinkButton>
-                <asp:LinkButton ID="lbPendiente"  runat="server" OnClick="lbPendiente_Click"  CssClass="tab-btn">Pendiente</asp:LinkButton>
-                <asp:LinkButton ID="lbRevision"   runat="server" OnClick="lbRevision_Click"   CssClass="tab-btn">Revisi&oacute;n</asp:LinkButton>
-                <asp:LinkButton ID="lbFirma"      runat="server" OnClick="lbFirma_Click"      CssClass="tab-btn">Firma</asp:LinkButton>
-                <asp:LinkButton ID="lbCompletado" runat="server" OnClick="lbCompletado_Click" CssClass="tab-btn">Completado</asp:LinkButton>
+                <asp:LinkButton ID="lbRegistrado" runat="server" OnClick="lbRegistrado_Click" CssClass="tab-btn">Registrado</asp:LinkButton>
+                <asp:LinkButton ID="lbRevision"   runat="server" OnClick="lbRevision_Click"   CssClass="tab-btn">En Revisi&oacute;n</asp:LinkButton>
+                <asp:LinkButton ID="lbObservado"  runat="server" OnClick="lbObservado_Click"  CssClass="tab-btn">Observado</asp:LinkButton>
+                <asp:LinkButton ID="lbPendiente"  runat="server" OnClick="lbPendiente_Click"  CssClass="tab-btn">Pendiente de Firma</asp:LinkButton>
+                <asp:LinkButton ID="lbFParcial"   runat="server" OnClick="lbFParcial_Click"   CssClass="tab-btn">Firma Parcial</asp:LinkButton>
+                <asp:LinkButton ID="lbFCompleto"  runat="server" OnClick="lbFCompleto_Click"  CssClass="tab-btn">Firmado Completo</asp:LinkButton>
             </div>
 
             <!-- TABLE -->

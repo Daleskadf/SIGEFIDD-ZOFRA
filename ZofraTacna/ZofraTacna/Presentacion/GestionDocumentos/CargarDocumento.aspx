@@ -667,33 +667,44 @@
     // ============================================================
     function guardarParticipantes() {
         let participantes = [];
-        let revisoresSet = new Set();
-        let firmantesSet = new Set();
+        let participantesSet = new Set();
 
-        // Guardar revisores como REV
-        revisores.forEach(r => {
-            if (revisoresSet.has(r.login)) return;
+        // Guardar revisores como REV (solo revisión, sin firma)
+        revisores.forEach((r, idx) => {
+            if (participantesSet.has(r.login)) return;
             participantes.push({
                 login: r.login,
                 nombre: r.nombre,
                 tipo: 'REV',
-                orden: 0
+                orden: 0  // Revisores no firman
             });
-            revisoresSet.add(r.login);
+            participantesSet.add(r.login);
         });
 
         // Guardar firmantes como FIR con su orden secuencial
+        // El servidor insertará CADA firmante DOS VECES:
+        // 1. Como REV (Orden=0) para revisar
+        // 2. Como FIR (Orden=su_posicion) para firmar
         firmantes.forEach((f, idx) => {
-            if (firmantesSet.has(f.login)) return;
-            participantes.push({
-                login: f.login,
-                nombre: f.nombre,
-                tipo: 'FIR',
-                orden: idx + 1
-            });
-            firmantesSet.add(f.login);
+            if (participantesSet.has(f.login)) {
+                // Si ya existe como revisor, actualizamos su orden de firma
+                let part = participantes.find(p => p.login === f.login);
+                if (part) {
+                    part.tipo = 'FIR';  // Ahora también es firmante
+                    part.orden = idx + 1;
+                }
+            } else {
+                participantes.push({
+                    login: f.login,
+                    nombre: f.nombre,
+                    tipo: 'FIR',  // Firmante (será insertado dos veces en BD)
+                    orden: idx + 1  // Orden secuencial de firma
+                });
+                participantesSet.add(f.login);
+            }
         });
 
+        console.log('Participantes guardados:', participantes);
         document.getElementById('<%= hfParticipantes.ClientID %>').value = JSON.stringify(participantes);
     }
 

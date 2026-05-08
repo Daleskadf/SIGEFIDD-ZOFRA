@@ -11,6 +11,17 @@ namespace ZofraTacna.Presentacion
 {
     public partial class VerObservaciones : Page
     {
+        protected bool MostrarPopupBloqueo
+        {
+            get { return ViewState["MostrarPopupBloqueo"] != null && (bool)ViewState["MostrarPopupBloqueo"]; }
+            set { ViewState["MostrarPopupBloqueo"] = value; }
+        }
+        protected string MensajePopupBloqueo
+        {
+            get { return (ViewState["MensajePopupBloqueo"] as string) ?? ""; }
+            set { ViewState["MensajePopupBloqueo"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["LoginUsuario"] == null) { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
@@ -18,6 +29,11 @@ namespace ZofraTacna.Presentacion
             if (rol != "REG" && rol != "ADM") { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
             int id;
             if (!int.TryParse(Request.QueryString["id"], out id) || id <= 0) { Response.Redirect("MisDocumentos.aspx"); return; }
+            if (!IsPostBack)
+            {
+                MostrarPopupBloqueo = false;
+                MensajePopupBloqueo = "";
+            }
 
             string login = Session["LoginUsuario"].ToString();
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
@@ -44,6 +60,27 @@ namespace ZofraTacna.Presentacion
                 foreach (string o in obs) sb.Append("<div class='obs-item'>").Append(HttpUtility.HtmlEncode(o)).Append("</div>");
                 litObservaciones.Text = sb.ToString();
             }
+        }
+
+        protected void btnEditarDocumento_Click(object sender, EventArgs e)
+        {
+            int id;
+            if (!int.TryParse(Request.QueryString["id"], out id) || id <= 0)
+            {
+                Response.Redirect("MisDocumentos.aspx");
+                return;
+            }
+
+            var repoBloqueo = new RepositorioBloqueoFlujo();
+            bool bloqueado = repoBloqueo.ExisteBloqueoActivo(id, "REV_EDIT", "");
+            if (bloqueado)
+            {
+                MostrarPopupBloqueo = true;
+                MensajePopupBloqueo = "Un revisor se encuentra emitiendo su revision sobre este documento.";
+                return;
+            }
+
+            Response.Redirect("EditarDocumento.aspx?id=" + id);
         }
 
         private string BuildNav(string rol)
