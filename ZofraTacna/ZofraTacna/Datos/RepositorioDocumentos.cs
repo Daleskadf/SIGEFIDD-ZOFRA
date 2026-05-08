@@ -462,6 +462,7 @@ namespace ZofraTacna.Datos
 
                         int idEstadoDocNuevo = idEstadoDocAnterior;
                         string detalle;
+                        bool pasaAFirma = false;
 
                         if (esObservacion)
                         {
@@ -475,6 +476,7 @@ namespace ZofraTacna.Datos
                             {
                                 idEstadoDocNuevo = ObtenerIdMaestro(conn, tx, "ESTADO_DOC", "PEN");
                                 detalle = "Todos los revisores emitieron conformidad. Documento pendiente de firma.";
+                                pasaAFirma = true;
                             }
                             else
                             {
@@ -493,6 +495,45 @@ namespace ZofraTacna.Datos
                         // Historial se registra siempre, incluso si el estado del documento no cambia.
                         InsertarHistorial(conn, tx, idDocumento, idEstadoDocAnterior, idEstadoDocNuevo, loginRevisor, detalleCompleto);
                         tx.Commit();
+
+                        // Notificar por correo si fue observación
+                        if (esObservacion)
+                        {
+                            try
+                            {
+                                using (var cmdNotif = new SqlCommand("dbo.USP_NotificarObservacionDocumento", conn))
+                                {
+                                    cmdNotif.CommandType = CommandType.StoredProcedure;
+                                    cmdNotif.Parameters.AddWithValue("@IdDocumento", idDocumento);
+                                    cmdNotif.Parameters.AddWithValue("@LoginRevisorQueObserva", loginRevisor);
+                                    cmdNotif.Parameters.AddWithValue("@ComentarioObservacion", comentario ?? "");
+                                    cmdNotif.ExecuteNonQuery();
+                                }
+                            }
+                            catch
+                            {
+                                // No fallar el flujo principal si la notificación falla
+                            }
+                        }
+
+                        // Notificar a firmantes cuando el documento pasa a firma (todos conformes)
+                        if (pasaAFirma)
+                        {
+                            try
+                            {
+                                using (var cmdNotif = new SqlCommand("dbo.USP_NotificarAsignacionFirma", conn))
+                                {
+                                    cmdNotif.CommandType = CommandType.StoredProcedure;
+                                    cmdNotif.Parameters.AddWithValue("@IdDocumento", idDocumento);
+                                    cmdNotif.ExecuteNonQuery();
+                                }
+                            }
+                            catch
+                            {
+                                // No fallar el flujo principal si la notificación falla
+                            }
+                        }
+
                         mensaje = esObservacion
                             ? "Observacion registrada correctamente."
                             : "Conformidad registrada correctamente.";

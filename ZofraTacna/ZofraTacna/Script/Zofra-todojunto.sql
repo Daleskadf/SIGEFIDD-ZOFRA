@@ -972,6 +972,169 @@ BEGIN
 END
 GO
 
+-- CORREO PARA AVISAR SOBRE DOCUMENTO OBSERVADO
+CREATE OR ALTER PROCEDURE dbo.USP_NotificarObservacionDocumento
+    @IdDocumento INT,
+    @LoginRevisorQueObserva VARCHAR(50), -- Se requiere para saber quién observó
+    @ComentarioObservacion VARCHAR(1000)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150), @NombreObservador VARCHAR(250);
+    DECLARE @Cuerpo NVARCHAR(MAX), @AsuntoFinal NVARCHAR(250), @EmailDestino VARCHAR(150);
+
+    -- 1. Obtener datos generales del documento y nombre del revisor que observa
+    SELECT 
+        @AsuntoDoc = d.Asunto,
+        @CodigoDoc = d.CodigoDocumento,
+        @AreaDoc = ISNULL(uo.Descripcion, 'Área No Definida')
+    FROM dbo.Documento d
+    LEFT JOIN administracion.dbo.UnidadOrganica uo ON TRY_CONVERT(INT, d.AreaResponsable) = uo.IDUnidadOrganica
+    WHERE d.IdDocumento = @IdDocumento;
+
+    SELECT @NombreObservador = NombreCompleto 
+    FROM dbo.VW_EmpleadosActivos 
+    WHERE LoginUsuario = @LoginRevisorQueObserva;
+
+    -- 2. Cursor para enviar el correo al REGISTRADOR y a TODOS LOS REVISORES
+    -- El UNION asegura que no se repitan correos si el registrador también es revisor
+    DECLARE curNotificar CURSOR FOR
+    SELECT DISTINCT v.Email 
+    FROM dbo.Documento d 
+    INNER JOIN dbo.VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario 
+    WHERE d.IdDocumento = @IdDocumento
+    UNION
+    SELECT v.Email 
+    FROM dbo.DocumentoParticipante dp
+    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
+    WHERE dp.IdDocumento = @IdDocumento AND m.Codigo = 'REV'; -- Solo revisores
+
+    OPEN curNotificar;
+    FETCH NEXT FROM curNotificar INTO @EmailDestino;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Construcción de la plantilla profesional ZOFRATACNA
+        SET @Cuerpo = CONCAT(
+            N'<div style="font-family: Segoe UI, Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">',
+            -- Header Azul Marino
+            N'<div style="background-color: #1a335d; color: white; padding: 15px 20px; font-size: 13px;">',
+            N'<table width="100%"><tr><td><span style="background-color: white; color: #1a335d; padding: 4px 8px; border-radius: 4px; font-weight: bold;">ZOFRATACNA</span></td>',
+            N'<td style="text-align: center; opacity: 0.8;">Gestión de Firma Digital</td>',
+            N'<td style="text-align: right; font-size: 10px; opacity: 0.6;">ISO 9001:2015</td></tr></table></div>',
+            -- Banner de Alerta Roja
+            N'<div style="background-color: #e53e3e; color: white; padding: 10px 20px; font-size: 14px; font-weight: 500;">⚠️ DOCUMENTO OBSERVADO</div>',
+            -- Cuerpo del Mensaje
+            N'<div style="padding: 30px; color: #444; line-height: 1.5;">',
+            N'<p style="margin-top: 0;">Se informa que el revisor <strong>', @NombreObservador, N'</strong> ha realizado una observación técnica al documento.</p>',
+            -- Cuadro de Comentario
+            N'<div style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 15px; margin: 20px 0;">',
+            N'<h4 style="color: #c53030; margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase;">Detalle de la observación:</h4>',
+            N'<p style="font-style: italic; margin: 0; color: #2d3748;">"', @ComentarioObservacion, N'"</p></div>',
+            -- Tabla de Datos del Documento
+            N'<table style="width: 100%; font-size: 13px; border-collapse: collapse; color: #2d3748; margin-bottom: 20px;">',
+            N'<tr><td style="color: #4a5568; width: 35%; padding: 6px 0; border-bottom: 1px solid #edf2f7;">Documento:</td><td style="padding: 6px 0; border-bottom: 1px solid #edf2f7;"><strong>', @AsuntoDoc, N'</strong></td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 6px 0; border-bottom: 1px solid #edf2f7;">Código:</td><td style="padding: 6px 0; border-bottom: 1px solid #edf2f7;">', @CodigoDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 6px 0; border-bottom: 1px solid #edf2f7;">Área:</td><td style="padding: 6px 0; border-bottom: 1px solid #edf2f7;">', @AreaDoc, N'</td></tr></table>',
+            -- Botón de Acción
+            N'<div style="text-align: center; margin-top: 30px;">',
+            N'<a href="https://zofratacna.com.pe" style="background-color: #e53e3e; color: white; padding: 12px 35px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;">Ver Observación en el Sistema</a></div></div>',
+            -- Footer
+            N'<div style="background-color: #fcfcfc; padding: 20px; font-size: 10px; color: #a0aec0; text-align: center; border-top: 1px solid #edf2f7;">Este es un mensaje automático generado por SIGEFIDD-ZOFRA. Por favor no responder.</div></div>'
+        );
+
+        SET @AsuntoFinal = CONCAT(N'OBSERVACIÓN: ', @CodigoDoc, N' - ', @AsuntoDoc);
+        
+        -- Envío de correo individual
+        EXEC dbo.GEN_X_EnviarMail @Para = @EmailDestino, @Asunto = @AsuntoFinal, @Mensaje = @Cuerpo;
+
+        FETCH NEXT FROM curNotificar INTO @EmailDestino;
+    END
+
+    CLOSE curNotificar;
+    DEALLOCATE curNotificar;
+END
+GO
+
+
+
+-- CORREO PARA AVISAR SOBRE DOCUMENTO PENDIENTE DE FIRMA
+CREATE OR ALTER PROCEDURE dbo.USP_NotificarAsignacionFirma
+    @IdDocumento INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150);
+    DECLARE @EmailDestino VARCHAR(150), @NombreFirmante VARCHAR(250), @Orden INT;
+    DECLARE @Cuerpo NVARCHAR(MAX), @AsuntoFinal NVARCHAR(250);
+
+    -- 1. Obtener datos generales del documento
+    SELECT 
+        @AsuntoDoc = d.Asunto, 
+        @CodigoDoc = d.CodigoDocumento, 
+        @AreaDoc = ISNULL(uo.Descripcion, 'Área No Definida')
+    FROM dbo.Documento d
+    LEFT JOIN administracion.dbo.UnidadOrganica uo ON TRY_CONVERT(INT, d.AreaResponsable) = uo.IDUnidadOrganica
+    WHERE d.IdDocumento = @IdDocumento;
+
+    -- 2. Cursor para notificar a cada firmante con su ORDEN específico
+    DECLARE curFirmantes CURSOR FOR
+    SELECT v.Email, v.NombreCompleto, dp.OrdenSecuencial 
+    FROM dbo.DocumentoParticipante dp
+    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
+    WHERE dp.IdDocumento = @IdDocumento 
+      AND m.Codigo = 'FIR' -- Solo a los que tienen rol de Firmante
+    ORDER BY dp.OrdenSecuencial; -- Los procesamos en orden
+
+    OPEN curFirmantes;
+    FETCH NEXT FROM curFirmantes INTO @EmailDestino, @NombreFirmante, @Orden;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Construcción del cuerpo personalizado con el ROL y ORDEN
+        SET @Cuerpo = CONCAT(
+            N'<div style="font-family: Segoe UI, Arial, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; margin: auto; background-color: #ffffff;">',
+            -- Header ZOFRATACNA
+            N'<div style="background-color: #1a335d; color: white; padding: 15px 20px; font-size: 13px;">',
+            N'<table width="100%"><tr><td><span style="background-color: white; color: #1a335d; padding: 4px 8px; border-radius: 4px; font-weight: bold;">ZOFRATACNA</span></td>',
+            N'<td style="text-align: right; opacity: 0.8;">Módulo de Firma Digital</td></tr></table></div>',
+            -- Título dinámico
+            N'<div style="background-color: #2c5282; color: white; padding: 10px 20px; font-size: 14px; font-weight: 500;">Asignación de Firma Digital - Orden N° ', @Orden, N'</div>',
+            -- Contenido
+            N'<div style="padding: 30px; color: #444; line-height: 1.5;">',
+            N'<p style="margin-top: 0;">Estimado(a) <strong>', @NombreFirmante, N'</strong>,</p>',
+            N'<p style="font-size: 14px;">Se le informa que el proceso de revisión ha concluido satisfactoriamente. Usted ha sido asignado como <strong>Firmante N° ', @Orden, N'</strong> para el siguiente documento:</p>',
+            -- Detalles del documento
+            N'<div style="background-color: #f7fafc; border: 1px solid #edf2f7; border-radius: 6px; padding: 20px; margin: 20px 0;">',
+            N'<table style="width: 100%; font-size: 13px; color: #2d3748;">',
+            N'<tr><td style="color: #4a5568; width: 35%; padding: 4px 0;">Asunto:</td><td><strong>', @AsuntoDoc, N'</strong></td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Código:</td><td>', @CodigoDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Origen:</td><td>', @AreaDoc, N'</td></tr>',
+            N'<tr><td style="color: #4a5568; padding: 4px 0;">Su Posición:</td><td><span style="background-color: #bee3f8; color: #2c5282; padding: 2px 8px; border-radius: 12px; font-size: 11px;">Prioridad de Firma ', @Orden, N'</span></td></tr></table></div>',
+            -- Botón
+            N'<div style="text-align: center;"><a href="https://zofratacna.com.pe" style="background-color: #2b6cb0; color: white; padding: 12px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Ingresar para Firmar</a></div></div>',
+            -- Footer
+            N'<div style="background-color: #fcfcfc; padding: 20px; font-size: 10px; color: #a0aec0; text-align: center; border-top: 1px solid #edf2f7;">Este es un mensaje automático de SIGEFIDD-ZOFRA.</div></div>'
+        );
+
+        SET @AsuntoFinal = CONCAT(N'PENDIENTE DE FIRMA (N° ', @Orden, N'): ', @CodigoDoc);
+
+        -- Enviar correo individual con su posición
+        EXEC dbo.GEN_X_EnviarMail @Para = @EmailDestino, @Asunto = @AsuntoFinal, @Mensaje = @Cuerpo;
+
+        FETCH NEXT FROM curFirmantes INTO @EmailDestino, @NombreFirmante, @Orden;
+    END
+
+    CLOSE curFirmantes;
+    DEALLOCATE curFirmantes;
+END
+GO
+
+
 -- ============================================================
 -- PARTE 3: BASE DE DATOS  FirmaDigital_Files
 --   Repositorio de archivos PDF.
@@ -1678,3 +1841,4 @@ WHERE IdUsuario = 1008;
 
 SELECT * FROM dbo.UsuarioSistema WHERE IdUsuario = 1008;
 */
+
