@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -44,6 +46,7 @@ namespace ZofraTacna.Presentacion
 
             CargarRevisores(idDoc);
             CargarFirmantes(idDoc);
+            CargarHistorial(idDoc);
         }
 
         // ============================================================
@@ -51,7 +54,8 @@ namespace ZofraTacna.Presentacion
         // ============================================================
         private void CargarInfoDocumento(int idDoc)
         {
-            string sql = @"SELECT d.Asunto, d.CodigoDocumento, me.Descripcion AS Estado, me.Codigo AS EstadoCod
+            string sql = @"SELECT d.Asunto, d.CodigoDocumento, me.Descripcion AS Estado, me.Codigo AS EstadoCod,
+                                  d.FechaLimiteRevision, d.FechaLimiteAprobacion, ISNULL(d.Prioridad,'MEDIA') AS Prioridad
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
                            WHERE d.IdDocumento = @id AND d.Activo = 1";
@@ -66,12 +70,23 @@ namespace ZofraTacna.Presentacion
                     {
                         if (dr.Read())
                         {
-                            litAsunto.Text  = System.Web.HttpUtility.HtmlEncode(dr["Asunto"].ToString());
-                            litCodigo.Text  = System.Web.HttpUtility.HtmlEncode(dr["CodigoDocumento"].ToString());
+                            litAsunto.Text  = HttpUtility.HtmlEncode(dr["Asunto"].ToString());
+                            litCodigo.Text  = HttpUtility.HtmlEncode(dr["CodigoDocumento"].ToString());
                             string est      = dr["EstadoCod"].ToString();
                             string css      = (est == "PEN" || est == "FPAR") ? "badge badge-firma" : "badge badge-estado";
                             litEstadoBadge.Text = string.Format("<span class='{0}'>{1}</span>", css,
-                                System.Web.HttpUtility.HtmlEncode(dr["Estado"].ToString()));
+                                HttpUtility.HtmlEncode(dr["Estado"].ToString()));
+                            CultureInfo pe  = CultureInfo.GetCultureInfo("es-PE");
+                            DateTime fRev   = Convert.ToDateTime(dr["FechaLimiteRevision"]);
+                            DateTime fApr   = Convert.ToDateTime(dr["FechaLimiteAprobacion"]);
+                            litPlazosActuales.Text = "<p style='font-size:11px;color:#555;background:#f0f7ff;border-radius:6px;padding:8px 10px;margin-bottom:10px'>" +
+                                "<strong>Actual rev.:</strong> " + HttpUtility.HtmlEncode(fRev.ToString("g", pe)) +
+                                "&nbsp;&nbsp;<strong>Actual apr.:</strong> " + HttpUtility.HtmlEncode(fApr.ToString("g", pe)) + "</p>";
+                            txtNuevaFechaRevision.Text   = fRev.ToString("yyyy-MM-ddTHH:mm");
+                            txtNuevaFechaAprobacion.Text = fApr.ToString("yyyy-MM-ddTHH:mm");
+                            txtEditAsunto.Text = dr["Asunto"].ToString();
+                            string prior = dr["Prioridad"].ToString().ToUpper();
+                            ddlEditPrioridad.SelectedValue = (prior == "ALTA" || prior == "MEDIA" || prior == "BAJA") ? prior : "MEDIA";
                         }
                         else
                         {
@@ -80,6 +95,46 @@ namespace ZofraTacna.Presentacion
                     }
                 }
             }
+        }
+
+        private void CargarHistorial(int idDoc)
+        {
+            string sql = @"SELECT h.FechaCambio, h.DetalleAccion, h.LoginUsuarioAccion,
+                                  ma.Descripcion AS EstAnterior, mn.Descripcion AS EstNuevo
+                           FROM HistorialDocumento h
+                           JOIN Maestro ma ON h.IdEstadoAnterior = ma.IdMaestro
+                           JOIN Maestro mn ON h.IdEstadoNuevo    = mn.IdMaestro
+                           WHERE h.IdDocumento = @id
+                           ORDER BY h.FechaCambio DESC";
+
+            var sb = new System.Text.StringBuilder();
+            CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
+            using (var cn = new SqlConnection(ConnStr))
+            {
+                cn.Open();
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDoc);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string fecha   = Convert.ToDateTime(dr["FechaCambio"]).ToString("g", pe);
+                            string detalle = HttpUtility.HtmlEncode(dr["DetalleAccion"].ToString());
+                            string login   = HttpUtility.HtmlEncode(dr["LoginUsuarioAccion"].ToString());
+                            string estAnt  = HttpUtility.HtmlEncode(dr["EstAnterior"].ToString());
+                            string estNuev = HttpUtility.HtmlEncode(dr["EstNuevo"].ToString());
+                            sb.Append("<div style='position:relative;padding-left:26px;padding-bottom:14px;font-size:12px'>");
+                            sb.Append("<div style='position:absolute;left:5px;top:3px;width:12px;height:12px;border-radius:50%;background:#1a2a4a;border:2px solid #fff;box-shadow:0 0 0 1px #dde1f0'></div>");
+                            sb.AppendFormat("<div style='color:#888;font-size:11px;margin-bottom:3px'>{0} &mdash; <strong>{1}</strong></div>", fecha, login);
+                            sb.AppendFormat("<div style='color:#333;font-weight:600;margin-bottom:2px'>{0}</div>", detalle);
+                            sb.AppendFormat("<div style='color:#aaa;font-size:11px'>{0} &rarr; {1}</div>", estAnt, estNuev);
+                            sb.Append("</div>");
+                        }
+                    }
+                }
+            }
+            litHistorial.Text = sb.Length > 0 ? sb.ToString() : "<p style='color:#bbb;font-size:12px;text-align:center;padding:16px'>Sin eventos registrados.</p>";
         }
 
         private void CargarDropdowns(int idDoc)
@@ -242,8 +297,12 @@ namespace ZofraTacna.Presentacion
                         cmd.ExecuteNonQuery();
                     }
                 }
+                ReiniciarFlujo(idDoc, "revisor agregado: " + login);
                 CargarDropdowns(idDoc);
-                MostrarMsg("Revisor agregado correctamente.", true);
+                CargarRevisores(idDoc);
+                CargarFirmantes(idDoc);
+                CargarHistorial(idDoc);
+                MostrarMsg("Revisor agregado. El flujo fue reiniciado.", true);
             }
             catch (Exception ex) { MostrarMsg("Error al agregar revisor: " + ex.Message, false); }
         }
@@ -251,10 +310,10 @@ namespace ZofraTacna.Presentacion
         protected void rptRevisores_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int idDoc = int.Parse(hfDocId.Value);
-            int idPart = Convert.ToInt32(e.CommandArgument);
 
             if (e.CommandName == "Eliminar")
             {
+                int idPart = Convert.ToInt32(e.CommandArgument);
                 using (var cn = new SqlConnection(ConnStr))
                 {
                     cn.Open();
@@ -264,9 +323,118 @@ namespace ZofraTacna.Presentacion
                         cmd.ExecuteNonQuery();
                     }
                 }
+                pnlReasignar.Visible = false;
+                ReiniciarFlujo(idDoc, "revisor eliminado");
                 CargarDropdowns(idDoc);
-                MostrarMsg("Revisor eliminado.", true);
+                CargarRevisores(idDoc);
+                CargarFirmantes(idDoc);
+                CargarHistorial(idDoc);
+                MostrarMsg("Revisor eliminado. El flujo fue reiniciado.", true);
             }
+            else if (e.CommandName == "Reasignar")
+            {
+                string[] partes = e.CommandArgument.ToString().Split('|');
+                hfReasignarId.Value    = partes[0];
+                litReasignarLogin.Text = System.Web.HttpUtility.HtmlEncode(partes[1]);
+
+                ddlReasignarNuevo.Items.Clear();
+                ddlReasignarNuevo.Items.Add(new ListItem("-- Seleccionar nuevo revisor --", ""));
+                using (var cn = new SqlConnection(ConnStr))
+                {
+                    cn.Open();
+                    string sql = @"SELECT u.LoginUsuario FROM UsuarioSistema u
+                                   JOIN Maestro m ON u.IdRolSistema=m.IdMaestro
+                                   WHERE u.Activo=1 AND m.Codigo='REV'
+                                     AND u.LoginUsuario != @actual
+                                     AND u.LoginUsuario NOT IN (
+                                         SELECT dp.LoginUsuario FROM DocumentoParticipante dp
+                                         JOIN Maestro mt ON dp.IdTipoParticipante=mt.IdMaestro
+                                         WHERE dp.IdDocumento=@idDoc AND mt.Codigo='REV' AND dp.Activo=1)
+                                   ORDER BY u.LoginUsuario";
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@actual", partes[1]);
+                        cmd.Parameters.AddWithValue("@idDoc",  idDoc);
+                        using (var dr = cmd.ExecuteReader())
+                            while (dr.Read())
+                                ddlReasignarNuevo.Items.Add(new ListItem(dr["LoginUsuario"].ToString(), dr["LoginUsuario"].ToString()));
+                    }
+                }
+                pnlReasignar.Visible = true;
+            }
+        }
+
+        protected void btnConfirmarReasignacion_Click(object sender, EventArgs e)
+        {
+            int idDoc  = int.Parse(hfDocId.Value);
+            int idPart = int.Parse(hfReasignarId.Value);
+            string nuevo = ddlReasignarNuevo.SelectedValue;
+            if (string.IsNullOrEmpty(nuevo)) { MostrarMsg("Seleccione el nuevo revisor.", false); return; }
+
+            string loginAdm = Session["LoginUsuario"].ToString();
+            string anterior = litReasignarLogin.Text;
+
+            using (var cn = new SqlConnection(ConnStr))
+            {
+                cn.Open();
+                using (var tx = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        int idEstadoPen;
+                        using (var cmd = new SqlCommand("SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='PEN'", cn, tx))
+                            idEstadoPen = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        using (var cmd = new SqlCommand(@"UPDATE DocumentoParticipante
+                                                          SET LoginUsuario=@nuevo, EstadoParticipante=@est, FechaAsignacion=GETDATE()
+                                                          WHERE IdParticipante=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@nuevo", nuevo);
+                            cmd.Parameters.AddWithValue("@est",   idEstadoPen);
+                            cmd.Parameters.AddWithValue("@id",    idPart);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        int idEstadoDoc;
+                        using (var cmd = new SqlCommand("SELECT IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            idEstadoDoc = Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+
+                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
+                                                          (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
+                                                          VALUES (@idDoc,@est,@est,@login,@det,GETDATE())", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idDoc", idDoc);
+                            cmd.Parameters.AddWithValue("@est",   idEstadoDoc);
+                            cmd.Parameters.AddWithValue("@login", loginAdm);
+                            cmd.Parameters.AddWithValue("@det",   "ADM reasignó revisor: " + anterior + " → " + nuevo);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        tx.Commit();
+                        ReiniciarFlujo(idDoc, "revisor reasignado: " + anterior + " → " + nuevo);
+                        pnlReasignar.Visible = false;
+                        CargarDropdowns(idDoc);
+                        CargarRevisores(idDoc);
+                        CargarFirmantes(idDoc);
+                        CargarHistorial(idDoc);
+                        MostrarMsg("Revisor reasignado: " + anterior + " → " + nuevo + ". El flujo fue reiniciado.", true);
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        protected void btnCancelarReasignacion_Click(object sender, EventArgs e)
+        {
+            pnlReasignar.Visible = false;
+            hfReasignarId.Value  = "";
         }
 
         // ============================================================
@@ -331,8 +499,12 @@ namespace ZofraTacna.Presentacion
                             }
 
                             tx.Commit();
+                            ReiniciarFlujo(idDoc, "firmante agregado: " + login);
                             CargarDropdowns(idDoc);
-                            MostrarMsg("Firmante agregado correctamente (como revisor y firmante).", true);
+                            CargarRevisores(idDoc);
+                            CargarFirmantes(idDoc);
+                            CargarHistorial(idDoc);
+                            MostrarMsg("Firmante agregado. El flujo fue reiniciado.", true);
                         }
                         catch
                         {
@@ -362,13 +534,21 @@ namespace ZofraTacna.Presentacion
                     }
                 }
                 RenumerarFirmantes(idDoc);
+                ReiniciarFlujo(idDoc, "firmante eliminado");
                 CargarDropdowns(idDoc);
-                MostrarMsg("Firmante eliminado.", true);
+                CargarRevisores(idDoc);
+                CargarFirmantes(idDoc);
+                CargarHistorial(idDoc);
+                MostrarMsg("Firmante eliminado. El flujo fue reiniciado.", true);
             }
             else if (e.CommandName == "Subir" || e.CommandName == "Bajar")
             {
                 IntercambiarOrden(idDoc, idPart, e.CommandName == "Subir");
-                MostrarMsg("Orden actualizado.", true);
+                ReiniciarFlujo(idDoc, "orden de firmantes modificado");
+                CargarRevisores(idDoc);
+                CargarFirmantes(idDoc);
+                CargarHistorial(idDoc);
+                MostrarMsg("Orden actualizado. El flujo fue reiniciado.", true);
             }
         }
 
@@ -465,6 +645,136 @@ namespace ZofraTacna.Presentacion
             }
         }
 
+        protected void btnGuardarMetadatos_Click(object sender, EventArgs e)
+        {
+            int idDoc = int.Parse(hfDocId.Value);
+            string asunto = txtEditAsunto.Text.Trim();
+            if (string.IsNullOrEmpty(asunto)) { MostrarMsg("El asunto no puede estar vacío.", false); return; }
+
+            string prioridad  = ddlEditPrioridad.SelectedValue;
+            string loginAdm   = Session["LoginUsuario"].ToString();
+
+            using (var cn = new SqlConnection(ConnStr))
+            {
+                cn.Open();
+                using (var tx = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        string asuntoAnterior;
+                        using (var cmd = new SqlCommand("SELECT Asunto FROM Documento WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            asuntoAnterior = cmd.ExecuteScalar().ToString();
+                        }
+
+                        using (var cmd = new SqlCommand("UPDATE Documento SET Asunto=@asunto, Prioridad=@prior WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@asunto", asunto);
+                            cmd.Parameters.AddWithValue("@prior",  prioridad);
+                            cmd.Parameters.AddWithValue("@id",     idDoc);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        int idEstado;
+                        using (var cmd = new SqlCommand("SELECT IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            idEstado = Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+
+                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
+                            (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
+                            VALUES (@id,@est,@est,@login,@det,GETDATE())", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id",    idDoc);
+                            cmd.Parameters.AddWithValue("@est",   idEstado);
+                            cmd.Parameters.AddWithValue("@login", loginAdm);
+                            cmd.Parameters.AddWithValue("@det",   string.Format("ADM editó metadatos. Asunto: '{0}' → '{1}'. Prioridad: {2}", asuntoAnterior, asunto, prioridad));
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            CargarHistorial(idDoc);
+            MostrarMsg("Metadatos actualizados correctamente.", true);
+        }
+
+        // ============================================================
+        // REINICIO DE FLUJO
+        // ============================================================
+        private void ReiniciarFlujo(int idDoc, string motivo)
+        {
+            string loginAdm = Session["LoginUsuario"].ToString();
+            using (var cn = new SqlConnection(ConnStr))
+            {
+                cn.Open();
+                using (var tx = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        int idEstadoRev, idEstadoActual, idEstadoPen;
+                        using (var cmd = new SqlCommand(@"SELECT
+                            (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_DOC' AND Codigo='REV'),
+                            d.IdEstadoDocumento,
+                            (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='PEN')
+                            FROM Documento d WHERE d.IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            using (var dr = cmd.ExecuteReader())
+                            {
+                                dr.Read();
+                                idEstadoRev    = Convert.ToInt32(dr[0]);
+                                idEstadoActual = Convert.ToInt32(dr[1]);
+                                idEstadoPen    = Convert.ToInt32(dr[2]);
+                            }
+                        }
+
+                        using (var cmd = new SqlCommand("UPDATE Documento SET IdEstadoDocumento=@rev WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@rev", idEstadoRev);
+                            cmd.Parameters.AddWithValue("@id",  idDoc);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET EstadoParticipante=@pen, Activo=1 WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@pen", idEstadoPen);
+                            cmd.Parameters.AddWithValue("@id",  idDoc);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
+                            (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
+                            VALUES (@id,@ant,@nuevo,@login,@det,GETDATE())", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id",    idDoc);
+                            cmd.Parameters.AddWithValue("@ant",   idEstadoActual);
+                            cmd.Parameters.AddWithValue("@nuevo", idEstadoRev);
+                            cmd.Parameters.AddWithValue("@login", loginAdm);
+                            cmd.Parameters.AddWithValue("@det",   "ADM reinició el flujo: " + motivo);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
         // ============================================================
         // UTILIDADES
         // ============================================================
@@ -473,6 +783,79 @@ namespace ZofraTacna.Presentacion
             lblMsg.Text     = msg;
             lblMsg.CssClass = ok ? "alert alert-ok" : "alert alert-err";
             lblMsg.Visible  = true;
+        }
+
+        protected void btnAmpliarPlazo_Click(object sender, EventArgs e)
+        {
+            int idDoc = int.Parse(hfDocId.Value);
+
+            string motivo = txtMotivoAmpliacion.Text.Trim();
+            if (string.IsNullOrEmpty(motivo)) { MostrarMsg("Debe ingresar el motivo de la ampliación.", false); return; }
+
+            DateTime nuevaRev, nuevaApr;
+            if (!DateTime.TryParse(txtNuevaFechaRevision.Text, out nuevaRev) || nuevaRev <= DateTime.Now)
+            { MostrarMsg("La fecha límite de revisión debe ser una fecha futura válida.", false); return; }
+            if (!DateTime.TryParse(txtNuevaFechaAprobacion.Text, out nuevaApr) || nuevaApr <= nuevaRev)
+            { MostrarMsg("La fecha límite de aprobación debe ser posterior a la de revisión.", false); return; }
+
+            string loginAdm = Session["LoginUsuario"].ToString();
+            CultureInfo pe  = CultureInfo.GetCultureInfo("es-PE");
+
+            using (var cn = new SqlConnection(ConnStr))
+            {
+                cn.Open();
+                using (var tx = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        DateTime anteriorRev, anteriorApr;
+                        int idEstadoActual;
+                        using (var cmd = new SqlCommand("SELECT FechaLimiteRevision, FechaLimiteAprobacion, IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            using (var dr = cmd.ExecuteReader())
+                            {
+                                dr.Read();
+                                anteriorRev   = Convert.ToDateTime(dr[0]);
+                                anteriorApr   = Convert.ToDateTime(dr[1]);
+                                idEstadoActual = Convert.ToInt32(dr[2]);
+                            }
+                        }
+
+                        using (var cmd = new SqlCommand("UPDATE Documento SET FechaLimiteRevision=@rev, FechaLimiteAprobacion=@apr WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@rev", nuevaRev);
+                            cmd.Parameters.AddWithValue("@apr", nuevaApr);
+                            cmd.Parameters.AddWithValue("@id",  idDoc);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        string detalle = string.Format("ADM amplió plazo. Rev: {0} → {1}. Apr: {2} → {3}. Motivo: {4}",
+                            anteriorRev.ToString("g", pe), nuevaRev.ToString("g", pe),
+                            anteriorApr.ToString("g", pe), nuevaApr.ToString("g", pe), motivo);
+
+                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
+                            (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
+                            VALUES (@id,@est,@est,@login,@det,GETDATE())", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id",    idDoc);
+                            cmd.Parameters.AddWithValue("@est",   idEstadoActual);
+                            cmd.Parameters.AddWithValue("@login", loginAdm);
+                            cmd.Parameters.AddWithValue("@det",   detalle);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            Response.Redirect(Request.Url.PathAndQuery);
         }
 
         protected void btnCerrarSesion_Click(object sender, EventArgs e)

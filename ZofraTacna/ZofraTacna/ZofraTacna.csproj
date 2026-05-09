@@ -173,6 +173,13 @@
     <Compile Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx.designer.cs">
       <DependentUpon>GestionarParticipantes.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx.cs">
+      <DependentUpon>DevolverDocumento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx.designer.cs">
+      <DependentUpon>DevolverDocumento.aspx</DependentUpon>
+    </Compile>
     <!-- Presentacion - GestionDocumentos -->
     <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.designer.cs">
       <DependentUpon>CargarDocumento.aspx</DependentUpon>
@@ -271,6 +278,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\GestionDocumentos\CargarDocumento.aspx">

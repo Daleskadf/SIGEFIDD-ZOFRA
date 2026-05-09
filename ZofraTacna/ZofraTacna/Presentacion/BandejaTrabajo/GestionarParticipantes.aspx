@@ -74,6 +74,7 @@
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <asp:HiddenField ID="hfDocId" runat="server"/>
+<asp:HiddenField ID="hfReasignarId" runat="server"/>
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <!-- SIDEBAR -->
     <div class="sidebar">
@@ -158,11 +159,25 @@
                                 <div class='part-item <%# Eval("EstadoCss") %>'>
                                     <span class="part-login"><%# System.Web.HttpUtility.HtmlEncode(Eval("Login").ToString()) %></span>
                                     <div class="part-actions">
+                                        <asp:LinkButton runat="server" CommandName="Reasignar" CommandArgument='<%# Eval("IdParticipante") + "|" + Eval("Login") %>' CssClass="btn-orden" title="Reasignar" style="width:auto;padding:4px 8px;font-size:11px;font-weight:600;color:#1a2a4a">&#8635; Reasignar</asp:LinkButton>
                                         <asp:LinkButton runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("IdParticipante") %>' CssClass="btn-eliminar-p" OnClientClick="return confirm('¿Eliminar este revisor?')">Eliminar</asp:LinkButton>
                                     </div>
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
+                        <asp:Panel ID="pnlReasignar" runat="server" Visible="false">
+                            <hr class="divider"/>
+                            <div style="background:#f0f4ff;border:1.5px solid #c5d0f0;border-radius:8px;padding:14px;margin-top:8px">
+                                <p style="font-size:12px;font-weight:700;color:#1a2a4a;margin-bottom:8px">&#8635; Reasignar revisor: <asp:Literal ID="litReasignarLogin" runat="server"/></p>
+                                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                                    <asp:DropDownList ID="ddlReasignarNuevo" runat="server" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid #c5d0f0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;background:white"/>
+                                    <asp:Button ID="btnConfirmarReasignacion" runat="server" Text="Confirmar" OnClick="btnConfirmarReasignacion_Click" CausesValidation="false"
+                                        style="padding:9px 16px;border:none;border-radius:8px;background:linear-gradient(90deg,#1a2a4a,#2a4a8a);color:white;font-size:13px;font-weight:600;cursor:pointer"/>
+                                    <asp:LinkButton runat="server" OnClick="btnCancelarReasignacion_Click" CausesValidation="false"
+                                        style="font-size:12px;color:#888;cursor:pointer;text-decoration:underline">Cancelar</asp:LinkButton>
+                                </div>
+                            </div>
+                        </asp:Panel>
                     </div>
                 </div>
 
@@ -200,6 +215,86 @@
                 </div>
 
             </div>
+
+            <!-- AMPLIAR PLAZO -->
+            <div class="panel" style="margin-top:20px">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                    <h3>Ampliar Plazo de Revisi&oacute;n</h3>
+                </div>
+                <div class="panel-body">
+                    <asp:Literal ID="litPlazosActuales" runat="server"/>
+                    <asp:Literal ID="litMsgAmpliacion" runat="server"/>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+                        <div style="flex:1;min-width:200px">
+                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Nueva fecha l&iacute;m. revisi&oacute;n</label>
+                            <asp:TextBox ID="txtNuevaFechaRevision" runat="server" TextMode="DateTimeLocal"
+                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
+                        </div>
+                        <div style="flex:1;min-width:200px">
+                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Nueva fecha l&iacute;m. aprobaci&oacute;n / firma</label>
+                            <asp:TextBox ID="txtNuevaFechaAprobacion" runat="server" TextMode="DateTimeLocal"
+                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:12px">
+                        <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Motivo de la ampliaci&oacute;n</label>
+                        <asp:TextBox ID="txtMotivoAmpliacion" runat="server" TextMode="MultiLine" Rows="2"
+                            style="width:100%;padding:10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;resize:vertical"
+                            placeholder="Motivo de la ampliaci&oacute;n..."/>
+                    </div>
+                    <asp:Button ID="btnAmpliarPlazo" runat="server" Text="Confirmar Ampliaci&#243;n"
+                        OnClick="btnAmpliarPlazo_Click"
+                        OnClientClick="return confirm('¿Confirma la ampliación de plazos?');"
+                        CausesValidation="false"
+                        style="padding:10px 24px;background:linear-gradient(90deg,#1a6b9a,#2196f3);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer"/>
+                </div>
+            </div>
+
+            <!-- EDITAR METADATOS -->
+            <div class="panel" style="margin-top:20px">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    <h3>Editar Metadatos del Documento</h3>
+                </div>
+                <div class="panel-body">
+                    <asp:Literal ID="litMsgMetadatos" runat="server"/>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+                        <div style="flex:2;min-width:240px">
+                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Asunto</label>
+                            <asp:TextBox ID="txtEditAsunto" runat="server"
+                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
+                        </div>
+                        <div style="flex:1;min-width:160px">
+                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Prioridad</label>
+                            <asp:DropDownList ID="ddlEditPrioridad" runat="server"
+                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;background:white">
+                                <asp:ListItem Value="ALTA">Alta</asp:ListItem>
+                                <asp:ListItem Value="MEDIA">Media</asp:ListItem>
+                                <asp:ListItem Value="BAJA">Baja</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+                    <asp:Button ID="btnGuardarMetadatos" runat="server" Text="Guardar Cambios"
+                        OnClick="btnGuardarMetadatos_Click" CausesValidation="false"
+                        style="padding:10px 24px;background:linear-gradient(90deg,#2e7d32,#43a047);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer"/>
+                </div>
+            </div>
+
+            <!-- HISTORIAL / FLUJO -->
+            <div class="panel" style="margin-top:20px;margin-bottom:28px">
+                <div class="panel-header">
+                    <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                    <h3>Flujo del Documento</h3>
+                </div>
+                <div class="panel-body" style="max-height:360px;overflow-y:auto">
+                    <div style="position:relative;padding-left:4px">
+                        <div style="position:absolute;left:11px;top:6px;bottom:8px;width:2px;background:linear-gradient(180deg,#1a2a4a22,#1a2a4a44)"></div>
+                        <asp:Literal ID="litHistorial" runat="server"/>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
