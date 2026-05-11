@@ -10,7 +10,6 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Literal litDetallesDoc;
         protected global::System.Web.UI.WebControls.Literal litLineaTiempo;
         protected global::System.Web.UI.WebControls.Literal litNombreArchivoTitulo;
-        protected global::System.Web.UI.WebControls.Button btnEmitirFirma;
         protected global::System.Web.UI.WebControls.Panel pnlSinPdf;
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdf;
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;

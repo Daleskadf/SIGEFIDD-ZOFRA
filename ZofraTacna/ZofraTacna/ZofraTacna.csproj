@@ -145,6 +145,9 @@
     <Compile Include="Presentacion\BandejaTrabajo\ServirPdf.ashx.cs">
       <DependentUpon>ServirPdf.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx.cs">
+      <DependentUpon>LanzarFirmaPeru.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx.cs">
       <DependentUpon>EmitirRevision.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -264,6 +267,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx" />
     <Content Include="Presentacion\Notificaciones.ashx" />
     <Content Include="Presentacion\BloqueoFlujo.ashx" />
     <Content Include="Content\sigefidd-notificaciones.css" />

@@ -320,7 +320,7 @@ namespace ZofraTacna.Presentacion
                     "<button type='button' class='btn-detalle' onclick=\"window.location.href='VerDocumento.aspx?id={0}'\">{1}Ver</button>",
                     idDoc, svgOjo);
                 string firmarBtn = puedeFirmarDocumento
-                    ? string.Format("<button type='button' class='btn-firma' onclick=\"window.location.href='EmitirFirma.aspx?id={0}'\">{1}Firmar Documento</button>", idDoc, svgEdit)
+                    ? string.Format("<button type='button' class='btn-firma' onclick=\"lanzarFirmaPeru({0})\">{1}Firmar Documento</button>", idDoc, svgEdit)
                     : string.Format("<button type='button' class='btn-firma' disabled>{0}Firmar Documento</button>", svgEdit);
                 return verBtn + firmarBtn;
             }

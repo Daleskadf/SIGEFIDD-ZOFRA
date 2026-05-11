@@ -40,7 +40,7 @@
                 <div class="emitir-right">
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <div class="pdf-frame-wrap">
-                        <div class="pdf-float-actions"><asp:Button ID="btnEmitirFirma" runat="server" Text="Emitir Firma" CssClass="btn-firma" OnClick="btnEmitirFirma_Click" /></div>
+                        <div class="pdf-float-actions"><button type="button" id="btnLanzarFirma" class="btn-firma" onclick="lanzarFirmaPeru()">&#9998; Abrir Firma Per&uacute;</button></div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
                     </div>
@@ -51,5 +51,30 @@
 </div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
+<script>
+function lanzarFirmaPeru() {
+    var btn = document.getElementById('btnLanzarFirma');
+    if (btn) { btn.disabled = true; btn.textContent = 'Abriendo Firma Perú...'; }
+
+    fetch('LanzarFirmaPeru.ashx', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            alert('✅ ' + data.msg);
+        } else {
+            alert('⚠️ ' + data.msg);
+        }
+        if (btn) { btn.disabled = false; btn.textContent = '✎ Abrir Firma Perú'; }
+    })
+    .catch(function(err) {
+        alert('❌ Error de conexión al intentar abrir Firma Perú.');
+        if (btn) { btn.disabled = false; btn.textContent = '✎ Abrir Firma Perú'; }
+    });
+}
+</script>
 </body>
 </html>
