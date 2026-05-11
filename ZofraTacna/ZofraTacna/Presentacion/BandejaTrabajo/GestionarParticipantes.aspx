@@ -69,12 +69,69 @@
         .btn-eliminar-p:hover{background:#fff0f0}
         .empty-list{text-align:center;padding:24px;color:#bbb;font-size:13px}
         .divider{border:none;border-top:1px solid #eef0f8;margin:12px 0}
+        .form-label{font-size:11px;font-weight:700;letter-spacing:.5px;color:#555;margin-bottom:6px;display:block}
+        .required{color:#c0392b}
+        .form-input{width:100%;padding:11px 13px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;color:#333;font-family:'Segoe UI',sans-serif;outline:none}
+        .form-input:focus{border-color:#1a2a4a}
+        textarea.form-input{resize:vertical;min-height:88px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+        .form-group{margin-bottom:18px}
+        .plazos-box{border:1.5px solid #e8eaf0;border-radius:12px;padding:18px;margin-bottom:18px}
+        .plazos-box.plazos-zona-plazos{background:linear-gradient(165deg,#f2faf5 0%,#e3f2e8 45%,#f7fcf9 100%);border-color:#a8d4b8;box-shadow:0 2px 12px rgba(46,125,50,.08)}
+        .plazos-box.plazos-zona-plazos .plazos-sub{color:#2e7d32}
+        .plazos-box.plazos-zona-asignacion{background:linear-gradient(165deg,#f4f6ff 0%,#e8ecfc 40%,#fafbff 100%);border-color:#b8c4e8;box-shadow:0 2px 14px rgba(26,42,74,.08)}
+        .plazos-box.plazos-zona-asignacion .plazos-sub{color:#3949ab}
+        .revisores-wrap{background:linear-gradient(180deg,#ffffff 0%,#f2faf5 100%);border:1.5px solid #c8e6c9;border-radius:12px;padding:14px;min-height:120px}
+        .revisores-hint{font-size:11px;color:#4a6b55;margin:10px 0 0;line-height:1.4}
+        .revisor-card{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;background:white;border:1.5px solid #b2dfbc;border-radius:10px;box-shadow:0 2px 8px rgba(46,125,50,.08);transition:box-shadow .15s,border-color .15s}
+        .revisor-card:last-child{margin-bottom:0}
+        .revisor-card:hover{border-color:#2e7d32;box-shadow:0 4px 14px rgba(46,125,50,.12)}
+        .revisor-badge{flex-shrink:0;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2e7d32,#43a047);color:white;font-size:11px;font-weight:800;border-radius:8px;letter-spacing:.5px}
+        .revisor-nombre{flex:1;font-size:13px;font-weight:600;color:#1b5e20;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .revisor-btn-quitar{width:30px;height:36px;border:none;background:transparent;color:#c0392b;font-size:20px;font-weight:bold;cursor:pointer;line-height:1;border-radius:6px;flex-shrink:0;align-self:center}
+        .revisor-btn-quitar:hover{background:#fdecea;color:#8b1a1a}
+        .firmantes-wrap{background:linear-gradient(180deg,#ffffff 0%,#f4f7fd 100%);border:1.5px solid #dbe3f0;border-radius:12px;padding:14px;min-height:120px}
+        .firmantes-hint{font-size:11px;color:#5c6b8a;margin:0 0 10px;line-height:1.4}
+        .firmante-card{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;background:white;border:1.5px solid #e0e7f2;border-radius:10px;box-shadow:0 2px 8px rgba(26,42,74,.06);transition:box-shadow .15s,border-color .15s,transform .1s;cursor:grab}
+        .firmante-card:last-child{margin-bottom:0}
+        .firmante-card:hover{border-color:#1a2a4a;box-shadow:0 4px 14px rgba(26,42,74,.1)}
+        .firmante-card.firmante-dragging{opacity:.65;transform:scale(.99);cursor:grabbing;box-shadow:0 8px 24px rgba(26,42,74,.18)}
+        .firmante-card.firmante-drag-over{border-color:#8b1a1a;background:#fff8f8}
+        .firmante-handle{flex-shrink:0;width:28px;height:36px;display:flex;align-items:center;justify-content:center;color:#8898b8;font-size:16px;letter-spacing:-2px;user-select:none;border-radius:6px;background:#f0f3fa;cursor:grab}
+        .firmante-handle:active{cursor:grabbing}
+        .firmante-orden{flex-shrink:0;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2a4a,#2a3f6f);color:white;font-size:12px;font-weight:700;border-radius:8px}
+        .firmante-nombre{flex:1;font-size:13px;font-weight:600;color:#1a2a4a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .firmante-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+        .firmante-btn-flecha{width:30px;height:26px;border:1.5px solid #c5d0e8;background:#f8faff;color:#1a2a4a;border-radius:6px;font-size:12px;cursor:pointer;line-height:1;padding:0;font-weight:700}
+        .firmante-btn-flecha:hover:not(:disabled){background:#1a2a4a;color:white;border-color:#1a2a4a}
+        .firmante-btn-flecha:disabled{opacity:.35;cursor:not-allowed}
+        .firmante-btn-quitar{width:30px;height:56px;border:none;background:transparent;color:#c0392b;font-size:20px;font-weight:bold;cursor:pointer;line-height:1;border-radius:6px}
+        .firmante-btn-quitar:hover{background:#fdecea;color:#8b1a1a}
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        #dropdownResultadosGp{animation:gpSlideDown .15s ease-out;border-left:1.5px solid #1a2a4a !important;border-right:1.5px solid #1a2a4a !important;border-bottom:1.5px solid #1a2a4a !important}
+        @keyframes gpSlideDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+        .empleado-resultado-item{transition:all .15s ease}
+        .plazos-title{font-size:14px;font-weight:600;color:#1a2a4a;margin-bottom:4px}
+        .plazos-sub{font-size:12px;color:#3b5bdb;margin-bottom:14px}
+        .plazos-hint{font-size:11px;color:#888;margin-top:4px}
+        .upload-zone{border:2px dashed #b0b8d0;border-radius:10px;padding:28px;text-align:center;cursor:pointer;background:#fafbff;margin-bottom:12px;position:relative}
+        .upload-zone:hover{border-color:#1a2a4a;background:#f0f2ff}
+        .upload-zone svg{width:32px;height:32px;fill:#aab;margin-bottom:8px}
+        .upload-zone .uz-title{font-size:14px;font-weight:500;color:#555;margin-bottom:4px}
+        .upload-zone .uz-sub{font-size:12px;color:#aaa}
+        .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .btn-guardar-doc{padding:11px 26px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(90deg,#1a2a4a,#8b1a1a);color:#fff;box-shadow:0 4px 12px rgba(26,42,74,.2)}
+        .btn-guardar-doc:hover{filter:brightness(1.05)}
+        .guardar-doc-wrap{margin-top:20px;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:18px 22px;border:1.5px solid #e8eaf0}
+        .guardar-doc-wrap p{font-size:12px;color:#63718f;margin:0 0 14px;line-height:1.5;max-width:920px}
+        .guardar-doc-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;align-items:center}
+        .doc-ayuda{font-size:11px;color:#888;margin-top:6px;line-height:1.45}
+        @media (max-width:720px){.form-row{grid-template-columns:1fr}.gp-grid-participantes{grid-template-columns:1fr !important}}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
-<form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
+<form id="form1" runat="server" enctype="multipart/form-data" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <asp:HiddenField ID="hfDocId" runat="server"/>
-<asp:HiddenField ID="hfReasignarId" runat="server"/>
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <!-- SIDEBAR -->
     <div class="sidebar">
@@ -134,150 +191,104 @@
             <!-- MENSAJE -->
             <asp:Label ID="lblMsg" runat="server" Visible="false" CssClass="alert"/>
 
-            <!-- PANELES -->
-            <div class="panels">
-
-                <!-- PANEL REVISORES -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                        <h3>Revisores Asignados</h3>
-                    </div>
-                    <div class="panel-body">
-                        <!-- Agregar revisor -->
-                        <div class="agregar-form">
-                            <asp:DropDownList ID="ddlRevisor" runat="server" CssClass="agregar-form select"/>
-                            <asp:Button ID="btnAgregarRevisor" runat="server" Text="+ Agregar" CssClass="btn-agregar-p" OnClick="btnAgregarRevisor_Click" CausesValidation="false"/>
-                        </div>
-                        <hr class="divider"/>
-                        <!-- Lista actual -->
-                        <asp:Panel ID="pnlRevisoresVacio" runat="server" Visible="false">
-                            <div class="empty-list">Sin revisores asignados</div>
-                        </asp:Panel>
-                        <asp:Repeater ID="rptRevisores" runat="server" OnItemCommand="rptRevisores_ItemCommand">
-                            <ItemTemplate>
-                                <div class='part-item <%# Eval("EstadoCss") %>'>
-                                    <span class="part-login"><%# System.Web.HttpUtility.HtmlEncode(Eval("Login").ToString()) %></span>
-                                    <div class="part-actions">
-                                        <asp:LinkButton runat="server" CommandName="Reasignar" CommandArgument='<%# Eval("IdParticipante") + "|" + Eval("Login") %>' CssClass="btn-orden" title="Reasignar" style="width:auto;padding:4px 8px;font-size:11px;font-weight:600;color:#1a2a4a">&#8635; Reasignar</asp:LinkButton>
-                                        <asp:LinkButton runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("IdParticipante") %>' CssClass="btn-eliminar-p" OnClientClick="return confirm('¿Eliminar este revisor?')">Eliminar</asp:LinkButton>
-                                    </div>
-                                </div>
-                            </ItemTemplate>
-                        </asp:Repeater>
-                        <asp:Panel ID="pnlReasignar" runat="server" Visible="false">
-                            <hr class="divider"/>
-                            <div style="background:#f0f4ff;border:1.5px solid #c5d0f0;border-radius:8px;padding:14px;margin-top:8px">
-                                <p style="font-size:12px;font-weight:700;color:#1a2a4a;margin-bottom:8px">&#8635; Reasignar revisor: <asp:Literal ID="litReasignarLogin" runat="server"/></p>
-                                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                                    <asp:DropDownList ID="ddlReasignarNuevo" runat="server" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid #c5d0f0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;background:white"/>
-                                    <asp:Button ID="btnConfirmarReasignacion" runat="server" Text="Confirmar" OnClick="btnConfirmarReasignacion_Click" CausesValidation="false"
-                                        style="padding:9px 16px;border:none;border-radius:8px;background:linear-gradient(90deg,#1a2a4a,#2a4a8a);color:white;font-size:13px;font-weight:600;cursor:pointer"/>
-                                    <asp:LinkButton runat="server" OnClick="btnCancelarReasignacion_Click" CausesValidation="false"
-                                        style="font-size:12px;color:#888;cursor:pointer;text-decoration:underline">Cancelar</asp:LinkButton>
-                                </div>
-                            </div>
-                        </asp:Panel>
-                    </div>
-                </div>
-
-                <!-- PANEL FIRMANTES -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
-                        <h3>Firmantes y Orden de Firma</h3>
-                    </div>
-                    <div class="panel-body">
-                        <!-- Agregar firmante -->
-                        <div class="agregar-form">
-                            <asp:DropDownList ID="ddlFirmante" runat="server" CssClass="agregar-form select"/>
-                            <asp:Button ID="btnAgregarFirmante" runat="server" Text="+ Agregar" CssClass="btn-agregar-p" OnClick="btnAgregarFirmante_Click" CausesValidation="false"/>
-                        </div>
-                        <hr class="divider"/>
-                        <!-- Lista actual con orden -->
-                        <asp:Panel ID="pnlFirmantesVacio" runat="server" Visible="false">
-                            <div class="empty-list">Sin firmantes asignados</div>
-                        </asp:Panel>
-                        <asp:Repeater ID="rptFirmantes" runat="server" OnItemCommand="rptFirmantes_ItemCommand">
-                            <ItemTemplate>
-                                <div class="part-item">
-                                    <span class="part-orden"><%# Eval("Orden") %></span>
-                                    <span class="part-login"><%# System.Web.HttpUtility.HtmlEncode(Eval("Login").ToString()) %></span>
-                                    <div class="part-actions">
-                                        <asp:LinkButton runat="server" CommandName="Subir" CommandArgument='<%# Eval("IdParticipante") %>' CssClass="btn-orden" title="Subir orden" Enabled='<%# (bool)Eval("PuedeSubir") %>'>&#8593;</asp:LinkButton>
-                                        <asp:LinkButton runat="server" CommandName="Bajar" CommandArgument='<%# Eval("IdParticipante") %>' CssClass="btn-orden" title="Bajar orden" Enabled='<%# (bool)Eval("PuedeBajar") %>'>&#8595;</asp:LinkButton>
-                                        <asp:LinkButton runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("IdParticipante") %>' CssClass="btn-eliminar-p" OnClientClick="return confirm('¿Eliminar este firmante?')">Eliminar</asp:LinkButton>
-                                    </div>
-                                </div>
-                            </ItemTemplate>
-                        </asp:Repeater>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- AMPLIAR PLAZO -->
-            <div class="panel" style="margin-top:20px">
+            <!-- DATOS DEL DOCUMENTO (alineado a Cargar documento) -->
+            <div class="panel" style="margin-bottom:20px">
                 <div class="panel-header">
-                    <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-                    <h3>Ampliar Plazo de Revisi&oacute;n</h3>
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    <h3>Datos del documento</h3>
                 </div>
                 <div class="panel-body">
-                    <asp:Literal ID="litPlazosActuales" runat="server"/>
-                    <asp:Literal ID="litMsgAmpliacion" runat="server"/>
-                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-                        <div style="flex:1;min-width:200px">
-                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Nueva fecha l&iacute;m. revisi&oacute;n</label>
-                            <asp:TextBox ID="txtNuevaFechaRevision" runat="server" TextMode="DateTimeLocal"
-                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
-                        </div>
-                        <div style="flex:1;min-width:200px">
-                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Nueva fecha l&iacute;m. aprobaci&oacute;n / firma</label>
-                            <asp:TextBox ID="txtNuevaFechaAprobacion" runat="server" TextMode="DateTimeLocal"
-                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
-                        </div>
+                    <p style="font-size:12px;color:#63718f;margin:-4px 0 16px;line-height:1.45">Edite la misma informaci&oacute;n que al cargar un documento (incluidos los plazos por horas). Los revisores y firmantes se gestionan abajo. Use el bot&oacute;n <strong>Guardar datos del documento</strong> (debajo de esos paneles) cuando haya terminado los cambios; el flujo vuelve a <strong>revisi&oacute;n</strong> desde el inicio.</p>
+                    <div class="form-group">
+                        <label class="form-label">C&Oacute;DIGO DE DOCUMENTO <span class="required">*</span></label>
+                        <asp:TextBox ID="txtEditCodigo" runat="server" CssClass="form-input" MaxLength="50" placeholder="Ej: RS-0001-2026"/>
+                        <div class="doc-ayuda">Debe ser &uacute;nico en el sistema. Mismo formato que en &laquo;Cargar documento&raquo;.</div>
                     </div>
-                    <div style="margin-bottom:12px">
-                        <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Motivo de la ampliaci&oacute;n</label>
-                        <asp:TextBox ID="txtMotivoAmpliacion" runat="server" TextMode="MultiLine" Rows="2"
-                            style="width:100%;padding:10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;resize:vertical"
-                            placeholder="Motivo de la ampliaci&oacute;n..."/>
+                    <div class="form-group">
+                        <label class="form-label">ASUNTO <span class="required">*</span></label>
+                        <asp:TextBox ID="txtEditAsunto" runat="server" CssClass="form-input" placeholder="Asunto del documento"/>
                     </div>
-                    <asp:Button ID="btnAmpliarPlazo" runat="server" Text="Confirmar Ampliaci&#243;n"
-                        OnClick="btnAmpliarPlazo_Click"
-                        OnClientClick="return confirm('¿Confirma la ampliación de plazos?');"
-                        CausesValidation="false"
-                        style="padding:10px 24px;background:linear-gradient(90deg,#1a6b9a,#2196f3);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer"/>
-                </div>
-            </div>
-
-            <!-- EDITAR METADATOS -->
-            <div class="panel" style="margin-top:20px">
-                <div class="panel-header">
-                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                    <h3>Editar Metadatos del Documento</h3>
-                </div>
-                <div class="panel-body">
-                    <asp:Literal ID="litMsgMetadatos" runat="server"/>
-                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-                        <div style="flex:2;min-width:240px">
-                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Asunto</label>
-                            <asp:TextBox ID="txtEditAsunto" runat="server"
-                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif"/>
+                    <div class="form-group">
+                        <label class="form-label">DESCRIPCI&Oacute;N</label>
+                        <asp:TextBox ID="txtEditDescripcion" runat="server" TextMode="MultiLine" CssClass="form-input" placeholder="Descripci&oacute;n opcional"/>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label">CATEGOR&Iacute;A <span class="required">*</span></label>
+                            <asp:DropDownList ID="ddlEditCategoria" runat="server" CssClass="form-input"/>
                         </div>
-                        <div style="flex:1;min-width:160px">
-                            <label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:4px">Prioridad</label>
-                            <asp:DropDownList ID="ddlEditPrioridad" runat="server"
-                                style="width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;background:white">
+                        <div>
+                            <label class="form-label">PRIORIDAD <span class="required">*</span></label>
+                            <asp:DropDownList ID="ddlEditPrioridad" runat="server" CssClass="form-input">
                                 <asp:ListItem Value="ALTA">Alta</asp:ListItem>
                                 <asp:ListItem Value="MEDIA">Media</asp:ListItem>
                                 <asp:ListItem Value="BAJA">Baja</asp:ListItem>
                             </asp:DropDownList>
                         </div>
                     </div>
-                    <asp:Button ID="btnGuardarMetadatos" runat="server" Text="Guardar Cambios"
-                        OnClick="btnGuardarMetadatos_Click" CausesValidation="false"
-                        style="padding:10px 24px;background:linear-gradient(90deg,#2e7d32,#43a047);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer"/>
+                    <div class="form-group">
+                        <label class="form-label">&Aacute;REA (UNIDAD ORG&Aacute;NICA) <span class="required">*</span></label>
+                        <asp:DropDownList ID="ddlEditArea" runat="server" CssClass="form-input"/>
+                    </div>
+                    <div class="plazos-box plazos-zona-plazos">
+                        <div class="plazos-title">Plazos por etapa (desde este momento)</div>
+                        <div class="plazos-sub">Al guardar se recalculan las fechas l&iacute;mite a partir de la hora actual, igual que al registrar un documento nuevo.</div>
+                        <div class="form-row" style="margin-bottom:0">
+                            <div>
+                                <label class="form-label">PLAZO REVISI&Oacute;N (HORAS) <span class="required">*</span></label>
+                                <asp:TextBox ID="txtEditHorasRevision" runat="server" CssClass="form-input" Text="24"/>
+                                <div class="plazos-hint">Tiempo m&aacute;ximo para la fase de revisi&oacute;n</div>
+                            </div>
+                            <div>
+                                <label class="form-label">PLAZO FIRMA (HORAS) <span class="required">*</span></label>
+                                <asp:TextBox ID="txtEditHorasFirma" runat="server" CssClass="form-input" Text="48"/>
+                                <div class="plazos-hint">Debe ser mayor o igual que el plazo de revisi&oacute;n</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ARCHIVO PDF</label>
+                        <asp:Literal ID="litPdfVigente" runat="server"/>
+                        <div class="upload-zone" onclick="document.getElementById('<%= filePdfReemplazo.ClientID %>').click()">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
+                            <div class="uz-title">Opcional: nueva versi&oacute;n PDF</div>
+                            <div class="uz-sub">Solo PDF, m&aacute;x. 15 MB. La versi&oacute;n vigente queda archivada.</div>
+                            <asp:FileUpload ID="filePdfReemplazo" runat="server" style="display:none" accept=".pdf" onchange="gpMostrarNombrePdf(this)"/>
+                        </div>
+                        <asp:Label ID="lblNombrePdfSeleccionado" runat="server" style="font-size:13px;color:#2e7d32;display:none"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revisores y firmantes (misma experiencia que Cargar documento) -->
+            <div class="plazos-box plazos-zona-asignacion" style="margin-bottom:20px">
+                <div class="plazos-title">Asignar revisores y firmantes</div>
+                <div class="plazos-sub">Se muestran los ya asignados; puede buscar por nombre o login, reordenar firmas y guardar todo con el bot&oacute;n inferior.</div>
+                <div style="margin-bottom:20px;position:relative;">
+                    <label class="form-label">BUSCAR EMPLEADO</label>
+                    <asp:TextBox ID="txtBuscadorParticipantes" runat="server" CssClass="form-input" placeholder="Escriba nombre o login..." AutoComplete="off"/>
+                    <div id="dropdownResultadosGp" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #1a2a4a;border-top:none;border-radius:0 0 8px 8px;max-height:280px;overflow-y:auto;z-index:1000;box-shadow:0 8px 16px rgba(0,0,0,0.1);"></div>
+                    <asp:ListBox ID="lstBuscadorParticipantes" runat="server" style="display:none;" SelectionMode="Single"/>
+                </div>
+                <div class="gp-grid-participantes" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+                    <div style="border:1.5px solid rgba(168,212,184,.85);border-radius:10px;padding:16px;background:rgba(255,255,255,.72);">
+                        <div style="font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:12px;">&#10003; REVISORES</div>
+                        <div id="listaRevisores" class="revisores-wrap" role="list" aria-label="Lista de revisores"></div>
+                        <p class="revisores-hint">Quitar en una columna elimina tambi&eacute;n de la otra, igual que en Cargar documento.</p>
+                    </div>
+                    <div style="border:1.5px solid rgba(184,196,232,.9);border-radius:10px;padding:16px;background:rgba(255,255,255,.72);">
+                        <div style="font-size:13px;font-weight:700;color:#1a2a4a;margin-bottom:12px;">&#128271; FIRMANTES (orden de firma)</div>
+                        <p class="firmantes-hint">Arrastre las tarjetas o use &#9650; &#9660;. El n&uacute;mero indica la secuencia de firma.</p>
+                        <div id="listaFirmantes" class="firmantes-wrap" role="list" aria-label="Lista de firmantes"></div>
+                    </div>
+                </div>
+                <asp:HiddenField ID="hfParticipantes" runat="server" />
+            </div>
+
+            <div class="guardar-doc-wrap">
+                <p>Confirme aqu&iacute; los datos del documento, los plazos en horas y el PDF (si aplica), <strong>despu&eacute;s</strong> de revisar revisores, firmantes y el orden de firma. Un solo guardado aplica todo y reinicia el proceso de revisi&oacute;n.</p>
+                <div class="guardar-doc-actions">
+                    <asp:Button ID="btnGuardarMetadatos" runat="server" Text="Guardar datos del documento" CssClass="btn-guardar-doc" OnClick="btnGuardarMetadatos_Click" OnClientClick="return (typeof window.gpValidarAntesGuardar === 'function' ? window.gpValidarAntesGuardar() : true);" CausesValidation="false"/>
                 </div>
             </div>
 
@@ -299,6 +310,27 @@
     </div>
 </div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
+<script type="text/javascript">
+    function gpMostrarNombrePdf(input) {
+        var lbl = document.getElementById('<%= lblNombrePdfSeleccionado.ClientID %>');
+        if (!lbl) return;
+        if (input.files && input.files.length > 0) {
+            var f = input.files[0];
+            lbl.textContent = 'Seleccionado: ' + f.name + ' (' + (f.size / (1024 * 1024)).toFixed(2) + ' MB)';
+            lbl.style.display = 'block';
+        } else {
+            lbl.textContent = '';
+            lbl.style.display = 'none';
+        }
+    }
+    window.GP_IDS = {
+        txt: '<%= txtBuscadorParticipantes.ClientID %>',
+        lst: '<%= lstBuscadorParticipantes.ClientID %>',
+        hf: '<%= hfParticipantes.ClientID %>',
+        dd: 'dropdownResultadosGp'
+    };
+</script>
+<script type="text/javascript" src="<%= ResolveUrl("~/Scripts/gestionarParticipantesAsignacion.js") %>"></script>
 </form>
 </body>
 </html>

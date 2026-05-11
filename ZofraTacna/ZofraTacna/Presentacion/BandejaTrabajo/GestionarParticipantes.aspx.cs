@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Web;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ZofraTacna.Datos;
+using ZofraTacna.LogicaNegocio;
+using ZofraTacna.Models;
 
 namespace ZofraTacna.Presentacion
 {
     public partial class GestionarParticipantes : Page
     {
         private string ConnStr => ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+        private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();
+        private readonly RepositorioDocumentos _repoDocs = new RepositorioDocumentos();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -31,8 +38,10 @@ namespace ZofraTacna.Presentacion
             if (!IsPostBack)
             {
                 hfDocId.Value = idDoc.ToString();
+                CargarCombosEdit();
                 CargarInfoDocumento(idDoc);
-                CargarDropdowns(idDoc);
+                CargarEmpleadosListBox();
+                RegistrarBootParticipantesCliente(idDoc);
             }
             else
             {
@@ -44,18 +53,38 @@ namespace ZofraTacna.Presentacion
             litNombre.Text = login;
             litRol.Text    = Session["RolNombre"]?.ToString() ?? "";
 
-            CargarRevisores(idDoc);
-            CargarFirmantes(idDoc);
             CargarHistorial(idDoc);
         }
 
         // ============================================================
         // CARGA INICIAL
         // ============================================================
+        private void CargarCombosEdit()
+        {
+            ddlEditCategoria.Items.Clear();
+            ddlEditCategoria.Items.Add(new ListItem("Seleccionar...", ""));
+            foreach (string cat in _modulo.ObtenerCategorias())
+            {
+                string[] partes = cat.Split('|');
+                if (partes.Length >= 2)
+                    ddlEditCategoria.Items.Add(new ListItem(partes[1], partes[0]));
+            }
+
+            ddlEditArea.Items.Clear();
+            ddlEditArea.Items.Add(new ListItem("Seleccionar...", ""));
+            foreach (string u in _modulo.ObtenerUnidadesOrganicas())
+            {
+                string[] partes = u.Split('|');
+                if (partes.Length >= 2)
+                    ddlEditArea.Items.Add(new ListItem(partes[1], partes[0]));
+            }
+        }
+
         private void CargarInfoDocumento(int idDoc)
         {
             string sql = @"SELECT d.Asunto, d.CodigoDocumento, me.Descripcion AS Estado, me.Codigo AS EstadoCod,
-                                  d.FechaLimiteRevision, d.FechaLimiteAprobacion, ISNULL(d.Prioridad,'MEDIA') AS Prioridad
+                                  d.FechaLimiteRevision, d.FechaLimiteAprobacion, ISNULL(d.Prioridad,'MEDIA') AS Prioridad,
+                                  d.Descripcion, d.IdTipoDocumento, d.AreaResponsable, d.FechaCreacion
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
                            WHERE d.IdDocumento = @id AND d.Activo = 1";
@@ -76,17 +105,46 @@ namespace ZofraTacna.Presentacion
                             string css      = (est == "PEN" || est == "FPAR") ? "badge badge-firma" : "badge badge-estado";
                             litEstadoBadge.Text = string.Format("<span class='{0}'>{1}</span>", css,
                                 HttpUtility.HtmlEncode(dr["Estado"].ToString()));
-                            CultureInfo pe  = CultureInfo.GetCultureInfo("es-PE");
-                            DateTime fRev   = Convert.ToDateTime(dr["FechaLimiteRevision"]);
-                            DateTime fApr   = Convert.ToDateTime(dr["FechaLimiteAprobacion"]);
-                            litPlazosActuales.Text = "<p style='font-size:11px;color:#555;background:#f0f7ff;border-radius:6px;padding:8px 10px;margin-bottom:10px'>" +
-                                "<strong>Actual rev.:</strong> " + HttpUtility.HtmlEncode(fRev.ToString("g", pe)) +
-                                "&nbsp;&nbsp;<strong>Actual apr.:</strong> " + HttpUtility.HtmlEncode(fApr.ToString("g", pe)) + "</p>";
-                            txtNuevaFechaRevision.Text   = fRev.ToString("yyyy-MM-ddTHH:mm");
-                            txtNuevaFechaAprobacion.Text = fApr.ToString("yyyy-MM-ddTHH:mm");
+                            DateTime fRev   = dr["FechaLimiteRevision"] != DBNull.Value ? Convert.ToDateTime(dr["FechaLimiteRevision"]) : DateTime.Now.AddHours(24);
+                            DateTime fApr   = dr["FechaLimiteAprobacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaLimiteAprobacion"]) : DateTime.Now.AddHours(48);
+
+                            txtEditCodigo.Text = dr["CodigoDocumento"].ToString();
                             txtEditAsunto.Text = dr["Asunto"].ToString();
-                            string prior = dr["Prioridad"].ToString().ToUpper();
+                            txtEditDescripcion.Text = dr["Descripcion"] != DBNull.Value ? dr["Descripcion"].ToString() : "";
+
+                            string idTipo = dr["IdTipoDocumento"].ToString();
+                            if (ddlEditCategoria.Items.FindByValue(idTipo) != null)
+                                ddlEditCategoria.SelectedValue = idTipo;
+
+                            string idArea = dr["AreaResponsable"].ToString();
+                            if (ddlEditArea.Items.FindByValue(idArea) != null)
+                                ddlEditArea.SelectedValue = idArea;
+
+                            string prior = dr["Prioridad"].ToString().ToUpperInvariant();
                             ddlEditPrioridad.SelectedValue = (prior == "ALTA" || prior == "MEDIA" || prior == "BAJA") ? prior : "MEDIA";
+
+                            DateTime cre = Convert.ToDateTime(dr["FechaCreacion"]);
+                            double thRev = (fRev - cre).TotalHours;
+                            double thFir = (fApr - cre).TotalHours;
+                            int hRev = thRev > 0 ? (int)Math.Ceiling(thRev) : 24;
+                            int hFir = thFir > hRev ? (int)Math.Ceiling(thFir) : hRev + 24;
+                            txtEditHorasRevision.Text = Math.Max(1, hRev).ToString(CultureInfo.InvariantCulture);
+                            txtEditHorasFirma.Text = Math.Max(hRev + 1, hFir).ToString(CultureInfo.InvariantCulture);
+
+                            int idAdj;
+                            string nombrePdf;
+                            int tam;
+                            if (_repoDocs.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombrePdf, out tam))
+                            {
+                                string peso = tam < 1024 ? tam + " B" : (tam / 1024.0).ToString("0.##", CultureInfo.InvariantCulture) + " KB";
+                                if (tam >= 1024 * 1024)
+                                    peso = (tam / (1024.0 * 1024.0)).ToString("0.##", CultureInfo.InvariantCulture) + " MB";
+                                litPdfVigente.Text = "<p style=\"font-size:12px;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:10px 12px;margin-bottom:8px\">" +
+                                    "<strong>PDF vigente:</strong> " + HttpUtility.HtmlEncode(nombrePdf ?? "") +
+                                    " <span style=\"color:#666\">(" + HttpUtility.HtmlEncode(peso) + ")</span></p>";
+                            }
+                            else
+                                litPdfVigente.Text = "<p style=\"font-size:12px;color:#888;background:#f5f5f5;border-radius:8px;padding:10px 12px;margin-bottom:8px\">No hay PDF vigente en el sistema para este tr&aacute;mite.</p>";
                         }
                         else
                         {
@@ -137,522 +195,218 @@ namespace ZofraTacna.Presentacion
             litHistorial.Text = sb.Length > 0 ? sb.ToString() : "<p style='color:#bbb;font-size:12px;text-align:center;padding:16px'>Sin eventos registrados.</p>";
         }
 
-        private void CargarDropdowns(int idDoc)
+        private void CargarEmpleadosListBox()
         {
-            using (var cn = new SqlConnection(ConnStr))
+            lstBuscadorParticipantes.Items.Clear();
+            foreach (var emp in _modulo.ObtenerEmpleadosDisponibles())
             {
-                cn.Open();
-                CargarDropdownTipo(cn, idDoc, "REV", ddlRevisor);
-                CargarDropdownTipo(cn, idDoc, "FIR", ddlFirmante);
+                string texto = emp.LoginUsuario + " - " + (emp.NombreCompleto ?? emp.LoginUsuario);
+                lstBuscadorParticipantes.Items.Add(new ListItem(texto, emp.LoginUsuario));
             }
         }
 
-        private void CargarDropdownTipo(SqlConnection cn, int idDoc, string tipo, DropDownList ddl)
+        private void RegistrarBootParticipantesCliente(int idDoc)
         {
-            string sql = @"SELECT u.LoginUsuario
-                           FROM UsuarioSistema u
-                           JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
-                           WHERE u.Activo = 1 AND m.Codigo = @tipo
-                             AND u.LoginUsuario NOT IN (
-                                 SELECT dp.LoginUsuario
-                                 FROM DocumentoParticipante dp
-                                 JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
-                                 WHERE dp.IdDocumento = @id AND mt.Codigo = @tipo)
-                           ORDER BY u.LoginUsuario";
-
-            ddl.Items.Clear();
-            ddl.Items.Add(new ListItem("-- Seleccionar --", ""));
-            using (var cmd = new SqlCommand(sql, cn))
-            {
-                cmd.Parameters.AddWithValue("@tipo", tipo);
-                cmd.Parameters.AddWithValue("@id", idDoc);
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                        ddl.Items.Add(new ListItem(dr["LoginUsuario"].ToString(), dr["LoginUsuario"].ToString()));
-                }
-            }
+            var js = new JavaScriptSerializer();
+            string json = js.Serialize(ObtenerParticipantesBootObject(idDoc));
+            ClientScript.RegisterStartupScript(GetType(), "gpParticipantesBoot",
+                "window.__gpParticipantesBoot = " + json + ";", true);
         }
 
-        // ============================================================
-        // CARGAR LISTAS
-        // ============================================================
-        private void CargarRevisores(int idDoc)
+        private Dictionary<string, object> ObtenerParticipantesBootObject(int idDoc)
         {
-            string sql = @"SELECT dp.IdParticipante, dp.LoginUsuario,
-                                  ISNULL(mr.Codigo, 'PEN') AS EstadoCod
-                           FROM DocumentoParticipante dp
-                           JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
-                           LEFT JOIN Maestro mr ON dp.EstadoParticipante = mr.IdMaestro
-                           WHERE dp.IdDocumento = @id AND mt.Codigo = 'REV'
-                           ORDER BY dp.OrdenSecuencial ASC, dp.IdParticipante ASC";
+            var nombres = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var emp in _modulo.ObtenerEmpleadosDisponibles())
+            {
+                if (!string.IsNullOrEmpty(emp.LoginUsuario))
+                    nombres[emp.LoginUsuario] = emp.NombreCompleto ?? emp.LoginUsuario;
+            }
 
-            var lista = new List<object>();
+            var listaRevisores = new List<object>();
+            var listaFirmantes = new List<object>();
+
+            const string sqlRev = @"SELECT dp.LoginUsuario
+                FROM DocumentoParticipante dp
+                INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                WHERE dp.IdDocumento = @id AND mt.Codigo = 'REV'
+                GROUP BY dp.LoginUsuario
+                ORDER BY MIN(dp.OrdenSecuencial), MIN(dp.IdParticipante)";
+
+            const string sqlFir = @"SELECT dp.LoginUsuario, dp.OrdenSecuencial
+                FROM DocumentoParticipante dp
+                INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                WHERE dp.IdDocumento = @id AND mt.Codigo = 'FIR'
+                ORDER BY dp.OrdenSecuencial ASC, dp.IdParticipante ASC";
+
             using (var cn = new SqlConnection(ConnStr))
             {
                 cn.Open();
-                using (var cmd = new SqlCommand(sql, cn))
+                using (var cmd = new SqlCommand(sqlRev, cn))
                 {
                     cmd.Parameters.AddWithValue("@id", idDoc);
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-                            string est = dr["EstadoCod"].ToString().ToUpper();
-                            string css = est == "OBS" ? "est-obs" : (est == "FIR" || est == "REG") ? "est-ok" : "";
-                            lista.Add(new {
-                                IdParticipante = Convert.ToInt32(dr["IdParticipante"]),
-                                Login          = dr["LoginUsuario"].ToString(),
-                                EstadoCss      = css
+                            string login = dr["LoginUsuario"].ToString();
+                            string nom = nombres.ContainsKey(login) ? nombres[login] : login;
+                            listaRevisores.Add(new Dictionary<string, object>
+                            {
+                                { "login", login },
+                                { "nombre", nom }
                             });
                         }
                     }
                 }
-            }
 
-            pnlRevisoresVacio.Visible  = lista.Count == 0;
-            rptRevisores.DataSource    = lista;
-            rptRevisores.DataBind();
-        }
-
-        private void CargarFirmantes(int idDoc)
-        {
-            string sql = @"SELECT dp.IdParticipante, dp.LoginUsuario, dp.OrdenSecuencial
-                           FROM DocumentoParticipante dp
-                           JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
-                           WHERE dp.IdDocumento = @id AND mt.Codigo = 'FIR'
-                           ORDER BY dp.OrdenSecuencial ASC, dp.IdParticipante ASC";
-
-            var lista = new List<object>();
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                cn.Open();
-                using (var cmd = new SqlCommand(sql, cn))
+                using (var cmd = new SqlCommand(sqlFir, cn))
                 {
                     cmd.Parameters.AddWithValue("@id", idDoc);
+                    int idx = 0;
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-                            lista.Add(new {
-                                IdParticipante = Convert.ToInt32(dr["IdParticipante"]),
-                                Login          = dr["LoginUsuario"].ToString(),
-                                Orden          = dr["OrdenSecuencial"] == DBNull.Value ? 0 : Convert.ToInt32(dr["OrdenSecuencial"])
+                            idx++;
+                            string login = dr["LoginUsuario"].ToString();
+                            string nom = nombres.ContainsKey(login) ? nombres[login] : login;
+                            int ord = dr["OrdenSecuencial"] != DBNull.Value
+                                ? Convert.ToInt32(dr["OrdenSecuencial"], CultureInfo.InvariantCulture)
+                                : idx;
+                            listaFirmantes.Add(new Dictionary<string, object>
+                            {
+                                { "login", login },
+                                { "nombre", nom },
+                                { "orden", ord }
                             });
                         }
                     }
                 }
             }
 
-            // Calcular si puede subir/bajar
-            var conFlags = new List<object>();
-            for (int i = 0; i < lista.Count; i++)
+            return new Dictionary<string, object>
             {
-                dynamic item = lista[i];
-                conFlags.Add(new {
-                    IdParticipante = (int)item.IdParticipante,
-                    Login          = (string)item.Login,
-                    Orden          = (int)item.Orden,
-                    PuedeSubir     = i > 0,
-                    PuedeBajar     = i < lista.Count - 1
-                });
-            }
-
-            pnlFirmantesVacio.Visible  = conFlags.Count == 0;
-            rptFirmantes.DataSource    = conFlags;
-            rptFirmantes.DataBind();
+                { "revisores", listaRevisores },
+                { "firmantes", listaFirmantes }
+            };
         }
 
-        // ============================================================
-        // EVENTOS — REVISORES
-        // ============================================================
-        protected void btnAgregarRevisor_Click(object sender, EventArgs e)
+        private static List<RegistrarParticipanteItem> ParseParticipantesDesdeOculto(string json)
         {
-            int idDoc = int.Parse(hfDocId.Value);
-            string login = ddlRevisor.SelectedValue;
-            if (string.IsNullOrEmpty(login)) { MostrarMsg("Seleccione un revisor.", false); return; }
+            var list = new List<RegistrarParticipanteItem>();
+            if (string.IsNullOrWhiteSpace(json))
+                return list;
 
-            string sql = @"INSERT INTO DocumentoParticipante
-                               (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
-                                EstadoParticipante, FechaAsignacion, Activo)
-                           VALUES (
-                               @idDoc, @login,
-                               (SELECT IdMaestro FROM Maestro WHERE Codigo='REV' AND Tipo='TIPO_PARTICIPANTE'),
-                               ISNULL((SELECT MAX(dp2.OrdenSecuencial)
-                                       FROM DocumentoParticipante dp2
-                                       JOIN Maestro mt2 ON dp2.IdTipoParticipante=mt2.IdMaestro
-                                       WHERE dp2.IdDocumento=@idDoc AND mt2.Codigo='REV'), 0) + 1,
-                               (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
-                               GETDATE(), 1)";
+            var js = new JavaScriptSerializer();
+            var raw = js.Deserialize<List<Dictionary<string, object>>>(json);
+            if (raw == null)
+                return list;
 
-            try
+            foreach (var p in raw)
             {
-                using (var cn = new SqlConnection(ConnStr))
-                {
-                    cn.Open();
-                    using (var cmd = new SqlCommand(sql, cn))
-                    {
-                        cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                        cmd.Parameters.AddWithValue("@login", login);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                ReiniciarFlujo(idDoc, "revisor agregado: " + login);
-                CargarDropdowns(idDoc);
-                CargarRevisores(idDoc);
-                CargarFirmantes(idDoc);
-                CargarHistorial(idDoc);
-                MostrarMsg("Revisor agregado. El flujo fue reiniciado.", true);
+                if (p == null || !p.ContainsKey("login") || p["login"] == null)
+                    continue;
+                string login = Convert.ToString(p["login"], CultureInfo.InvariantCulture).Trim();
+                if (string.IsNullOrEmpty(login))
+                    continue;
+
+                string tipo = "REV";
+                if (p.ContainsKey("tipo") && p["tipo"] != null)
+                    tipo = Convert.ToString(p["tipo"], CultureInfo.InvariantCulture);
+
+                int orden = 0;
+                if (p.ContainsKey("orden") && p["orden"] != null)
+                    int.TryParse(Convert.ToString(p["orden"], CultureInfo.InvariantCulture), NumberStyles.Integer, CultureInfo.InvariantCulture, out orden);
+
+                list.Add(new RegistrarParticipanteItem { Login = login, Tipo = tipo, Orden = orden });
             }
-            catch (Exception ex) { MostrarMsg("Error al agregar revisor: " + ex.Message, false); }
-        }
 
-        protected void rptRevisores_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            int idDoc = int.Parse(hfDocId.Value);
-
-            if (e.CommandName == "Eliminar")
-            {
-                int idPart = Convert.ToInt32(e.CommandArgument);
-                using (var cn = new SqlConnection(ConnStr))
-                {
-                    cn.Open();
-                    using (var cmd = new SqlCommand("DELETE FROM DocumentoParticipante WHERE IdParticipante=@id", cn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", idPart);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                pnlReasignar.Visible = false;
-                ReiniciarFlujo(idDoc, "revisor eliminado");
-                CargarDropdowns(idDoc);
-                CargarRevisores(idDoc);
-                CargarFirmantes(idDoc);
-                CargarHistorial(idDoc);
-                MostrarMsg("Revisor eliminado. El flujo fue reiniciado.", true);
-            }
-            else if (e.CommandName == "Reasignar")
-            {
-                string[] partes = e.CommandArgument.ToString().Split('|');
-                hfReasignarId.Value    = partes[0];
-                litReasignarLogin.Text = System.Web.HttpUtility.HtmlEncode(partes[1]);
-
-                ddlReasignarNuevo.Items.Clear();
-                ddlReasignarNuevo.Items.Add(new ListItem("-- Seleccionar nuevo revisor --", ""));
-                using (var cn = new SqlConnection(ConnStr))
-                {
-                    cn.Open();
-                    string sql = @"SELECT u.LoginUsuario FROM UsuarioSistema u
-                                   JOIN Maestro m ON u.IdRolSistema=m.IdMaestro
-                                   WHERE u.Activo=1 AND m.Codigo='REV'
-                                     AND u.LoginUsuario != @actual
-                                     AND u.LoginUsuario NOT IN (
-                                         SELECT dp.LoginUsuario FROM DocumentoParticipante dp
-                                         JOIN Maestro mt ON dp.IdTipoParticipante=mt.IdMaestro
-                                         WHERE dp.IdDocumento=@idDoc AND mt.Codigo='REV' AND dp.Activo=1)
-                                   ORDER BY u.LoginUsuario";
-                    using (var cmd = new SqlCommand(sql, cn))
-                    {
-                        cmd.Parameters.AddWithValue("@actual", partes[1]);
-                        cmd.Parameters.AddWithValue("@idDoc",  idDoc);
-                        using (var dr = cmd.ExecuteReader())
-                            while (dr.Read())
-                                ddlReasignarNuevo.Items.Add(new ListItem(dr["LoginUsuario"].ToString(), dr["LoginUsuario"].ToString()));
-                    }
-                }
-                pnlReasignar.Visible = true;
-            }
-        }
-
-        protected void btnConfirmarReasignacion_Click(object sender, EventArgs e)
-        {
-            int idDoc  = int.Parse(hfDocId.Value);
-            int idPart = int.Parse(hfReasignarId.Value);
-            string nuevo = ddlReasignarNuevo.SelectedValue;
-            if (string.IsNullOrEmpty(nuevo)) { MostrarMsg("Seleccione el nuevo revisor.", false); return; }
-
-            string loginAdm = Session["LoginUsuario"].ToString();
-            string anterior = litReasignarLogin.Text;
-
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                cn.Open();
-                using (var tx = cn.BeginTransaction())
-                {
-                    try
-                    {
-                        int idEstadoPen;
-                        using (var cmd = new SqlCommand("SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='PEN'", cn, tx))
-                            idEstadoPen = Convert.ToInt32(cmd.ExecuteScalar());
-
-                        using (var cmd = new SqlCommand(@"UPDATE DocumentoParticipante
-                                                          SET LoginUsuario=@nuevo, EstadoParticipante=@est, FechaAsignacion=GETDATE()
-                                                          WHERE IdParticipante=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@nuevo", nuevo);
-                            cmd.Parameters.AddWithValue("@est",   idEstadoPen);
-                            cmd.Parameters.AddWithValue("@id",    idPart);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        int idEstadoDoc;
-                        using (var cmd = new SqlCommand("SELECT IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@id", idDoc);
-                            idEstadoDoc = Convert.ToInt32(cmd.ExecuteScalar());
-                        }
-
-                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
-                                                          (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
-                                                          VALUES (@idDoc,@est,@est,@login,@det,GETDATE())", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                            cmd.Parameters.AddWithValue("@est",   idEstadoDoc);
-                            cmd.Parameters.AddWithValue("@login", loginAdm);
-                            cmd.Parameters.AddWithValue("@det",   "ADM reasignó revisor: " + anterior + " → " + nuevo);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        tx.Commit();
-                        ReiniciarFlujo(idDoc, "revisor reasignado: " + anterior + " → " + nuevo);
-                        pnlReasignar.Visible = false;
-                        CargarDropdowns(idDoc);
-                        CargarRevisores(idDoc);
-                        CargarFirmantes(idDoc);
-                        CargarHistorial(idDoc);
-                        MostrarMsg("Revisor reasignado: " + anterior + " → " + nuevo + ". El flujo fue reiniciado.", true);
-                    }
-                    catch
-                    {
-                        tx.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        protected void btnCancelarReasignacion_Click(object sender, EventArgs e)
-        {
-            pnlReasignar.Visible = false;
-            hfReasignarId.Value  = "";
-        }
-
-        // ============================================================
-        // EVENTOS — FIRMANTES
-        // ============================================================
-        protected void btnAgregarFirmante_Click(object sender, EventArgs e)
-        {
-            int idDoc = int.Parse(hfDocId.Value);
-            string login = ddlFirmante.SelectedValue;
-            if (string.IsNullOrEmpty(login)) { MostrarMsg("Seleccione un firmante.", false); return; }
-
-            // Los firmantes se agregan DOS VECES en la BD:
-            // 1. Como REV (Orden=0) para que puedan revisar en fase REV
-            // 2. Como FIR (Orden=secuencial) para que puedan firmar en fase PEN/FPAR
-
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                try
-                {
-                    cn.Open();
-                    using (var tx = cn.BeginTransaction())
-                    {
-                        try
-                        {
-                            // PRIMERA INSERCIÓN: Como REVISOR (Orden=0)
-                            string sqlRev = @"INSERT INTO DocumentoParticipante
-                                           (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
-                                            EstadoParticipante, FechaAsignacion, Activo)
-                                       VALUES (
-                                           @idDoc, @login,
-                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='REV' AND Tipo='TIPO_PARTICIPANTE'),
-                                           0,
-                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
-                                           GETDATE(), 1)";
-
-                            using (var cmd = new SqlCommand(sqlRev, cn, tx))
-                            {
-                                cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                                cmd.Parameters.AddWithValue("@login", login);
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            // SEGUNDA INSERCIÓN: Como FIRMANTE (Orden=secuencial)
-                            string sqlFir = @"INSERT INTO DocumentoParticipante
-                                           (IdDocumento, LoginUsuario, IdTipoParticipante, OrdenSecuencial,
-                                            EstadoParticipante, FechaAsignacion, Activo)
-                                       VALUES (
-                                           @idDoc, @login,
-                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='FIR' AND Tipo='TIPO_PARTICIPANTE'),
-                                           ISNULL((SELECT MAX(dp2.OrdenSecuencial)
-                                                   FROM DocumentoParticipante dp2
-                                                   JOIN Maestro mt2 ON dp2.IdTipoParticipante=mt2.IdMaestro
-                                                   WHERE dp2.IdDocumento=@idDoc AND mt2.Codigo='FIR'), 0) + 1,
-                                           (SELECT IdMaestro FROM Maestro WHERE Codigo='PEN' AND Tipo='ESTADO_PARTICIPANTE'),
-                                           GETDATE(), 1)";
-
-                            using (var cmd = new SqlCommand(sqlFir, cn, tx))
-                            {
-                                cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                                cmd.Parameters.AddWithValue("@login", login);
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            tx.Commit();
-                            ReiniciarFlujo(idDoc, "firmante agregado: " + login);
-                            CargarDropdowns(idDoc);
-                            CargarRevisores(idDoc);
-                            CargarFirmantes(idDoc);
-                            CargarHistorial(idDoc);
-                            MostrarMsg("Firmante agregado. El flujo fue reiniciado.", true);
-                        }
-                        catch
-                        {
-                            tx.Rollback();
-                            throw;
-                        }
-                    }
-                }
-                catch (Exception ex) { MostrarMsg("Error al agregar firmante: " + ex.Message, false); }
-            }
-        }
-
-        protected void rptFirmantes_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            int idDoc = int.Parse(hfDocId.Value);
-            int idPart = Convert.ToInt32(e.CommandArgument);
-
-            if (e.CommandName == "Eliminar")
-            {
-                using (var cn = new SqlConnection(ConnStr))
-                {
-                    cn.Open();
-                    using (var cmd = new SqlCommand("DELETE FROM DocumentoParticipante WHERE IdParticipante=@id", cn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", idPart);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                RenumerarFirmantes(idDoc);
-                ReiniciarFlujo(idDoc, "firmante eliminado");
-                CargarDropdowns(idDoc);
-                CargarRevisores(idDoc);
-                CargarFirmantes(idDoc);
-                CargarHistorial(idDoc);
-                MostrarMsg("Firmante eliminado. El flujo fue reiniciado.", true);
-            }
-            else if (e.CommandName == "Subir" || e.CommandName == "Bajar")
-            {
-                IntercambiarOrden(idDoc, idPart, e.CommandName == "Subir");
-                ReiniciarFlujo(idDoc, "orden de firmantes modificado");
-                CargarRevisores(idDoc);
-                CargarFirmantes(idDoc);
-                CargarHistorial(idDoc);
-                MostrarMsg("Orden actualizado. El flujo fue reiniciado.", true);
-            }
-        }
-
-        private void IntercambiarOrden(int idDoc, int idPart, bool subir)
-        {
-            // Obtener orden actual y el vecino
-            string sqlVecino = subir
-                ? @"SELECT TOP 1 IdParticipante, OrdenSecuencial
-                    FROM DocumentoParticipante dp
-                    JOIN Maestro mt ON dp.IdTipoParticipante=mt.IdMaestro
-                    WHERE dp.IdDocumento=@idDoc AND mt.Codigo='FIR'
-                      AND dp.OrdenSecuencial < (SELECT OrdenSecuencial FROM DocumentoParticipante WHERE IdParticipante=@id)
-                    ORDER BY dp.OrdenSecuencial DESC"
-                : @"SELECT TOP 1 IdParticipante, OrdenSecuencial
-                    FROM DocumentoParticipante dp
-                    JOIN Maestro mt ON dp.IdTipoParticipante=mt.IdMaestro
-                    WHERE dp.IdDocumento=@idDoc AND mt.Codigo='FIR'
-                      AND dp.OrdenSecuencial > (SELECT OrdenSecuencial FROM DocumentoParticipante WHERE IdParticipante=@id)
-                    ORDER BY dp.OrdenSecuencial ASC";
-
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                cn.Open();
-                int ordenActual, vecinoId, ordenVecino;
-
-                using (var cmd = new SqlCommand("SELECT OrdenSecuencial FROM DocumentoParticipante WHERE IdParticipante=@id", cn))
-                {
-                    cmd.Parameters.AddWithValue("@id", idPart);
-                    ordenActual = Convert.ToInt32(cmd.ExecuteScalar());
-                }
-
-                using (var cmd = new SqlCommand(sqlVecino, cn))
-                {
-                    cmd.Parameters.AddWithValue("@idDoc", idDoc);
-                    cmd.Parameters.AddWithValue("@id", idPart);
-                    using (var dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read()) return;
-                        vecinoId    = Convert.ToInt32(dr["IdParticipante"]);
-                        ordenVecino = Convert.ToInt32(dr["OrdenSecuencial"]);
-                    }
-                }
-
-                using (var tr = cn.BeginTransaction())
-                {
-                    using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET OrdenSecuencial=@o WHERE IdParticipante=@id", cn, tr))
-                    {
-                        cmd.Parameters.AddWithValue("@o", ordenVecino);
-                        cmd.Parameters.AddWithValue("@id", idPart);
-                        cmd.ExecuteNonQuery();
-                    }
-                    using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET OrdenSecuencial=@o WHERE IdParticipante=@id", cn, tr))
-                    {
-                        cmd.Parameters.AddWithValue("@o", ordenActual);
-                        cmd.Parameters.AddWithValue("@id", vecinoId);
-                        cmd.ExecuteNonQuery();
-                    }
-                    tr.Commit();
-                }
-            }
-        }
-
-        private void RenumerarFirmantes(int idDoc)
-        {
-            // Tras eliminar un firmante, renumerar el orden secuencialmente
-            string sqlSelect = @"SELECT IdParticipante FROM DocumentoParticipante dp
-                                 JOIN Maestro mt ON dp.IdTipoParticipante=mt.IdMaestro
-                                 WHERE dp.IdDocumento=@id AND mt.Codigo='FIR'
-                                 ORDER BY dp.OrdenSecuencial ASC, dp.IdParticipante ASC";
-
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                cn.Open();
-                var ids = new List<int>();
-                using (var cmd = new SqlCommand(sqlSelect, cn))
-                {
-                    cmd.Parameters.AddWithValue("@id", idDoc);
-                    using (var dr = cmd.ExecuteReader())
-                        while (dr.Read()) ids.Add(Convert.ToInt32(dr["IdParticipante"]));
-                }
-                using (var tr = cn.BeginTransaction())
-                {
-                    for (int i = 0; i < ids.Count; i++)
-                    {
-                        using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET OrdenSecuencial=@o WHERE IdParticipante=@id", cn, tr))
-                        {
-                            cmd.Parameters.AddWithValue("@o", i + 1);
-                            cmd.Parameters.AddWithValue("@id", ids[i]);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                    tr.Commit();
-                }
-            }
+            return list;
         }
 
         protected void btnGuardarMetadatos_Click(object sender, EventArgs e)
         {
             int idDoc = int.Parse(hfDocId.Value);
-            string asunto = txtEditAsunto.Text.Trim();
-            if (string.IsNullOrEmpty(asunto)) { MostrarMsg("El asunto no puede estar vacío.", false); return; }
+            string codigo = (txtEditCodigo.Text ?? "").Trim();
+            string asunto = (txtEditAsunto.Text ?? "").Trim();
+            string descripcion = (txtEditDescripcion.Text ?? "").Trim();
+            string loginAdm = Session["LoginUsuario"].ToString();
 
-            string prioridad  = ddlEditPrioridad.SelectedValue;
-            string loginAdm   = Session["LoginUsuario"].ToString();
+            if (string.IsNullOrEmpty(codigo)) { MostrarMsg("El código del documento es obligatorio.", false); return; }
+            if (codigo.Length > 50) { MostrarMsg("El código no puede superar 50 caracteres.", false); return; }
+            if (string.IsNullOrEmpty(asunto)) { MostrarMsg("El asunto no puede estar vacío.", false); return; }
+            if (string.IsNullOrWhiteSpace(ddlEditCategoria.SelectedValue))
+            { MostrarMsg("Seleccione una categoría de documento.", false); return; }
+            if (string.IsNullOrWhiteSpace(ddlEditArea.SelectedValue))
+            { MostrarMsg("Seleccione el área (unidad orgánica).", false); return; }
+
+            int horasRev, horasFirma;
+            if (!int.TryParse((txtEditHorasRevision.Text ?? "").Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out horasRev) || horasRev < 1)
+            { MostrarMsg("Plazo de revisión: ingrese un número entero de horas mayor o igual a 1.", false); return; }
+            if (!int.TryParse((txtEditHorasFirma.Text ?? "").Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out horasFirma) || horasFirma < horasRev)
+            { MostrarMsg("El plazo de firma (horas) debe ser mayor o igual al plazo de revisión.", false); return; }
+
+            var participantes = ParseParticipantesDesdeOculto(hfParticipantes.Value);
+            if (participantes.Count == 0)
+            {
+                MostrarMsg("Debe asignar al menos un revisor o firmante.", false);
+                return;
+            }
+
+            int idTipo = int.Parse(ddlEditCategoria.SelectedValue, CultureInfo.InvariantCulture);
+            int idArea = int.Parse(ddlEditArea.SelectedValue, CultureInfo.InvariantCulture);
+            string prioridad = ddlEditPrioridad.SelectedValue ?? "MEDIA";
+
+            DateTime limRev = DateTime.Now.AddHours(horasRev);
+            DateTime limFir = DateTime.Now.AddHours(horasFirma);
+
+            byte[] pdfBytes = null;
+            string nombrePdfNuevo = null;
+            bool subePdf = filePdfReemplazo.HasFile && filePdfReemplazo.PostedFile != null && filePdfReemplazo.PostedFile.ContentLength > 0;
+            if (subePdf)
+            {
+                if (!string.Equals(Path.GetExtension(filePdfReemplazo.FileName), ".pdf", StringComparison.OrdinalIgnoreCase))
+                { MostrarMsg("Solo se permiten archivos PDF.", false); return; }
+                if (filePdfReemplazo.PostedFile.ContentLength > 15 * 1024 * 1024)
+                { MostrarMsg("El archivo supera los 15 MB.", false); return; }
+                using (var br = new BinaryReader(filePdfReemplazo.PostedFile.InputStream))
+                    pdfBytes = br.ReadBytes(filePdfReemplazo.PostedFile.ContentLength);
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                { MostrarMsg("El PDF está vacío.", false); return; }
+                nombrePdfNuevo = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) + "_" + Path.GetFileName(filePdfReemplazo.FileName);
+            }
+
+            string codigoAnterior;
+            using (var cn0 = new SqlConnection(ConnStr))
+            {
+                cn0.Open();
+                using (var cmd0 = new SqlCommand("SELECT CodigoDocumento FROM Documento WHERE IdDocumento=@id AND Activo=1", cn0))
+                {
+                    cmd0.Parameters.AddWithValue("@id", idDoc);
+                    object o = cmd0.ExecuteScalar();
+                    if (o == null || o == DBNull.Value) { Response.Redirect("BandejaTrabajo.aspx"); return; }
+                    codigoAnterior = o.ToString();
+                }
+            }
+
+            if (!string.Equals(codigo, codigoAnterior, StringComparison.OrdinalIgnoreCase))
+            {
+                using (var cnU = new SqlConnection(ConnStr))
+                {
+                    cnU.Open();
+                    using (var cmdU = new SqlCommand(
+                               "SELECT COUNT(*) FROM Documento WHERE Activo=1 AND CodigoDocumento=@c AND IdDocumento<>@id", cnU))
+                    {
+                        cmdU.Parameters.AddWithValue("@c", codigo);
+                        cmdU.Parameters.AddWithValue("@id", idDoc);
+                        if (Convert.ToInt32(cmdU.ExecuteScalar()) > 0)
+                        {
+                            MostrarMsg("Ya existe otro documento activo con ese código.", false);
+                            return;
+                        }
+                    }
+                }
+            }
 
             using (var cn = new SqlConnection(ConnStr))
             {
@@ -661,21 +415,6 @@ namespace ZofraTacna.Presentacion
                 {
                     try
                     {
-                        string asuntoAnterior;
-                        using (var cmd = new SqlCommand("SELECT Asunto FROM Documento WHERE IdDocumento=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@id", idDoc);
-                            asuntoAnterior = cmd.ExecuteScalar().ToString();
-                        }
-
-                        using (var cmd = new SqlCommand("UPDATE Documento SET Asunto=@asunto, Prioridad=@prior WHERE IdDocumento=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@asunto", asunto);
-                            cmd.Parameters.AddWithValue("@prior",  prioridad);
-                            cmd.Parameters.AddWithValue("@id",     idDoc);
-                            cmd.ExecuteNonQuery();
-                        }
-
                         int idEstado;
                         using (var cmd = new SqlCommand("SELECT IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
                         {
@@ -683,14 +422,46 @@ namespace ZofraTacna.Presentacion
                             idEstado = Convert.ToInt32(cmd.ExecuteScalar());
                         }
 
+                        using (var cmd = new SqlCommand(@"UPDATE Documento SET
+                            CodigoDocumento=@cod,
+                            Asunto=@asunto,
+                            Descripcion=@desc,
+                            IdTipoDocumento=@tipo,
+                            AreaResponsable=@area,
+                            AreaCategoria=@asunto,
+                            Prioridad=@prior,
+                            FechaLimiteRevision=@limRev,
+                            FechaLimiteAprobacion=@limFir,
+                            FechaModificacion=GETDATE(),
+                            IDUsuarioModificador=@adm
+                            WHERE IdDocumento=@id", cn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@cod", codigo);
+                            cmd.Parameters.AddWithValue("@asunto", asunto);
+                            cmd.Parameters.AddWithValue("@desc", (object)descripcion ?? "");
+                            cmd.Parameters.AddWithValue("@tipo", idTipo);
+                            cmd.Parameters.AddWithValue("@area", idArea);
+                            cmd.Parameters.AddWithValue("@prior", prioridad);
+                            cmd.Parameters.AddWithValue("@limRev", limRev);
+                            cmd.Parameters.AddWithValue("@limFir", limFir);
+                            cmd.Parameters.AddWithValue("@adm", loginAdm.Length > 15 ? loginAdm.Substring(0, 15) : loginAdm);
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        string detHist = string.Format(
+                            CultureInfo.InvariantCulture,
+                            "ADM actualizó datos del documento. Código: {0} → {1}. Categoría/área/plazos/prioridad/asunto actualizados.{2}",
+                            codigoAnterior, codigo, subePdf ? " PDF reemplazado." : "");
+
                         using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
                             (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
                             VALUES (@id,@est,@est,@login,@det,GETDATE())", cn, tx))
                         {
-                            cmd.Parameters.AddWithValue("@id",    idDoc);
-                            cmd.Parameters.AddWithValue("@est",   idEstado);
+                            cmd.Parameters.AddWithValue("@id", idDoc);
+                            cmd.Parameters.AddWithValue("@est", idEstado);
                             cmd.Parameters.AddWithValue("@login", loginAdm);
-                            cmd.Parameters.AddWithValue("@det",   string.Format("ADM editó metadatos. Asunto: '{0}' → '{1}'. Prioridad: {2}", asuntoAnterior, asunto, prioridad));
+                            cmd.Parameters.AddWithValue("@det", detHist);
                             cmd.ExecuteNonQuery();
                         }
 
@@ -704,8 +475,34 @@ namespace ZofraTacna.Presentacion
                 }
             }
 
-            CargarHistorial(idDoc);
-            MostrarMsg("Metadatos actualizados correctamente.", true);
+            try
+            {
+                _modulo.CrearUsuariosParticipantes(participantes);
+                _repoDocs.ReemplazarParticipantesDesdeLista(idDoc, participantes);
+            }
+            catch (ArgumentException ex)
+            {
+                MostrarMsg(ex.Message, false);
+                return;
+            }
+            catch (Exception ex)
+            {
+                MostrarMsg("Error al guardar participantes: " + ex.Message, false);
+                return;
+            }
+
+            if (subePdf && pdfBytes != null)
+            {
+                _repoDocs.ReemplazarPdfConHistorial(idDoc, pdfBytes, nombrePdfNuevo, loginAdm,
+                    "Administrador reemplazó PDF desde Gestionar participantes.");
+            }
+
+            ReiniciarFlujo(idDoc, "actualización de datos del documento / PDF por administrador");
+
+            try { _modulo.NotificarRevisores(idDoc); }
+            catch { /* correo opcional */ }
+
+            Response.Redirect(Request.Url.PathAndQuery, false);
         }
 
         // ============================================================
@@ -745,7 +542,7 @@ namespace ZofraTacna.Presentacion
                             cmd.ExecuteNonQuery();
                         }
 
-                        using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET EstadoParticipante=@pen, Activo=1 WHERE IdDocumento=@id", cn, tx))
+                        using (var cmd = new SqlCommand("UPDATE DocumentoParticipante SET EstadoParticipante=@pen WHERE IdDocumento=@id", cn, tx))
                         {
                             cmd.Parameters.AddWithValue("@pen", idEstadoPen);
                             cmd.Parameters.AddWithValue("@id",  idDoc);
@@ -783,79 +580,6 @@ namespace ZofraTacna.Presentacion
             lblMsg.Text     = msg;
             lblMsg.CssClass = ok ? "alert alert-ok" : "alert alert-err";
             lblMsg.Visible  = true;
-        }
-
-        protected void btnAmpliarPlazo_Click(object sender, EventArgs e)
-        {
-            int idDoc = int.Parse(hfDocId.Value);
-
-            string motivo = txtMotivoAmpliacion.Text.Trim();
-            if (string.IsNullOrEmpty(motivo)) { MostrarMsg("Debe ingresar el motivo de la ampliación.", false); return; }
-
-            DateTime nuevaRev, nuevaApr;
-            if (!DateTime.TryParse(txtNuevaFechaRevision.Text, out nuevaRev) || nuevaRev <= DateTime.Now)
-            { MostrarMsg("La fecha límite de revisión debe ser una fecha futura válida.", false); return; }
-            if (!DateTime.TryParse(txtNuevaFechaAprobacion.Text, out nuevaApr) || nuevaApr <= nuevaRev)
-            { MostrarMsg("La fecha límite de aprobación debe ser posterior a la de revisión.", false); return; }
-
-            string loginAdm = Session["LoginUsuario"].ToString();
-            CultureInfo pe  = CultureInfo.GetCultureInfo("es-PE");
-
-            using (var cn = new SqlConnection(ConnStr))
-            {
-                cn.Open();
-                using (var tx = cn.BeginTransaction())
-                {
-                    try
-                    {
-                        DateTime anteriorRev, anteriorApr;
-                        int idEstadoActual;
-                        using (var cmd = new SqlCommand("SELECT FechaLimiteRevision, FechaLimiteAprobacion, IdEstadoDocumento FROM Documento WHERE IdDocumento=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@id", idDoc);
-                            using (var dr = cmd.ExecuteReader())
-                            {
-                                dr.Read();
-                                anteriorRev   = Convert.ToDateTime(dr[0]);
-                                anteriorApr   = Convert.ToDateTime(dr[1]);
-                                idEstadoActual = Convert.ToInt32(dr[2]);
-                            }
-                        }
-
-                        using (var cmd = new SqlCommand("UPDATE Documento SET FechaLimiteRevision=@rev, FechaLimiteAprobacion=@apr WHERE IdDocumento=@id", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@rev", nuevaRev);
-                            cmd.Parameters.AddWithValue("@apr", nuevaApr);
-                            cmd.Parameters.AddWithValue("@id",  idDoc);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        string detalle = string.Format("ADM amplió plazo. Rev: {0} → {1}. Apr: {2} → {3}. Motivo: {4}",
-                            anteriorRev.ToString("g", pe), nuevaRev.ToString("g", pe),
-                            anteriorApr.ToString("g", pe), nuevaApr.ToString("g", pe), motivo);
-
-                        using (var cmd = new SqlCommand(@"INSERT INTO HistorialDocumento
-                            (IdDocumento,IdEstadoAnterior,IdEstadoNuevo,LoginUsuarioAccion,DetalleAccion,FechaCambio)
-                            VALUES (@id,@est,@est,@login,@det,GETDATE())", cn, tx))
-                        {
-                            cmd.Parameters.AddWithValue("@id",    idDoc);
-                            cmd.Parameters.AddWithValue("@est",   idEstadoActual);
-                            cmd.Parameters.AddWithValue("@login", loginAdm);
-                            cmd.Parameters.AddWithValue("@det",   detalle);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        tx.Commit();
-                    }
-                    catch
-                    {
-                        tx.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            Response.Redirect(Request.Url.PathAndQuery);
         }
 
         protected void btnCerrarSesion_Click(object sender, EventArgs e)

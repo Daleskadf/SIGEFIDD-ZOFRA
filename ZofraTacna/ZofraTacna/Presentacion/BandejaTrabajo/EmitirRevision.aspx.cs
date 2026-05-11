@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using ZofraTacna.Datos;
 using ZofraTacna.Models;
 
@@ -31,6 +33,27 @@ namespace ZofraTacna.Presentacion
         {
             get { return (ViewState["MensajeBloqueo"] as string) ?? ""; }
             set { ViewState["MensajeBloqueo"] = value; }
+        }
+
+        /// <summary>Vista dividida con dos PDFs (solo tras pulsar Comparar documento).</summary>
+        private bool ModoComparacionActivo
+        {
+            get { return ViewState["ModoCmpAct"] != null && (bool)ViewState["ModoCmpAct"]; }
+            set { ViewState["ModoCmpAct"] = value; }
+        }
+
+        /// <summary>IdAdjunto para panel izquierdo; 0 = PDF vigente (sin idAdj en el handler).</summary>
+        private int CmpAdjIzq
+        {
+            get { return ViewState["CmpAdjIzq"] != null ? Convert.ToInt32(ViewState["CmpAdjIzq"], CultureInfo.InvariantCulture) : 0; }
+            set { ViewState["CmpAdjIzq"] = value; }
+        }
+
+        /// <summary>IdAdjunto para panel derecho; 0 = vigente.</summary>
+        private int CmpAdjDer
+        {
+            get { return ViewState["CmpAdjDer"] != null ? Convert.ToInt32(ViewState["CmpAdjDer"], CultureInfo.InvariantCulture) : 0; }
+            set { ViewState["CmpAdjDer"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -61,7 +84,53 @@ namespace ZofraTacna.Presentacion
             ModoBloqueado = false;
             MensajeBloqueo = "";
             _repoBloqueo.RegistrarOTocarBloqueo(idDoc, "REV_EDIT", login, LockToken);
+        }
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            if (ModoBloqueado || Session["LoginUsuario"] == null) return;
+            int idDoc = IdDocumentoActual;
+            if (idDoc <= 0) return;
+            string rol = Session["RolCodigo"] != null ? Session["RolCodigo"].ToString() : "";
             CargarVista(idDoc, rol);
+        }
+
+        protected void btnCompararDocumento_Click(object sender, EventArgs e)
+        {
+            ModoComparacionActivo = true;
+            var repo = new RepositorioDocumentos();
+            List<AdjuntoArchivadoInfo> arch = repo.ObtenerAdjuntosArchivados(IdDocumentoActual);
+            if (arch != null && arch.Count > 0)
+            {
+                CmpAdjIzq = arch[0].IdAdjunto;
+                CmpAdjDer = 0;
+            }
+            else
+            {
+                CmpAdjIzq = 0;
+                CmpAdjDer = 0;
+                ModoComparacionActivo = false;
+            }
+        }
+
+        protected void btnCerrarComparacion_Click(object sender, EventArgs e)
+        {
+            ModoComparacionActivo = false;
+        }
+
+        protected void ddlPdfCompareIzq_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int v;
+            int.TryParse(ddlPdfCompareIzq.SelectedValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out v);
+            CmpAdjIzq = v < 0 ? 0 : v;
+        }
+
+        protected void ddlPdfCompareDer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int v;
+            int.TryParse(ddlPdfCompareDer.SelectedValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out v);
+            CmpAdjDer = v < 0 ? 0 : v;
         }
 
         protected void btnEmitirConformidad_Click(object sender, EventArgs e)
@@ -92,7 +161,6 @@ namespace ZofraTacna.Presentacion
                 pnlMensajeOk.Visible = false;
                 litMensajeError.Text = "Debe ingresar una observacion para continuar.";
                 pnlMensajeError.Visible = true;
-                CargarVista(idDoc, rol);
                 return;
             }
 
@@ -117,7 +185,6 @@ namespace ZofraTacna.Presentacion
                 litMensajeError.Text = HttpUtility.HtmlEncode(mensaje);
                 pnlMensajeError.Visible = true;
             }
-            CargarVista(idDoc, rol);
         }
 
         private void CargarVista(int idDoc, string rol)
@@ -153,51 +220,77 @@ namespace ZofraTacna.Presentacion
             string nombrePdf;
             int tamBytes;
             bool hayPdf = repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombrePdf, out tamBytes);
-            AdjuntoArchivadoInfo archivado;
-            bool hayPdfAnterior = repo.TryObtenerUltimaVersionArchivada(idDoc, out archivado);
-            bool modoComparar = hayPdf && hayPdfAnterior;
+            List<AdjuntoArchivadoInfo> archivados = repo.ObtenerAdjuntosArchivados(idDoc);
+            bool puedeComparar = hayPdf && archivados != null && archivados.Count > 0;
+            if (!puedeComparar)
+                ModoComparacionActivo = false;
+            bool modoComparar = puedeComparar && ModoComparacionActivo;
+
+            if (modoComparar && archivados != null)
+            {
+                var idsValidos = new HashSet<int> { 0 };
+                foreach (AdjuntoArchivadoInfo a in archivados)
+                    idsValidos.Add(a.IdAdjunto);
+                if (!idsValidos.Contains(CmpAdjIzq)) CmpAdjIzq = archivados.Count > 0 ? archivados[0].IdAdjunto : 0;
+                if (!idsValidos.Contains(CmpAdjDer)) CmpAdjDer = 0;
+            }
+            else if (!modoComparar)
+            {
+                CmpAdjIzq = 0;
+                CmpAdjDer = 0;
+            }
+
             divEmitShell.Attributes["class"] = modoComparar ? "emitir-wrap emitir-wrap--compare" : "emitir-wrap";
             divContentArea.Attributes["class"] = modoComparar ? "content content--compare-pdf" : "content";
 
             string nombreMostrar = hayPdf && !string.IsNullOrEmpty(nombrePdf) ? nombrePdf : "(sin archivo)";
             litNombreArchivoTitulo.Text = modoComparar
-                ? HttpUtility.HtmlEncode("Versi\u00F3n actual: " + nombreMostrar)
+                ? HttpUtility.HtmlEncode("Comparaci\u00F3n de versiones")
                 : HttpUtility.HtmlEncode(nombreMostrar);
 
+            btnCompararDocumento.Visible = puedeComparar && !modoComparar;
+            btnCerrarComparacion.Visible = modoComparar;
             pnlBannerComparacion.Visible = modoComparar;
             pnlVistaPdfComparar.Visible = modoComparar;
             pnlVistaPdfSimple.Visible = !modoComparar;
 
+            string basePdf = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDoc);
+
             if (modoComparar)
             {
-                string basePdf = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDoc);
-                lnkPdfAntNuevaPestana.NavigateUrl = basePdf + "&idAdj=" + archivado.IdAdjunto;
-                lnkPdfActNuevaPestana.NavigateUrl = basePdf;
+                CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
+                LlenarComboVersiones(ddlPdfCompareIzq, archivados, nombrePdf, pe);
+                LlenarComboVersiones(ddlPdfCompareDer, archivados, nombrePdf, pe);
+                SeleccionarValorCombo(ddlPdfCompareIzq, CmpAdjIzq);
+                SeleccionarValorCombo(ddlPdfCompareDer, CmpAdjDer);
+
+                string urlIzq = CmpAdjIzq > 0 ? basePdf + "&idAdj=" + CmpAdjIzq : basePdf;
+                string urlDer = CmpAdjDer > 0 ? basePdf + "&idAdj=" + CmpAdjDer : basePdf;
+                lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
+                lnkPdfDerNuevaPestana.NavigateUrl = urlDer;
                 ifrPdfAnterior.Visible = true;
-                ifrPdfAnterior.Attributes["src"] = basePdf + "&idAdj=" + archivado.IdAdjunto;
+                ifrPdfAnterior.Attributes["src"] = urlIzq;
                 ifrPdfActualCompare.Visible = true;
-                ifrPdfActualCompare.Attributes["src"] = basePdf;
+                ifrPdfActualCompare.Attributes["src"] = urlDer;
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = false;
+                pnlVistaPdfComparar.CssClass = "pdf-compare-grid";
             }
             else if (hayPdf)
             {
-                lnkPdfAntNuevaPestana.NavigateUrl = "";
-                lnkPdfActNuevaPestana.NavigateUrl = "";
+                lnkPdfIzqNuevaPestana.NavigateUrl = "";
+                lnkPdfDerNuevaPestana.NavigateUrl = "";
                 ifrPdf.Visible = true;
-                ifrPdf.Attributes["src"] = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDoc);
+                ifrPdf.Attributes["src"] = basePdf;
                 pnlSinPdf.Visible = false;
             }
             else
             {
-                lnkPdfAntNuevaPestana.NavigateUrl = "";
-                lnkPdfActNuevaPestana.NavigateUrl = "";
+                lnkPdfIzqNuevaPestana.NavigateUrl = "";
+                lnkPdfDerNuevaPestana.NavigateUrl = "";
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = true;
             }
-
-            if (modoComparar)
-                pnlVistaPdfComparar.CssClass = "pdf-compare-grid pdf-mode-both";
 
             litDetallesDoc.Text = ConstruirDetallesHtml(doc, tipoDesc, estadoDesc, tamBytes, hayPdf, modoComparar);
             litLineaTiempo.Text = ConstruirLineaTiempoHtml(repo.ObtenerLineaTiempoDocumento(idDoc));
@@ -275,6 +368,35 @@ namespace ZofraTacna.Presentacion
             if (bytes < 1024) return bytes + " B";
             if (bytes < 1048576) return (bytes / 1024.0).ToString("0.##", CultureInfo.InvariantCulture) + " KB";
             return (bytes / 1048576.0).ToString("0.##", CultureInfo.InvariantCulture) + " MB";
+        }
+
+        private static void LlenarComboVersiones(DropDownList ddl, List<AdjuntoArchivadoInfo> archivados, string nombrePdfVigente, CultureInfo pe)
+        {
+            ddl.Items.Clear();
+            string vig = string.IsNullOrEmpty(nombrePdfVigente) ? "documento.pdf" : nombrePdfVigente;
+            ddl.Items.Add(new ListItem("Vigente (actual) — " + vig, "0"));
+            if (archivados == null) return;
+            foreach (AdjuntoArchivadoInfo a in archivados)
+            {
+                string fecha = a.FechaSuperacion.HasValue ? a.FechaSuperacion.Value.ToString("g", pe) : a.FechaCreacion.ToString("g", pe);
+                string nom = string.IsNullOrEmpty(a.NombreArchivo) ? "archivo.pdf" : a.NombreArchivo;
+                ddl.Items.Add(new ListItem(
+                    "Archivado (" + fecha + ") — " + nom,
+                    a.IdAdjunto.ToString(CultureInfo.InvariantCulture)));
+            }
+        }
+
+        private static void SeleccionarValorCombo(DropDownList ddl, int idAdjunto)
+        {
+            string val = idAdjunto.ToString(CultureInfo.InvariantCulture);
+            ListItem it = ddl.Items.FindByValue(val);
+            if (it != null)
+            {
+                ddl.ClearSelection();
+                it.Selected = true;
+            }
+            else if (ddl.Items.Count > 0)
+                ddl.SelectedIndex = 0;
         }
 
         private static string ConstruirLineaTiempoHtml(System.Collections.Generic.List<LineaTiempoEvento> eventos)

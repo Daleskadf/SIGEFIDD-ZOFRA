@@ -29,19 +29,25 @@
         .role-badge{background:#eef0f8;color:#1a2a4a;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:600}
         .nav-item-logout{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:white;font-size:13px;cursor:pointer;margin-top:auto;text-decoration:none;background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1.5px solid #7d1717;margin-bottom:10px;box-shadow:0 6px 16px rgba(139,26,26,.25)}
         .nav-item-logout:hover{background:linear-gradient(135deg,#a32121,#d44736)}
-        .content{flex:1;padding:24px 28px;overflow:auto;min-height:0;display:flex;flex-direction:column}
+        .content{flex:1;padding:24px 28px;overflow-x:hidden;overflow-y:auto;min-height:0;display:flex;flex-direction:column}
         /* Comparacion: la pagina crece y hace scroll; al bajar, Detalle/Flujo suben y liberan espacio para el PDF */
         .content.content--compare-pdf{overflow-y:auto;overflow-x:hidden;padding-bottom:24px;min-height:0;-webkit-overflow-scrolling:touch}
         .content.content--compare-pdf .emitir-wrap--compare{display:flex;flex-direction:column;flex:0 0 auto;width:100%}
         .content h1{font-size:22px;color:#1a2a4a;font-weight:700}
         .content .sub{font-size:13px;color:#63718f;margin-top:4px;margin-bottom:18px}
-        .content-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-shrink:0}
+        .content-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-shrink:0;flex-wrap:wrap}
+        .content-head-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+        .btn-comparar{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#3d5faf,#2a4588);border:1.5px solid #1e3770;box-shadow:0 4px 14px rgba(42,69,136,.35);text-decoration:none;font-weight:700;cursor:pointer;font-family:inherit}
+        .btn-comparar:hover{background:linear-gradient(135deg,#4a6fc4,#335099);border-color:#2a4588;box-shadow:0 6px 18px rgba(42,69,136,.42)}
+        .btn-cerrar-cmp{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#2a3f6f,#1a2a4a);border:1px solid #17243f;font-weight:700;cursor:pointer;font-family:inherit}
+        .btn-cerrar-cmp:hover{filter:brightness(1.06)}
         .sub .doc-code{display:inline-block;background:#e8ecf7;color:#1a2a4a;border:1px solid #cfd8ef;border-radius:999px;padding:2px 10px;font-weight:700;margin-right:6px}
         .link-volver{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1px solid #7d1717;text-decoration:none;font-weight:700;box-shadow:0 6px 16px rgba(139,26,26,.25);white-space:nowrap}
         .link-volver:hover{background:linear-gradient(135deg,#a32121,#d44736)}
-        .emitir-wrap{display:flex;gap:20px;align-items:stretch;min-height:min(720px,calc(100vh - 200px))}
+        .emitir-wrap{display:flex;gap:20px;align-items:stretch;flex:1;min-height:0}
+        .emitir-wrap:not(.emitir-wrap--compare){min-height:min(560px,calc(100vh - 220px))}
         .emitir-left{width:min(380px,34vw);min-width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:14px}
-        .emitir-right{flex:1;min-width:0;display:flex;flex-direction:column;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+        .emitir-right{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
         /* Modo comparacion: metadatos arriba en dos columnas; PDF usa todo el ancho del area de contenido */
         .emitir-wrap.emitir-wrap--compare{flex-direction:column;gap:16px;flex:0 0 auto;align-items:stretch;width:100%}
         .emitir-wrap.emitir-wrap--compare .emitir-left{display:grid;grid-template-columns:minmax(260px,1fr) minmax(260px,1fr);gap:16px;width:100%;min-width:0;overflow:visible;flex-shrink:0;padding-right:0}
@@ -88,8 +94,10 @@
         .tl-detail{color:#555;line-height:1.45}
         .pdf-head{padding:14px 18px;border-bottom:1px solid #eef0f8;font-size:14px;font-weight:700;color:#1a2a4a;background:#fafbfd}
         .pdf-head span{color:#2a3f6f}
-        .pdf-frame-wrap{flex:1;min-height:420px;background:#3a3a42;position:relative}
-        .pdf-frame-wrap iframe{display:block;width:100%;height:100%;min-height:420px;border:none}
+        .pdf-frame-wrap{flex:1;min-height:0;display:flex;flex-direction:column;background:#3a3a42;position:relative}
+        .pdf-simple-host{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+        .pdf-simple-host iframe{display:block;width:100%;flex:1;min-height:0;border:none;background:#52525b}
+        .pdf-simple-host .pdf-empty{flex:1;min-height:280px}
         .pdf-float-actions{position:absolute;bottom:18px;right:18px;display:flex;flex-direction:column;gap:12px;z-index:8}
         .pdf-float-btn{border:none;border-radius:12px;padding:13px 18px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.3);backdrop-filter:blur(2px);transition:transform .15s ease,opacity .2s ease;min-width:204px;letter-spacing:.2px}
         .pdf-float-btn:hover{transform:translateY(-1px)}
@@ -97,11 +105,14 @@
         .btn-observacion{background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1px solid #7d1717}
         .pdf-empty{display:flex;align-items:center;justify-content:center;height:100%;min-height:320px;color:#aaa;font-size:14px;padding:24px;text-align:center}
         .pdf-compare-bar{background:#fafbfd;border-bottom:1px solid #eef0f8;padding:10px 18px;margin:0;flex-shrink:0}
-        .pdf-compare-bar .pdf-compare-toolbar{margin-top:0;padding-top:0;border-top:none}
-        .pdf-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%;min-height:420px;align-content:stretch}
-        .pdf-col{display:flex;flex-direction:column;min-width:0;background:#2a2a32;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+        .pdf-compare-hint{font-size:12px;color:#5c6478;line-height:1.45}
+        .pdf-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0;align-content:stretch;width:100%}
+        .pdf-col{display:flex;flex-direction:column;min-width:0;background:#2a2a32;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);min-height:0}
         .pdf-col-title{font-size:11px;font-weight:700;padding:10px 12px;background:#1a2a4a;color:#fff;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
-        .pdf-col iframe{flex:1;min-height:380px;border:none;width:100%}
+        .pdf-col-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;background:#fafbfd;border-bottom:1px solid #dde1f0;flex-shrink:0}
+        .pdf-col-toolbar select{flex:1;min-width:140px;max-width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid #cfd8ef;font-size:12px;font-weight:600;color:#1a2a4a;background:#fff}
+        .pdf-col-toolbar .cmp-tablink{font-size:11px;white-space:nowrap}
+        .pdf-col iframe{flex:1;min-height:380px;border:none;width:100%;background:#52525b}
         @media (max-width:1100px){
             .emitir-wrap.emitir-wrap--compare .emitir-left{grid-template-columns:1fr;max-height:none}
             .pdf-compare-grid:not(.pdf-mode-prev):not(.pdf-mode-next){grid-template-columns:1fr}
@@ -123,7 +134,7 @@
         .obs-text{width:100%;min-height:120px;resize:vertical;border:1.5px solid #d3daea;border-radius:10px;padding:10px 12px;font-size:13px;color:#2e3445;outline:none}
         .obs-text:focus{border-color:#1a2a4a;box-shadow:0 0 0 3px rgba(26,42,74,.12)}
         .obs-help{font-size:12px;color:#7a849b;margin-top:8px}
-        @media (max-width:1024px){.emitir-wrap:not(.emitir-wrap--compare){flex-direction:column}.emitir-left{width:100%;min-width:0}.pdf-frame-wrap{min-height:50vh}.content-head{flex-direction:column}.link-volver{align-self:flex-end}}
+        @media (max-width:1024px){.emitir-wrap:not(.emitir-wrap--compare){flex-direction:column;flex:1;min-height:0}.emitir-left{width:100%;min-width:0}.emitir-right{min-height:min(70vh,640px)}.pdf-frame-wrap{min-height:min(55vh,520px)}.content-head{flex-direction:column}.content-head-actions{width:100%;align-items:flex-end}}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -170,7 +181,11 @@
                     <h1>Emitir revisi&oacute;n</h1>
                     <p class="sub"><asp:Literal ID="litSubtituloDoc" runat="server"/></p>
                 </div>
-                <a class="link-volver" href="BandejaTrabajo.aspx">&larr; Volver a Bandeja de Trabajo</a>
+                <div class="content-head-actions">
+                    <a class="link-volver" href="BandejaTrabajo.aspx">&larr; Volver a Bandeja de Trabajo</a>
+                    <asp:Button ID="btnCompararDocumento" runat="server" CssClass="btn-comparar" Text="Comparar documento" ToolTip="Dividir la vista y elegir dos versiones del mismo tr&aacute;mite" OnClick="btnCompararDocumento_Click" CausesValidation="false" />
+                    <asp:Button ID="btnCerrarComparacion" runat="server" CssClass="btn-cerrar-cmp" Text="Cerrar comparaci&oacute;n" ToolTip="Volver a la vista &uacute;nica del PDF" OnClick="btnCerrarComparacion_Click" CausesValidation="false" Visible="false" />
+                </div>
             </div>
             <div runat="server" id="divEmitShell" class="emitir-wrap">
                 <div class="emitir-left">
@@ -189,37 +204,33 @@
                 <div class="emitir-right">
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <asp:Panel ID="pnlBannerComparacion" runat="server" Visible="false" CssClass="pdf-compare-bar">
-                        <div class="pdf-compare-toolbar">
-                            <div class="pdf-compare-view-btns">
-                                <span class="pdf-compare-toolbar-label">Vista</span>
-                                <button type="button" class="cmp-chip cmp-chip-on" data-cmp-mode="both" onclick="emRevCmpSetMode('both',this)" aria-pressed="true">Lado a lado</button>
-                                <button type="button" class="cmp-chip" data-cmp-mode="prev" onclick="emRevCmpSetMode('prev',this)" aria-pressed="false">Solo anterior</button>
-                                <button type="button" class="cmp-chip" data-cmp-mode="next" onclick="emRevCmpSetMode('next',this)" aria-pressed="false">Solo actual</button>
-                            </div>
-                            <div class="pdf-compare-open-links">
-                                <asp:HyperLink ID="lnkPdfAntNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Abrir anterior en nueva pesta&ntilde;a"/> 
-                                <span style="color:#aab">|</span>
-                                <asp:HyperLink ID="lnkPdfActNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Abrir actual en nueva pesta&ntilde;a"/>
-                            </div>
-                        </div>
+                        <p class="pdf-compare-hint">Elija la versi&oacute;n en cada panel (vigente o archivada). Los archivos provienen del historial del mismo registro.</p>
                     </asp:Panel>
                     <div class="pdf-frame-wrap">
                         <div class="pdf-float-actions" style="<%= ModoBloqueado ? "display:none;" : "" %>">
                             <button class="pdf-float-btn btn-conformidad" type="button" onclick="mostrarConfirmacionConformidad()">Emitir Conformidad</button>
                             <button class="pdf-float-btn btn-observacion" type="button" onclick="mostrarModalObservacion()">Emitir Observaci&oacute;n</button>
                         </div>
-                        <asp:Panel ID="pnlVistaPdfSimple" runat="server">
+                        <asp:Panel ID="pnlVistaPdfSimple" runat="server" CssClass="pdf-simple-host">
                             <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                             <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
                         </asp:Panel>
-                        <asp:Panel ID="pnlVistaPdfComparar" runat="server" Visible="false" CssClass="pdf-compare-grid pdf-mode-both">
+                        <asp:Panel ID="pnlVistaPdfComparar" runat="server" Visible="false" CssClass="pdf-compare-grid">
                             <div class="pdf-col">
-                                <div class="pdf-col-title">Versi&oacute;n anterior (archivada)</div>
-                                <iframe runat="server" id="ifrPdfAnterior" title="PDF anterior"></iframe>
+                                <div class="pdf-col-title">Panel izquierdo</div>
+                                <div class="pdf-col-toolbar">
+                                    <asp:DropDownList ID="ddlPdfCompareIzq" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPdfCompareIzq_SelectedIndexChanged" />
+                                    <asp:HyperLink ID="lnkPdfIzqNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Nueva pesta&ntilde;a" />
+                                </div>
+                                <iframe runat="server" id="ifrPdfAnterior" title="PDF panel izquierdo"></iframe>
                             </div>
                             <div class="pdf-col">
-                                <div class="pdf-col-title">Versi&oacute;n actual (corregida)</div>
-                                <iframe runat="server" id="ifrPdfActualCompare" title="PDF actual"></iframe>
+                                <div class="pdf-col-title">Panel derecho</div>
+                                <div class="pdf-col-toolbar">
+                                    <asp:DropDownList ID="ddlPdfCompareDer" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPdfCompareDer_SelectedIndexChanged" />
+                                    <asp:HyperLink ID="lnkPdfDerNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Nueva pesta&ntilde;a" />
+                                </div>
+                                <iframe runat="server" id="ifrPdfActualCompare" title="PDF panel derecho"></iframe>
                             </div>
                         </asp:Panel>
                     </div>
@@ -315,22 +326,6 @@
         var modalObs = document.getElementById('modalObservacion');
         if (modalObs && e.target === modalObs) cerrarModalObservacion();
     });
-
-    function emRevCmpSetMode(mode, btnEl) {
-        var grid = document.getElementById('<%= pnlVistaPdfComparar.ClientID %>');
-        if (!grid) return;
-        grid.classList.remove('pdf-mode-both', 'pdf-mode-prev', 'pdf-mode-next');
-        grid.classList.add(mode === 'prev' ? 'pdf-mode-prev' : (mode === 'next' ? 'pdf-mode-next' : 'pdf-mode-both'));
-        var toolbar = document.querySelector('.pdf-compare-toolbar');
-        if (toolbar) {
-            var chips = toolbar.querySelectorAll('.cmp-chip');
-            for (var j = 0; j < chips.length; j++) {
-                var on = chips[j].getAttribute('data-cmp-mode') === mode;
-                chips[j].classList.toggle('cmp-chip-on', on);
-                chips[j].setAttribute('aria-pressed', on ? 'true' : 'false');
-            }
-        }
-    }
 
     function emRevEnviarBloqueo(accion) {
         if (emRevBloqueado || !emRevIdDocumento || !emRevToken) return;

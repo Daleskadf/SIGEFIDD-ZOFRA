@@ -154,7 +154,7 @@ namespace ZofraTacna.LogicaNegocio
         /// Crea usuarios en UsuarioSistema para los participantes si no existen.
         /// Asigna el rol correcto (Revisor o Firmante) seg�n su tipo.
         /// </summary>
-        private void CrearUsuariosParticipantes(List<RegistrarParticipanteItem> participantes)
+        public void CrearUsuariosParticipantes(List<RegistrarParticipanteItem> participantes)
         {
             foreach (var participante in participantes)
             {

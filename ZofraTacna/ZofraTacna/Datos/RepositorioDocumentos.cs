@@ -131,6 +131,41 @@ namespace ZofraTacna.Datos
             }
         }
 
+        /// <summary>Todas las versiones archivadas (EsSuperado), mas reciente primero.</summary>
+        public List<AdjuntoArchivadoInfo> ObtenerAdjuntosArchivados(int idDocumento)
+        {
+            var lista = new List<AdjuntoArchivadoInfo>();
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"SELECT IdAdjunto, NombreArchivo, FechaSuperacion, MotivoSuperacion, FechaCreacion
+                               FROM DocumentoAdjunto
+                               WHERE IdDocumento=@id
+                                 AND ISNULL(EsEliminado,0)=0
+                                 AND ISNULL(EsSuperado,0)=1
+                               ORDER BY FechaSuperacion DESC, IdAdjunto DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new AdjuntoArchivadoInfo
+                            {
+                                IdAdjunto = (int)dr["IdAdjunto"],
+                                NombreArchivo = dr["NombreArchivo"] != DBNull.Value ? dr["NombreArchivo"].ToString() : "",
+                                FechaSuperacion = dr["FechaSuperacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaSuperacion"]) : (DateTime?)null,
+                                MotivoSuperacion = dr["MotivoSuperacion"] != DBNull.Value ? dr["MotivoSuperacion"].ToString() : "",
+                                FechaCreacion = dr["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaCreacion"]) : DateTime.MinValue
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
         public bool AdjuntoPerteneceADocumento(int idAdjunto, int idDocumento)
         {
             using (var conn = new SqlConnection(_connFiles))
@@ -456,6 +491,77 @@ namespace ZofraTacna.Datos
                 cmd.Parameters.AddWithValue("@tipo", idTipo);
                 cmd.Parameters.AddWithValue("@estado", idEstado);
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Elimina detalle de revision/firma y participantes del documento; inserta la lista (misma regla que al registrar).
+        /// </summary>
+        public void ReemplazarParticipantesDesdeLista(int idDocumento, List<RegistrarParticipanteItem> participantes)
+        {
+            if (participantes == null || participantes.Count == 0)
+                throw new ArgumentException("Debe haber al menos un participante.");
+
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (var cmd = new SqlCommand(@"
+                            DELETE rd FROM dbo.RevisionDetalle rd
+                            INNER JOIN dbo.DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
+                            WHERE dp.IdDocumento = @id", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDocumento);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        try
+                        {
+                            using (var cmd = new SqlCommand(@"
+                                DELETE fd FROM dbo.FirmaDetalle fd
+                                INNER JOIN dbo.DocumentoParticipante dp ON fd.IdParticipante = dp.IdParticipante
+                                WHERE dp.IdDocumento = @id", conn, tx))
+                            {
+                                cmd.Parameters.AddWithValue("@id", idDocumento);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        catch (SqlException)
+                        {
+                            // FirmaDetalle puede no existir en instalaciones antiguas
+                        }
+
+                        using (var cmd = new SqlCommand("DELETE FROM dbo.DocumentoParticipante WHERE IdDocumento=@id", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@id", idDocumento);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        int idTipoFirmante = ObtenerIdMaestro(conn, tx, "TIPO_PARTICIPANTE", "FIR");
+                        int idTipoRevisor = ObtenerIdMaestro(conn, tx, "TIPO_PARTICIPANTE", "REV");
+                        int idEstadoPen = ObtenerIdMaestro(conn, tx, "ESTADO_PARTICIPANTE", "PEN");
+
+                        foreach (RegistrarParticipanteItem participante in participantes)
+                        {
+                            InsertarParticipante(conn, tx, idDocumento, participante.Login, 0, idTipoRevisor, idEstadoPen);
+                            if (participante.Orden > 0)
+                            {
+                                InsertarParticipante(conn, tx, idDocumento, participante.Login,
+                                    participante.Orden, idTipoFirmante, idEstadoPen);
+                            }
+                        }
+
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
             }
         }
 

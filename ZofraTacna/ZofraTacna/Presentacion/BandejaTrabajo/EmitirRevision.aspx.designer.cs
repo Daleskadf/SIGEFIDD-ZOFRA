@@ -17,8 +17,12 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Literal litNombreArchivoTitulo;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divEmitShell;
         protected global::System.Web.UI.WebControls.Panel pnlBannerComparacion;
-        protected global::System.Web.UI.WebControls.HyperLink lnkPdfAntNuevaPestana;
-        protected global::System.Web.UI.WebControls.HyperLink lnkPdfActNuevaPestana;
+        protected global::System.Web.UI.WebControls.HyperLink lnkPdfIzqNuevaPestana;
+        protected global::System.Web.UI.WebControls.HyperLink lnkPdfDerNuevaPestana;
+        protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
+        protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareIzq;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareDer;
         protected global::System.Web.UI.WebControls.TextBox txtObservaciones;
         protected global::System.Web.UI.WebControls.Panel pnlVistaPdfSimple;
         protected global::System.Web.UI.WebControls.Panel pnlSinPdf;

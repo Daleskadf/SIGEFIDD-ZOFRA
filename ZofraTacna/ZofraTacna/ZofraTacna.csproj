@@ -272,6 +272,7 @@
     <Content Include="Presentacion\BloqueoFlujo.ashx" />
     <Content Include="Content\sigefidd-notificaciones.css" />
     <Content Include="Scripts\sigefidd-notificaciones.js" />
+    <Content Include="Scripts\gestionarParticipantesAsignacion.js" />
     <Content Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
