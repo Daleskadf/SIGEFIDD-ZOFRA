@@ -28,7 +28,7 @@ namespace ZofraTacna.Presentacion
             {
                 cn.Open();
 
-                int badge = GetBadgeCount(cn);
+                int badge = GetBadgeCount(cn, rol, login);
                 litSidebarNav.Text = BuildNav(rol, badge);
 
                 string filtroRol = "";
@@ -144,11 +144,32 @@ namespace ZofraTacna.Presentacion
             }
         }
 
-        private int GetBadgeCount(SqlConnection cn)
+        private int GetBadgeCount(SqlConnection cn, string rol, string login)
         {
-            using (var cmd = new SqlCommand(
-                "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')", cn))
+            string filtroRol = "";
+            if (rol == "REV" || rol == "FIR")
+            {
+                filtroRol = @" AND EXISTS (
+                                    SELECT 1
+                                    FROM DocumentoParticipante dpf
+                                    INNER JOIN Maestro mtf ON dpf.IdTipoParticipante = mtf.IdMaestro
+                                    WHERE dpf.IdDocumento = d.IdDocumento
+                                      AND dpf.LoginUsuario = @login
+                                      AND mtf.Codigo = @tipoRol
+                               )";
+            }
+            string sql = @"SELECT COUNT(*) FROM Documento d 
+                           JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro 
+                           WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')" + filtroRol;
+            using (var cmd = new SqlCommand(sql, cn))
+            {
+                if (rol == "REV" || rol == "FIR")
+                {
+                    cmd.Parameters.AddWithValue("@login", login);
+                    cmd.Parameters.AddWithValue("@tipoRol", rol);
+                }
                 return Convert.ToInt32(cmd.ExecuteScalar());
+            }
         }
 
         private string BuildNav(string rol, int badge)

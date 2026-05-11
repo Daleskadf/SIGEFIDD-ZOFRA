@@ -44,6 +44,16 @@ namespace ZofraTacna.Models
         public string   UsuarioCreacion         { get; set; }
     }
 
+    /// <summary>PDF archivado en FirmaDigital_Files tras correccion del registrador (auditoria).</summary>
+    public class AdjuntoArchivadoInfo
+    {
+        public int       IdAdjunto         { get; set; }
+        public string    NombreArchivo     { get; set; }
+        public DateTime? FechaSuperacion   { get; set; }
+        public string    MotivoSuperacion  { get; set; }
+        public DateTime  FechaCreacion     { get; set; }
+    }
+
     public class RegistrarDocumentoRequest
     {
         public string   CodigoDocumento         { get; set; }  // Ej: RS, AD, etc

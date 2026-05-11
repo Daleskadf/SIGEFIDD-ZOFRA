@@ -112,13 +112,24 @@ namespace ZofraTacna.LogicaNegocio
 
         public int RegistrarDocumentoConParticipantes(RegistrarDocumentoRequest request, string loginUsuario)
         {
-            // Validar los 3 componentes del c�digo de documento
-            if (string.IsNullOrWhiteSpace(request.CodigoDocumento))
-                throw new ArgumentException("El c�digo del documento es requerido (ej: RS, ADMIN).");
-            if (string.IsNullOrWhiteSpace(request.NumeroDocumento))
-                throw new ArgumentException("El n�mero del documento es requerido.");
-            if (request.AnoDocumento < 2000 || request.AnoDocumento > 2100)
-                throw new ArgumentException("El a�o debe estar entre 2000 y 2100.");
+            // Código en un solo campo: NumeroDocumento vacío → CodigoDocumento ya es el valor completo para BD.
+            // Modo legacy: los tres campos (prefijo, número, año) se componen como antes.
+            bool codigoCompletoEnUnCampo = string.IsNullOrWhiteSpace(request.NumeroDocumento);
+            if (codigoCompletoEnUnCampo)
+            {
+                if (string.IsNullOrWhiteSpace(request.CodigoDocumento))
+                    throw new ArgumentException("El código del documento es requerido (ej: RS-0001-2026).");
+                request.CodigoDocumento = request.CodigoDocumento.Trim();
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(request.CodigoDocumento))
+                    throw new ArgumentException("El código del documento es requerido (ej: RS, ADMIN).");
+                if (request.AnoDocumento < 2000 || request.AnoDocumento > 2100)
+                    throw new ArgumentException("El año debe estar entre 2000 y 2100.");
+                string codigoCompleto = $"{request.CodigoDocumento.Trim()}-{request.NumeroDocumento.Trim().PadLeft(4, '0')}-{request.AnoDocumento}";
+                request.CodigoDocumento = codigoCompleto;
+            }
 
             // Validar ASUNTO
             if (string.IsNullOrWhiteSpace(request.Asunto))
@@ -126,18 +137,14 @@ namespace ZofraTacna.LogicaNegocio
 
             // Validar otros campos
             if (request.IdTipoDocumento <= 0)
-                throw new ArgumentException("Debe seleccionar una categor�a v�lida.");
+                throw new ArgumentException("Debe seleccionar una categoría válida.");
             if (request.ContenidoPDF == null || request.ContenidoPDF.Length == 0)
-                throw new ArgumentException("El PDF est� vac�o.");
+                throw new ArgumentException("El PDF está vacío.");
             if (request.Participantes == null || request.Participantes.Count == 0)
                 throw new ArgumentException("Debe agregar al menos un participante.");
 
             // PASO PREVIO: Crear usuarios en UsuarioSistema si no existen
             CrearUsuariosParticipantes(request.Participantes);
-
-            // Formar el c�digo completo en CodigoDocumento: CODIGO-NUMERO-A�O (ej: RS-0001-2026)
-            string codigoCompleto = $"{request.CodigoDocumento}-{request.NumeroDocumento.PadLeft(4, '0')}-{request.AnoDocumento}";
-            request.CodigoDocumento = codigoCompleto;
 
             // Insertar en BD
             return _repo.InsertarDocumentoConParticipantes(request, loginUsuario);

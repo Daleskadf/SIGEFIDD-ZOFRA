@@ -153,22 +153,53 @@ namespace ZofraTacna.Presentacion
             string nombrePdf;
             int tamBytes;
             bool hayPdf = repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombrePdf, out tamBytes);
-            string nombreMostrar = hayPdf && !string.IsNullOrEmpty(nombrePdf) ? nombrePdf : "(sin archivo)";
-            litNombreArchivoTitulo.Text = HttpUtility.HtmlEncode(nombreMostrar);
+            AdjuntoArchivadoInfo archivado;
+            bool hayPdfAnterior = repo.TryObtenerUltimaVersionArchivada(idDoc, out archivado);
+            bool modoComparar = hayPdf && hayPdfAnterior;
+            divEmitShell.Attributes["class"] = modoComparar ? "emitir-wrap emitir-wrap--compare" : "emitir-wrap";
+            divContentArea.Attributes["class"] = modoComparar ? "content content--compare-pdf" : "content";
 
-            if (hayPdf)
+            string nombreMostrar = hayPdf && !string.IsNullOrEmpty(nombrePdf) ? nombrePdf : "(sin archivo)";
+            litNombreArchivoTitulo.Text = modoComparar
+                ? HttpUtility.HtmlEncode("Versi\u00F3n actual: " + nombreMostrar)
+                : HttpUtility.HtmlEncode(nombreMostrar);
+
+            pnlBannerComparacion.Visible = modoComparar;
+            pnlVistaPdfComparar.Visible = modoComparar;
+            pnlVistaPdfSimple.Visible = !modoComparar;
+
+            if (modoComparar)
             {
+                string basePdf = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDoc);
+                lnkPdfAntNuevaPestana.NavigateUrl = basePdf + "&idAdj=" + archivado.IdAdjunto;
+                lnkPdfActNuevaPestana.NavigateUrl = basePdf;
+                ifrPdfAnterior.Visible = true;
+                ifrPdfAnterior.Attributes["src"] = basePdf + "&idAdj=" + archivado.IdAdjunto;
+                ifrPdfActualCompare.Visible = true;
+                ifrPdfActualCompare.Attributes["src"] = basePdf;
+                ifrPdf.Visible = false;
+                pnlSinPdf.Visible = false;
+            }
+            else if (hayPdf)
+            {
+                lnkPdfAntNuevaPestana.NavigateUrl = "";
+                lnkPdfActNuevaPestana.NavigateUrl = "";
                 ifrPdf.Visible = true;
                 ifrPdf.Attributes["src"] = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDoc);
                 pnlSinPdf.Visible = false;
             }
             else
             {
+                lnkPdfAntNuevaPestana.NavigateUrl = "";
+                lnkPdfActNuevaPestana.NavigateUrl = "";
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = true;
             }
 
-            litDetallesDoc.Text = ConstruirDetallesHtml(doc, tipoDesc, estadoDesc, tamBytes, hayPdf);
+            if (modoComparar)
+                pnlVistaPdfComparar.CssClass = "pdf-compare-grid pdf-mode-both";
+
+            litDetallesDoc.Text = ConstruirDetallesHtml(doc, tipoDesc, estadoDesc, tamBytes, hayPdf, modoComparar);
             litLineaTiempo.Text = ConstruirLineaTiempoHtml(repo.ObtenerLineaTiempoDocumento(idDoc));
         }
 
@@ -189,7 +220,7 @@ namespace ZofraTacna.Presentacion
             }
         }
 
-        private static string ConstruirDetallesHtml(Documento doc, string tipoDesc, string estadoDesc, int tamBytes, bool hayPdf)
+        private static string ConstruirDetallesHtml(Documento doc, string tipoDesc, string estadoDesc, int tamBytes, bool hayPdf, bool gridDosColumnas)
         {
             var sb = new StringBuilder();
             CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
@@ -203,23 +234,28 @@ namespace ZofraTacna.Presentacion
             string clsFir = txtFir.IndexOf("fuera", StringComparison.OrdinalIgnoreCase) >= 0 ? "tiempo-vencido" : "tiempo-ok";
             string peso = hayPdf ? FormatearTamano(tamBytes) : "—";
 
-            Row(sb, "Nombre / asunto", doc.Asunto);
+            sb.Append(gridDosColumnas
+                ? "<div class=\"det-grid det-grid--2col\">"
+                : "<div class=\"det-grid\">");
+            Row(sb, "Nombre / asunto", doc.Asunto, false, false, true);
             Row(sb, "C\u00F3digo del documento", doc.CodigoDocumento, true);
             Row(sb, "Tipo de documento", tipoDesc);
             Row(sb, "Estado actual", estadoDesc);
             Row(sb, "Prioridad", pri);
             Row(sb, "Registrado por", doc.LoginUsuarioRegistrador);
             Row(sb, "Fecha de registro", doc.FechaCreacion.ToString("g", pe));
-            Row(sb, "L\u00EDmite m\u00E1x. revisi\u00F3n", maxRev.ToString("g", pe) + " <span class=\"" + clsRev + "\">(" + HttpUtility.HtmlEncode(txtRev) + ")</span>", false, true);
-            Row(sb, "L\u00EDmite m\u00E1x. aprobaci\u00F3n / firma", maxFir.ToString("g", pe) + " <span class=\"" + clsFir + "\">(" + HttpUtility.HtmlEncode(txtFir) + ")</span>", false, true);
-            Row(sb, "Peso del archivo PDF", peso);
+            Row(sb, "L\u00EDmite m\u00E1x. revisi\u00F3n", maxRev.ToString("g", pe) + " <span class=\"" + clsRev + "\">(" + HttpUtility.HtmlEncode(txtRev) + ")</span>", false, true, true);
+            Row(sb, "L\u00EDmite m\u00E1x. aprobaci\u00F3n / firma", maxFir.ToString("g", pe) + " <span class=\"" + clsFir + "\">(" + HttpUtility.HtmlEncode(txtFir) + ")</span>", false, true, true);
+            Row(sb, "Peso del archivo PDF", peso, false, false, true);
+            sb.Append("</div>");
             return sb.ToString();
         }
 
-        private static void Row(StringBuilder sb, string label, string value, bool mono = false, bool rawVal = false)
+        private static void Row(StringBuilder sb, string label, string value, bool mono = false, bool rawVal = false, bool spanFull = false)
         {
             string cls = mono ? "val mono" : "val";
-            sb.Append("<div class=\"det-row\"><span class=\"lbl\">").Append(HttpUtility.HtmlEncode(label)).Append("</span><span class=\"").Append(cls).Append("\">");
+            string rowClass = spanFull ? "det-row det-row--full" : "det-row";
+            sb.Append("<div class=\"").Append(rowClass).Append("\"><span class=\"lbl\">").Append(HttpUtility.HtmlEncode(label)).Append("</span><span class=\"").Append(cls).Append("\">");
             if (rawVal) sb.Append(value ?? "");
             else sb.Append(HttpUtility.HtmlEncode(value ?? ""));
             sb.Append("</span></div>");

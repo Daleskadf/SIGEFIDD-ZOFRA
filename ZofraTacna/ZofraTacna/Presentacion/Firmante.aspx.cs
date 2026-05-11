@@ -60,7 +60,17 @@ namespace ZofraTacna
                 litPendientes.Text       = pendientes.ToString();
                 litFirmados.Text         = firmados.ToString();
                 litTareas.Text           = total.ToString();
-                litBadgeBandeja.Text     = pendientes.ToString();
+                string sqlBadge = @"SELECT COUNT(*) FROM Documento d 
+                                    JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro 
+                                    WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')
+                                    AND EXISTS (
+                                        SELECT 1 FROM DocumentoParticipante dpf
+                                        INNER JOIN Maestro mtf ON dpf.IdTipoParticipante = mtf.IdMaestro
+                                        WHERE dpf.IdDocumento = d.IdDocumento
+                                          AND dpf.LoginUsuario = @u
+                                          AND mtf.Codigo = 'FIR'
+                                    )";
+                litBadgeBandeja.Text = Contar(conn, sqlBadge, login);
                 pnlRequiereAtencion.Visible = pendientes > 0;
 
                 CargarAlertas(conn, login);

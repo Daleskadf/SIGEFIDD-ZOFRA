@@ -51,8 +51,18 @@ namespace ZofraTacna
                 litRevisados.Text  = Contar(conn, sqlRevisados,  login);
                 litTotal.Text      = Contar(conn, sqlBase,       login);
 
-                int pendientes = int.Parse(litPendientes.Text);
-                litBadgeBandeja.Text = pendientes > 0 ? pendientes.ToString() : "0";
+                string sqlBadge = @"SELECT COUNT(*) FROM Documento d 
+                                    JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro 
+                                    WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')
+                                    AND EXISTS (
+                                        SELECT 1 FROM DocumentoParticipante dpf
+                                        INNER JOIN Maestro mtf ON dpf.IdTipoParticipante = mtf.IdMaestro
+                                        WHERE dpf.IdDocumento = d.IdDocumento
+                                          AND dpf.LoginUsuario = @u
+                                          AND mtf.Codigo = 'REV'
+                                    )";
+                string badgeStr = Contar(conn, sqlBadge, login);
+                litBadgeBandeja.Text = badgeStr;
 
                 CargarAlertas(conn, login);
             }

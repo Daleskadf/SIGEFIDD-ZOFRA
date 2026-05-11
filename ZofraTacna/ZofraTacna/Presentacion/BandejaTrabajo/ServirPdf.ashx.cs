@@ -33,6 +33,9 @@ namespace ZofraTacna.Presentacion
                 return;
             }
 
+            int idAdjQuery = 0;
+            int.TryParse(req.QueryString["idAdj"], out idAdjQuery);
+
             var repo = new RepositorioDocumentos();
             if (repo.ObtenerDocumentoPorId(idDoc) == null)
             {
@@ -43,7 +46,18 @@ namespace ZofraTacna.Presentacion
             int idAdj;
             string nombre;
             int bytes;
-            if (!repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombre, out bytes))
+            if (idAdjQuery > 0)
+            {
+                if (!repo.AdjuntoPerteneceADocumento(idAdjQuery, idDoc))
+                {
+                    rsp.StatusCode = 404;
+                    return;
+                }
+                idAdj = idAdjQuery;
+                nombre = repo.ObtenerNombreAdjunto(idAdj) ?? "documento.pdf";
+                bytes = 0;
+            }
+            else if (!repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombre, out bytes))
             {
                 rsp.StatusCode = 404;
                 rsp.ContentType = "text/plain";

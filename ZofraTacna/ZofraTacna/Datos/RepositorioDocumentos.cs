@@ -68,7 +68,7 @@ namespace ZofraTacna.Datos
             }
         }
 
-        /// <summary>Primer PDF adjunto al documento en FirmaDigital_Files.</summary>
+        /// <summary>PDF vigente (no eliminado, no archivado) en FirmaDigital_Files.</summary>
         public bool IntentarAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out int tamanioBytes)
         {
             idAdjunto = 0;
@@ -78,7 +78,11 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, TamanioBytes
-                               FROM DocumentoAdjunto WHERE IdDocumento=@id ORDER BY IdAdjunto ASC";
+                               FROM DocumentoAdjunto
+                               WHERE IdDocumento=@id
+                                 AND ISNULL(EsEliminado,0)=0
+                                 AND ISNULL(EsSuperado,0)=0
+                               ORDER BY IdAdjunto DESC";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", idDocumento);
@@ -94,18 +98,114 @@ namespace ZofraTacna.Datos
             }
         }
 
+        /// <summary>Ultima version archivada (reemplazada por correccion), para comparar con la vigente.</summary>
+        public bool TryObtenerUltimaVersionArchivada(int idDocumento, out AdjuntoArchivadoInfo info)
+        {
+            info = null;
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, FechaSuperacion, MotivoSuperacion, FechaCreacion
+                               FROM DocumentoAdjunto
+                               WHERE IdDocumento=@id
+                                 AND ISNULL(EsEliminado,0)=0
+                                 AND ISNULL(EsSuperado,0)=1
+                               ORDER BY FechaSuperacion DESC, IdAdjunto DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read()) return false;
+                        info = new AdjuntoArchivadoInfo
+                        {
+                            IdAdjunto = (int)dr["IdAdjunto"],
+                            NombreArchivo = dr["NombreArchivo"] != DBNull.Value ? dr["NombreArchivo"].ToString() : "",
+                            FechaSuperacion = dr["FechaSuperacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaSuperacion"]) : (DateTime?)null,
+                            MotivoSuperacion = dr["MotivoSuperacion"] != DBNull.Value ? dr["MotivoSuperacion"].ToString() : "",
+                            FechaCreacion = dr["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaCreacion"]) : DateTime.MinValue
+                        };
+                        return true;
+                    }
+                }
+            }
+        }
+
+        public bool AdjuntoPerteneceADocumento(int idAdjunto, int idDocumento)
+        {
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           @"SELECT 1 FROM DocumentoAdjunto
+                             WHERE IdAdjunto=@adj AND IdDocumento=@doc AND ISNULL(EsEliminado,0)=0", conn))
+                {
+                    cmd.Parameters.AddWithValue("@adj", idAdjunto);
+                    cmd.Parameters.AddWithValue("@doc", idDocumento);
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value;
+                }
+            }
+        }
+
+        /// <summary>Archiva adjuntos vigentes e inserta el PDF nuevo (auditoria en la misma tabla).</summary>
+        public void ReemplazarPdfConHistorial(int idDocumento, byte[] nuevoPdf, string nombreArchivo, string loginUsuario, string motivoArchivo)
+        {
+            if (nuevoPdf == null || nuevoPdf.Length == 0) return;
+            ArchivarAdjuntosVigentes(idDocumento, loginUsuario ?? "", motivoArchivo ?? "");
+            InsertarAdjuntoPDF(idDocumento, nuevoPdf, nombreArchivo, loginUsuario);
+        }
+
+        private void ArchivarAdjuntosVigentes(int idDocumento, string loginSuperacion, string motivoSuperacion)
+        {
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"UPDATE dbo.DocumentoAdjunto
+                               SET EsSuperado = 1,
+                                   FechaSuperacion = GETDATE(),
+                                   LoginSuperacion = @login,
+                                   MotivoSuperacion = @motivo
+                               WHERE IdDocumento = @id
+                                 AND ISNULL(EsEliminado, 0) = 0
+                                 AND ISNULL(EsSuperado, 0) = 0";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.AddWithValue("@login", loginSuperacion ?? "");
+                    cmd.Parameters.AddWithValue("@motivo", (object)(motivoSuperacion ?? "") ?? DBNull.Value);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public byte[] ObtenerBytesAdjunto(int idAdjunto)
         {
             using (var conn = new SqlConnection(_connFiles))
             {
                 conn.Open();
                 using (var cmd = new SqlCommand(
-                           "SELECT ContenidoPDF FROM DocumentoAdjunto WHERE IdAdjunto=@id", conn))
+                           "SELECT ContenidoPDF FROM DocumentoAdjunto WHERE IdAdjunto=@id AND ISNULL(EsEliminado,0)=0", conn))
                 {
                     cmd.Parameters.AddWithValue("@id", idAdjunto);
                     cmd.CommandTimeout = 120;
                     object o = cmd.ExecuteScalar();
                     return o != null && o != DBNull.Value ? (byte[])o : null;
+                }
+            }
+        }
+
+        public string ObtenerNombreAdjunto(int idAdjunto)
+        {
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           "SELECT NombreArchivo FROM DocumentoAdjunto WHERE IdAdjunto=@id AND ISNULL(EsEliminado,0)=0", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idAdjunto);
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value ? o.ToString() : null;
                 }
             }
         }
@@ -365,8 +465,8 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 string sql = @"INSERT INTO DocumentoAdjunto
-                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
-                    VALUES (@id,@pdf,@nom,@mime,@size,@user)";
+                    (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion,EsSuperado)
+                    VALUES (@id,@pdf,@nom,@mime,@size,@user,0)";
 
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -948,33 +1048,8 @@ namespace ZofraTacna.Datos
 
         private void GuardarOActualizarAdjunto(int idDocumento, byte[] pdf, string nombreArchivo, string login)
         {
-            int idAdj;
-            string nom;
-            int tam;
-            bool existe = IntentarAdjuntoPrincipal(idDocumento, out idAdj, out nom, out tam);
-            using (var conn = new SqlConnection(_connFiles))
-            {
-                conn.Open();
-                string sql = existe
-                    ? @"UPDATE DocumentoAdjunto
-                        SET ContenidoPDF=@pdf, NombreArchivo=@nom, TipoMime='application/pdf', TamanioBytes=@tam
-                        WHERE IdAdjunto=@idAdj"
-                    : @"INSERT INTO DocumentoAdjunto (IdDocumento,ContenidoPDF,NombreArchivo,TipoMime,TamanioBytes,UsuarioCreacion)
-                        VALUES (@idDoc,@pdf,@nom,'application/pdf',@tam,@usr)";
-                using (var cmd = new SqlCommand(sql, conn))
-                {
-                    if (existe) cmd.Parameters.AddWithValue("@idAdj", idAdj);
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@idDoc", idDocumento);
-                        cmd.Parameters.AddWithValue("@usr", login ?? "");
-                    }
-                    cmd.Parameters.Add("@pdf", SqlDbType.VarBinary, -1).Value = pdf;
-                    cmd.Parameters.AddWithValue("@nom", nombreArchivo);
-                    cmd.Parameters.AddWithValue("@tam", pdf.Length);
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            ReemplazarPdfConHistorial(idDocumento, pdf, nombreArchivo, login,
+                "Reemplazo de PDF al enviar correccion (version anterior archivada para auditoria).");
         }
 
         private int ObtenerIdMaestro(SqlConnection conn, SqlTransaction transaction, string tipo, string codigo)

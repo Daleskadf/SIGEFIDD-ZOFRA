@@ -55,6 +55,9 @@ namespace ZofraTacna
                 litCompletados.Text = ContarQuery(conn,
                     "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE m.Codigo='FCOM' AND d.Activo=1");
                 litUsuarios.Text   = ContarQuery(conn, "SELECT COUNT(*) FROM UsuarioSistema WHERE Activo=1");
+                
+                badgeBandeja.InnerText = ContarQuery(conn, 
+                    "SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.Activo=1 AND m.Codigo IN ('REG','REV','PEN','FPAR','OBS')");
             }
         }
 

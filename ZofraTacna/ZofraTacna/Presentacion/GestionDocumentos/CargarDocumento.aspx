@@ -179,37 +179,11 @@
             <p class="sub">Ingrese los metadatos del documento y adjunte el archivo PDF</p>
 
             <div class="form-group">
-                <label class="form-label">CÓDIGO DE DOCUMENTO <span class="required">*</span></label>
-                <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;align-items:flex-end;">
-                    <div>
-                        <label style="font-size:11px;color:#888;display:block;margin-bottom:6px;">CÓDIGO (letras)</label>
-                        <asp:TextBox ID="txtCodigoDoc" runat="server" CssClass="form-input" placeholder="RS" style="text-transform:uppercase;"/>
-                    </div>
-                    <div>
-                        <label style="font-size:11px;color:#888;display:block;margin-bottom:6px;">NÚMERO</label>
-                        <asp:TextBox ID="txtNumeroDoc" runat="server" CssClass="form-input" placeholder="1" />
-                    </div>
-                    <div>
-                        <label style="font-size:11px;color:#888;display:block;margin-bottom:6px;">AÑO</label>
-                        <asp:TextBox ID="txtAnoDoc" runat="server" CssClass="form-input" Text="2026" ReadOnly="true" style="background:#f5f5f5;cursor:pointer;"/>
-                        <button type="button" onclick="abrirSelectorAnos()" style="position:absolute;right:12px;margin-top:-38px;background:linear-gradient(90deg,#1a2a4a,#8b1a1a);color:white;border:none;border-radius:4px;padding:8px 12px;cursor:pointer;font-size:14px;">📅</button>
-                    </div>
-                </div>
-                <div style="font-size:11px;color:#999;margin-top:6px;">
-                    Resultado: <strong><asp:Literal ID="litCodigoPreview" runat="server" Text="RS-0001-2026"/></strong>
-                </div>
-            </div>
-
-            <!-- Modal Selector de Años -->
-            <div id="modalAnoSelector" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
-                <div style="background:white;border-radius:12px;padding:24px;width:90%;max-width:400px;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
-                    <div style="font-size:16px;font-weight:700;color:#1a2a4a;margin-bottom:16px;">Seleccionar Año</div>
-                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:300px;overflow-y:auto;margin-bottom:16px;">
-                        <asp:Literal ID="litAnosLista" runat="server"/>
-                    </div>
-                    <div style="display:flex;gap:8px;justify-content:flex-end;">
-                        <button type="button" onclick="cerrarSelectorAnos()" style="padding:8px 16px;border:1.5px solid #ddd;border-radius:6px;background:white;color:#555;cursor:pointer;">Cancelar</button>
-                    </div>
+                <label class="form-label">C&Oacute;DIGO DE DOCUMENTO <span class="required">*</span></label>
+                <asp:TextBox ID="txtCodigoDocumentoCompleto" runat="server" CssClass="form-input" MaxLength="120"
+                    placeholder="Ej: RS-0001-2026 (código, n&uacute;mero y a&ntilde;o en un solo campo)" />
+                <div style="font-size:11px;color:#999;margin-top:6px;line-height:1.4;">
+                    Ingrese manualmente el c&oacute;digo completo tal como debe guardarse en el sistema (incluye prefijo, correlativo y a&ntilde;o si aplica).
                 </div>
             </div>
 
@@ -722,73 +696,10 @@
     }
 
     // ============================================================
-    // MODAL: Selector de años
-    // ============================================================
-    function abrirSelectorAnos() {
-        document.getElementById('modalAnoSelector').style.display = 'flex';
-    }
-
-    function cerrarSelectorAnos() {
-        document.getElementById('modalAnoSelector').style.display = 'none';
-    }
-
-    function seleccionarAno(ano) {
-        document.getElementById('<%= txtAnoDoc.ClientID %>').value = ano;
-        actualizarPreview();
-        cerrarSelectorAnos();
-    }
-
-    // ============================================================
-    // PREVIEW: Código de documento
-    // ============================================================
-    function actualizarPreview() {
-        var codigo = (document.getElementById('<%= txtCodigoDoc.ClientID %>').value || 'RS').toUpperCase();
-        var numero = document.getElementById('<%= txtNumeroDoc.ClientID %>').value || '1';
-        var ano = document.getElementById('<%= txtAnoDoc.ClientID %>').value || '2026';
-
-        numero = numero.replace(/[^0-9]/g, '');
-        numero = ('000' + numero).slice(-4);
-
-        var resultado = codigo + '-' + numero + '-' + ano;
-        document.getElementById('<%= litCodigoPreview.ClientID %>').textContent = resultado;
-    }
-
-    // ============================================================
     // INICIALIZACIÓN: Después de DOMContentLoaded
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        // Renderizar participantes recuperados
         renderizarParticipantes();
-
-        // Setup de eventos para código, número y año
-        var txtCodigo = document.getElementById('<%= txtCodigoDoc.ClientID %>');
-        var txtNumero = document.getElementById('<%= txtNumeroDoc.ClientID %>');
-        var txtAno = document.getElementById('<%= txtAnoDoc.ClientID %>');
-        var modal = document.getElementById('modalAnoSelector');
-
-        if (txtCodigo) {
-            txtCodigo.addEventListener('keyup', function() {
-                this.value = this.value.replace(/[^A-Za-z]/g, '').toUpperCase();
-                actualizarPreview();
-            });
-        }
-
-        if (txtNumero) {
-            txtNumero.addEventListener('keyup', function() {
-                this.value = this.value.replace(/[^0-9]/g, '');
-                actualizarPreview();
-            });
-        }
-
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    cerrarSelectorAnos();
-                }
-            });
-        }
-
-        actualizarPreview();
     });
 
     // ============================================================
@@ -916,18 +827,14 @@
     function validarAntesDeEnviar() {
         let errores = [];
 
-        let codigo = (document.getElementById('<%= txtCodigoDoc.ClientID %>') || {}).value || '';
-        let numero = (document.getElementById('<%= txtNumeroDoc.ClientID %>') || {}).value || '';
-        let ano = (document.getElementById('<%= txtAnoDoc.ClientID %>') || {}).value || '';
+        let codigoCompleto = (document.getElementById('<%= txtCodigoDocumentoCompleto.ClientID %>') || {}).value || '';
         let asunto = (document.getElementById('<%= txtAsunto.ClientID %>') || {}).value || '';
         let categoria = (document.getElementById('<%= ddlCategoria.ClientID %>') || {}).value || '';
         let area = (document.getElementById('<%= ddlArea.ClientID %>') || {}).value || '';
         let participantes = (document.getElementById('<%= hfParticipantes.ClientID %>') || {}).value || '';
         let fileInput = document.getElementById('<%= filePDF.ClientID %>');
 
-        if (!codigo.trim()) errores.push('Código');
-        if (!numero.trim()) errores.push('Número');
-        if (!ano.trim()) errores.push('Año');
+        if (!codigoCompleto.trim()) errores.push('Código de documento (completo)');
         if (!asunto.trim()) errores.push('Asunto');
         if (!categoria) errores.push('Categoría');
         if (!area) errores.push('Área (unidad orgánica)');

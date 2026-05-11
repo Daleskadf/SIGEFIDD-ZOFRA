@@ -7,7 +7,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using ZofraTacna.Datos;
 using ZofraTacna.LogicaNegocio;
-using ZofraTacna.Models;
 
 namespace ZofraTacna.Presentacion
 {
@@ -104,13 +103,7 @@ namespace ZofraTacna.Presentacion
                                 return;
                             }
 
-                            // Parsear c�digo documento (formato: CODIGO-NUMERO-A�O)
-                            string codigoCompleto = dr["CodigoDocumento"].ToString();
-                            string[] partes = codigoCompleto.Split('-');
-
-                            txtCodigoDoc.Text = partes.Length > 0 ? partes[0] : "";
-                            txtNumeroDoc.Text = partes.Length > 1 ? partes[1] : "";
-                            txtAnoDoc.Text = partes.Length > 2 ? partes[2] : DateTime.Now.Year.ToString();
+                            txtCodigoDocumentoCompleto.Text = dr["CodigoDocumento"].ToString();
 
                             txtAsunto.Text = dr["Asunto"].ToString();
                             txtDescripcion.Text = dr["Descripcion"] == DBNull.Value ? "" : dr["Descripcion"].ToString();
@@ -187,22 +180,11 @@ namespace ZofraTacna.Presentacion
         {
             try
             {
-                // Validaciones
-                if (string.IsNullOrWhiteSpace(txtCodigoDoc.Text))
+                bool notificarDocumentoCorregido = false;
+                string codigoDocCompleto = (txtCodigoDocumentoCompleto.Text ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(codigoDocCompleto))
                 {
-                    MostrarMsg("Indique el codigo del documento (letras).", false);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtNumeroDoc.Text))
-                {
-                    MostrarMsg("Indique el numero del documento.", false);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtAnoDoc.Text))
-                {
-                    MostrarMsg("Indique el anio del documento.", false);
+                    MostrarMsg("Ingrese el código completo del documento.", false);
                     return;
                 }
 
@@ -275,11 +257,15 @@ namespace ZofraTacna.Presentacion
                             }
 
                             int idEstadoReg = ObtenerIdMaestro(conn: cn, tx: transaction, tipo: "ESTADO_DOC", codigo: "REG");
+                            int idEstadoObs = ObtenerIdMaestro(conn: cn, tx: transaction, tipo: "ESTADO_DOC", codigo: "OBS");
                             int idEstadoParticipantePen = ObtenerIdMaestro(conn: cn, tx: transaction, tipo: "ESTADO_PARTICIPANTE", codigo: "PEN");
+                            // Solo marca si corresponde avisar; el correo se envia mas abajo, despues de Commit y de guardar PDF en Files (si hay).
+                            notificarDocumentoCorregido = idEstadoObs > 0 && idEstadoActual == idEstadoObs;
 
-                            // Actualizar documento
+                            // Actualizar documento (incluye código completo en un solo campo)
                             string sql = @"UPDATE Documento 
-                                           SET Asunto = @asunto,
+                                           SET CodigoDocumento = @cod,
+                                               Asunto = @asunto,
                                                Descripcion = @desc,
                                                IdTipoDocumento = @tipo,
                                                Prioridad = @pri
@@ -287,6 +273,7 @@ namespace ZofraTacna.Presentacion
 
                             using (var cmd = new SqlCommand(sql, cn, transaction))
                             {
+                                cmd.Parameters.AddWithValue("@cod", codigoDocCompleto);
                                 cmd.Parameters.AddWithValue("@asunto", txtAsunto.Text.Trim());
                                 cmd.Parameters.AddWithValue("@desc", txtDescripcion.Text.Trim());
                                 cmd.Parameters.AddWithValue("@tipo", int.Parse(ddlCategoria.SelectedValue));
@@ -379,40 +366,19 @@ namespace ZofraTacna.Presentacion
                     }
                 }
 
-                // Actualizar PDF en FirmaDigital_Files (SEPARADO)
+                // PDF en FirmaDigital_Files: archiva la version vigente (auditoria) e inserta la nueva
                 if (pdfBytes != null)
                 {
-                    string connFilesStr = ConfigurationManager.ConnectionStrings["FirmaDigital_Files"].ConnectionString;
-                    using (var cnFiles = new SqlConnection(connFilesStr))
-                    {
-                        cnFiles.Open();
-
-                        // Eliminar PDF anterior
-                        string sqlDelete = "DELETE FROM DocumentoAdjunto WHERE IdDocumento = @id";
-                        using (var cmd = new SqlCommand(sqlDelete, cnFiles))
-                        {
-                            cmd.Parameters.AddWithValue("@id", idDocumento);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        // Insertar nuevo PDF
-                        string sqlInsert = @"INSERT INTO DocumentoAdjunto 
-                            (IdDocumento, ContenidoPDF, NombreArchivo, TipoMime, TamanioBytes, UsuarioCreacion, FechaCreacion)
-                            VALUES (@id, @pdf, @nom, @mime, @size, @user, GETDATE())";
-
-                        using (var cmd = new SqlCommand(sqlInsert, cnFiles))
-                        {
-                            cmd.CommandTimeout = 120;
-                            cmd.Parameters.AddWithValue("@id", idDocumento);
-                            cmd.Parameters.Add("@pdf", System.Data.SqlDbType.VarBinary, -1).Value = pdfBytes;
-                            cmd.Parameters.AddWithValue("@nom", pdfNombre);
-                            cmd.Parameters.AddWithValue("@mime", "application/pdf");
-                            cmd.Parameters.AddWithValue("@size", pdfBytes.Length);
-                            cmd.Parameters.AddWithValue("@user", Session["LoginUsuario"].ToString());
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    var repoAdj = new RepositorioDocumentos();
+                    repoAdj.ReemplazarPdfConHistorial(idDocumento, pdfBytes, pdfNombre,
+                        Session["LoginUsuario"].ToString(),
+                        "Reemplazo por correccion del registrador tras observacion (PDF anterior archivado).");
                 }
+
+                // Correo solo si el clic en Enviar correccion llego aqui sin error: Commit en FirmaDigital hecho,
+                // y si subio PDF nuevo, ya esta en FirmaDigital_Files. No se envia al elegir archivo ni antes del Commit.
+                if (notificarDocumentoCorregido)
+                    EjecutarNotificacionDocumentoCorregido(idDocumento);
 
                 LiberarBloqueoEdicionRegistrador();
 
@@ -423,6 +389,28 @@ namespace ZofraTacna.Presentacion
             catch (Exception ex)
             {
                 MostrarMsg("ERROR: " + ex.Message, false);
+            }
+        }
+
+        private void EjecutarNotificacionDocumentoCorregido(int idDocumento)
+        {
+            string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            try
+            {
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    using (var cmd = new SqlCommand("dbo.USP_NotificarDocumentoCorregido", cn))
+                    {
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@IdDocumento", idDocumento);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch
+            {
+                // La corrección del documento no debe fallar si el correo falla.
             }
         }
 

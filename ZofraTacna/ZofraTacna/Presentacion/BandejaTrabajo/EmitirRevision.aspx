@@ -29,19 +29,45 @@
         .role-badge{background:#eef0f8;color:#1a2a4a;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:600}
         .nav-item-logout{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:white;font-size:13px;cursor:pointer;margin-top:auto;text-decoration:none;background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1.5px solid #7d1717;margin-bottom:10px;box-shadow:0 6px 16px rgba(139,26,26,.25)}
         .nav-item-logout:hover{background:linear-gradient(135deg,#a32121,#d44736)}
-        .content{flex:1;padding:24px 28px;overflow:auto}
+        .content{flex:1;padding:24px 28px;overflow:auto;min-height:0;display:flex;flex-direction:column}
+        /* Comparacion: la pagina crece y hace scroll; al bajar, Detalle/Flujo suben y liberan espacio para el PDF */
+        .content.content--compare-pdf{overflow-y:auto;overflow-x:hidden;padding-bottom:24px;min-height:0;-webkit-overflow-scrolling:touch}
+        .content.content--compare-pdf .emitir-wrap--compare{display:flex;flex-direction:column;flex:0 0 auto;width:100%}
         .content h1{font-size:22px;color:#1a2a4a;font-weight:700}
         .content .sub{font-size:13px;color:#63718f;margin-top:4px;margin-bottom:18px}
-        .content-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+        .content-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-shrink:0}
         .sub .doc-code{display:inline-block;background:#e8ecf7;color:#1a2a4a;border:1px solid #cfd8ef;border-radius:999px;padding:2px 10px;font-weight:700;margin-right:6px}
         .link-volver{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1px solid #7d1717;text-decoration:none;font-weight:700;box-shadow:0 6px 16px rgba(139,26,26,.25);white-space:nowrap}
         .link-volver:hover{background:linear-gradient(135deg,#a32121,#d44736)}
         .emitir-wrap{display:flex;gap:20px;align-items:stretch;min-height:min(720px,calc(100vh - 200px))}
         .emitir-left{width:min(380px,34vw);min-width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:14px}
         .emitir-right{flex:1;min-width:0;display:flex;flex-direction:column;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+        /* Modo comparacion: metadatos arriba en dos columnas; PDF usa todo el ancho del area de contenido */
+        .emitir-wrap.emitir-wrap--compare{flex-direction:column;gap:16px;flex:0 0 auto;align-items:stretch;width:100%}
+        .emitir-wrap.emitir-wrap--compare .emitir-left{display:grid;grid-template-columns:minmax(260px,1fr) minmax(260px,1fr);gap:16px;width:100%;min-width:0;overflow:visible;flex-shrink:0;padding-right:0}
+        .emitir-wrap.emitir-wrap--compare .emitir-left .card-panel{margin:0}
+        .emitir-wrap.emitir-wrap--compare .emitir-right{display:flex;flex-direction:column;width:100%;flex:0 0 auto;overflow:visible;min-height:min(920px,92vh)}
+        .emitir-wrap.emitir-wrap--compare .pdf-head{flex-shrink:0}
+        .emitir-wrap.emitir-wrap--compare .pdf-frame-wrap{flex:1 1 auto;min-height:min(860px,85vh);display:flex;flex-direction:column;position:relative}
+        .emitir-wrap.emitir-wrap--compare .pdf-compare-grid{flex:1 1 auto;min-height:min(820px,80vh);height:auto;display:grid;align-content:stretch}
+        .emitir-wrap.emitir-wrap--compare .pdf-col{display:flex;flex-direction:column;min-width:0;min-height:min(780px,76vh);overflow:hidden}
+        .emitir-wrap.emitir-wrap--compare .pdf-col iframe{width:100%;flex:1 1 auto;min-height:min(720px,72vh);height:min(720px,72vh);border:none}
+        .pdf-mode-prev .pdf-col:nth-child(2),.pdf-mode-next .pdf-col:nth-child(1){display:none}
+        .pdf-compare-grid.pdf-mode-prev,.pdf-compare-grid.pdf-mode-next{grid-template-columns:1fr!important}
+        .pdf-compare-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(26,42,74,.12)}
+        .pdf-compare-view-btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+        .pdf-compare-toolbar-label{font-size:11px;font-weight:700;color:#1a2a4a;text-transform:uppercase;letter-spacing:.4px;margin-right:4px}
+        .cmp-chip{border:1.5px solid #cfd8ef;background:#fff;color:#1a2a4a;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+        .cmp-chip:hover{border-color:#1a2a4a;background:#f5f7fc}
+        .cmp-chip.cmp-chip-on{background:linear-gradient(135deg,#1a2a4a,#2a3f6f);color:#fff;border-color:#1a2a4a;box-shadow:0 4px 12px rgba(26,42,74,.25)}
+        .pdf-compare-open-links{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+        .cmp-tablink{font-size:12px;font-weight:600;color:#2a3f6f;text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px}
+        .cmp-tablink:hover{border-bottom-color:#2a3f6f;color:#1a2a4a}
         .card-panel{background:white;border-radius:12px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
         .panel-title{font-size:12px;font-weight:700;color:#1a2a4a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #eef0f8}
         .det-grid{display:flex;flex-direction:column;gap:10px}
+        .det-grid.det-grid--2col{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;align-items:start}
+        .det-grid.det-grid--2col .det-row--full{grid-column:1/-1}
         .det-row{display:flex;flex-direction:column;gap:3px;font-size:12px}
         .det-row .lbl{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
         .det-row .val{color:#333;font-weight:600;word-break:break-word}
@@ -50,6 +76,8 @@
         .tiempo-vencido{color:#c0392b;font-weight:700}
         /* Linea de tiempo */
         .tl-wrap{position:relative;padding-left:4px}
+        .tl-wrap-inner{flex:1;overflow-y:auto;max-height:480px}
+        .emitir-wrap.emitir-wrap--compare .tl-wrap-inner{max-height:min(400px,42vh)}
         .tl-line{position:absolute;left:11px;top:6px;bottom:8px;width:2px;background:linear-gradient(180deg,#1a2a4a22,#1a2a4a44)}
         .tl-item{position:relative;padding-left:26px;padding-bottom:16px;font-size:12px}
         .tl-item:last-child{padding-bottom:4px}
@@ -68,6 +96,19 @@
         .btn-conformidad{background:linear-gradient(135deg,#2a3f6f,#1a2a4a);border:1px solid #17243f}
         .btn-observacion{background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1px solid #7d1717}
         .pdf-empty{display:flex;align-items:center;justify-content:center;height:100%;min-height:320px;color:#aaa;font-size:14px;padding:24px;text-align:center}
+        .pdf-compare-bar{background:#fafbfd;border-bottom:1px solid #eef0f8;padding:10px 18px;margin:0;flex-shrink:0}
+        .pdf-compare-bar .pdf-compare-toolbar{margin-top:0;padding-top:0;border-top:none}
+        .pdf-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%;min-height:420px;align-content:stretch}
+        .pdf-col{display:flex;flex-direction:column;min-width:0;background:#2a2a32;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+        .pdf-col-title{font-size:11px;font-weight:700;padding:10px 12px;background:#1a2a4a;color:#fff;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+        .pdf-col iframe{flex:1;min-height:380px;border:none;width:100%}
+        @media (max-width:1100px){
+            .emitir-wrap.emitir-wrap--compare .emitir-left{grid-template-columns:1fr;max-height:none}
+            .pdf-compare-grid:not(.pdf-mode-prev):not(.pdf-mode-next){grid-template-columns:1fr}
+        }
+        @media (max-width:640px){
+            .emitir-wrap.emitir-wrap--compare .det-grid.det-grid--2col{grid-template-columns:1fr}
+        }
         .alert-msg{margin-bottom:12px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:600}
         .alert-ok{background:#e8f5e9;color:#1b5e20;border:1px solid #c8e6c9}
         .alert-err{background:#ffebee;color:#8b1a1a;border:1px solid #ffcdd2}
@@ -82,7 +123,7 @@
         .obs-text{width:100%;min-height:120px;resize:vertical;border:1.5px solid #d3daea;border-radius:10px;padding:10px 12px;font-size:13px;color:#2e3445;outline:none}
         .obs-text:focus{border-color:#1a2a4a;box-shadow:0 0 0 3px rgba(26,42,74,.12)}
         .obs-help{font-size:12px;color:#7a849b;margin-top:8px}
-        @media (max-width:1024px){.emitir-wrap{flex-direction:column}.emitir-left{width:100%;min-width:0}.pdf-frame-wrap{min-height:50vh}.content-head{flex-direction:column}.link-volver{align-self:flex-end}}
+        @media (max-width:1024px){.emitir-wrap:not(.emitir-wrap--compare){flex-direction:column}.emitir-left{width:100%;min-width:0}.pdf-frame-wrap{min-height:50vh}.content-head{flex-direction:column}.link-volver{align-self:flex-end}}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -121,7 +162,7 @@
                 </div>
             </div>
         </div>
-        <div class="content">
+        <div runat="server" id="divContentArea" class="content">
             <asp:Panel ID="pnlMensajeOk" runat="server" Visible="false" CssClass="alert-msg alert-ok"><asp:Literal ID="litMensajeOk" runat="server" /></asp:Panel>
             <asp:Panel ID="pnlMensajeError" runat="server" Visible="false" CssClass="alert-msg alert-err"><asp:Literal ID="litMensajeError" runat="server" /></asp:Panel>
             <div class="content-head">
@@ -131,7 +172,7 @@
                 </div>
                 <a class="link-volver" href="BandejaTrabajo.aspx">&larr; Volver a Bandeja de Trabajo</a>
             </div>
-            <div class="emitir-wrap">
+            <div runat="server" id="divEmitShell" class="emitir-wrap">
                 <div class="emitir-left">
                     <div class="card-panel">
                         <div class="panel-title">Detalles del documento</div>
@@ -139,7 +180,7 @@
                     </div>
                     <div class="card-panel" style="flex:1;min-height:200px;display:flex;flex-direction:column">
                         <div class="panel-title">Flujo del documento</div>
-                        <div class="tl-wrap" style="flex:1;overflow-y:auto;max-height:480px">
+                        <div class="tl-wrap tl-wrap-inner">
                             <div class="tl-line" aria-hidden="true"></div>
                             <asp:Literal ID="litLineaTiempo" runat="server"/>
                         </div>
@@ -147,13 +188,40 @@
                 </div>
                 <div class="emitir-right">
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
+                    <asp:Panel ID="pnlBannerComparacion" runat="server" Visible="false" CssClass="pdf-compare-bar">
+                        <div class="pdf-compare-toolbar">
+                            <div class="pdf-compare-view-btns">
+                                <span class="pdf-compare-toolbar-label">Vista</span>
+                                <button type="button" class="cmp-chip cmp-chip-on" data-cmp-mode="both" onclick="emRevCmpSetMode('both',this)" aria-pressed="true">Lado a lado</button>
+                                <button type="button" class="cmp-chip" data-cmp-mode="prev" onclick="emRevCmpSetMode('prev',this)" aria-pressed="false">Solo anterior</button>
+                                <button type="button" class="cmp-chip" data-cmp-mode="next" onclick="emRevCmpSetMode('next',this)" aria-pressed="false">Solo actual</button>
+                            </div>
+                            <div class="pdf-compare-open-links">
+                                <asp:HyperLink ID="lnkPdfAntNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Abrir anterior en nueva pesta&ntilde;a"/> 
+                                <span style="color:#aab">|</span>
+                                <asp:HyperLink ID="lnkPdfActNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Abrir actual en nueva pesta&ntilde;a"/>
+                            </div>
+                        </div>
+                    </asp:Panel>
                     <div class="pdf-frame-wrap">
                         <div class="pdf-float-actions" style="<%= ModoBloqueado ? "display:none;" : "" %>">
                             <button class="pdf-float-btn btn-conformidad" type="button" onclick="mostrarConfirmacionConformidad()">Emitir Conformidad</button>
                             <button class="pdf-float-btn btn-observacion" type="button" onclick="mostrarModalObservacion()">Emitir Observaci&oacute;n</button>
                         </div>
-                        <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
-                        <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
+                        <asp:Panel ID="pnlVistaPdfSimple" runat="server">
+                            <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
+                            <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
+                        </asp:Panel>
+                        <asp:Panel ID="pnlVistaPdfComparar" runat="server" Visible="false" CssClass="pdf-compare-grid pdf-mode-both">
+                            <div class="pdf-col">
+                                <div class="pdf-col-title">Versi&oacute;n anterior (archivada)</div>
+                                <iframe runat="server" id="ifrPdfAnterior" title="PDF anterior"></iframe>
+                            </div>
+                            <div class="pdf-col">
+                                <div class="pdf-col-title">Versi&oacute;n actual (corregida)</div>
+                                <iframe runat="server" id="ifrPdfActualCompare" title="PDF actual"></iframe>
+                            </div>
+                        </asp:Panel>
                     </div>
                 </div>
             </div>
@@ -247,6 +315,22 @@
         var modalObs = document.getElementById('modalObservacion');
         if (modalObs && e.target === modalObs) cerrarModalObservacion();
     });
+
+    function emRevCmpSetMode(mode, btnEl) {
+        var grid = document.getElementById('<%= pnlVistaPdfComparar.ClientID %>');
+        if (!grid) return;
+        grid.classList.remove('pdf-mode-both', 'pdf-mode-prev', 'pdf-mode-next');
+        grid.classList.add(mode === 'prev' ? 'pdf-mode-prev' : (mode === 'next' ? 'pdf-mode-next' : 'pdf-mode-both'));
+        var toolbar = document.querySelector('.pdf-compare-toolbar');
+        if (toolbar) {
+            var chips = toolbar.querySelectorAll('.cmp-chip');
+            for (var j = 0; j < chips.length; j++) {
+                var on = chips[j].getAttribute('data-cmp-mode') === mode;
+                chips[j].classList.toggle('cmp-chip-on', on);
+                chips[j].setAttribute('aria-pressed', on ? 'true' : 'false');
+            }
+        }
+    }
 
     function emRevEnviarBloqueo(accion) {
         if (emRevBloqueado || !emRevIdDocumento || !emRevToken) return;

@@ -159,23 +159,6 @@ namespace ZofraTacna.Presentacion
                 string[] partes = unidad.Split('|');
                 ddlArea.Items.Add(new ListItem(partes[1], partes[0]));
             }
-
-            // Generar lista de a�os (2024-2080) para el modal
-            GenerarListaAnos();
-        }
-
-        private void GenerarListaAnos()
-        {
-            var sb = new System.Text.StringBuilder();
-            int anoActual = DateTime.Now.Year;
-            int anoMax = 2080;
-
-            for (int ano = anoActual; ano <= anoMax; ano++)
-            {
-                string selected = (ano == 2026) ? "style='background:#1a2a4a;color:white;'" : "";
-                sb.AppendFormat("<button type='button' onclick=\"seleccionarAno({0})\" style='padding:8px;border:1px solid #ddd;border-radius:4px;cursor:pointer;{1}'>{0}</button>", ano, selected);
-            }
-            litAnosLista.Text = sb.ToString();
         }
 
         #endregion
@@ -186,12 +169,10 @@ namespace ZofraTacna.Presentacion
         {
             try
             {
-                // Validar los 3 campos del c�digo
-                if (string.IsNullOrWhiteSpace(txtCodigoDoc.Text) ||
-                    string.IsNullOrWhiteSpace(txtNumeroDoc.Text) ||
-                    string.IsNullOrWhiteSpace(txtAnoDoc.Text))
+                string codigoDocCompleto = (txtCodigoDocumentoCompleto.Text ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(codigoDocCompleto))
                 {
-                    MostrarMsg("Complete los campos: C�digo, N�mero y A�o.", false);
+                    MostrarMsg("Ingrese el código completo del documento.", false);
                     return;
                 }
 
@@ -264,12 +245,6 @@ namespace ZofraTacna.Presentacion
                 int horasRev = int.TryParse(txtPlazoRevision.Text.Trim(), out int hr) ? hr : 24;
                 int horasFirma = int.TryParse(txtPlazoFirma.Text.Trim(), out int hf) ? hf : 48;
 
-                if (!int.TryParse(txtAnoDoc.Text.Trim(), out int anoDocumento))
-                {
-                    MostrarMsg("El año del documento no tiene formato válido.", false);
-                    return;
-                }
-
                 // Convertir participantes JSON a lista de objetos
                 var participantes = new List<RegistrarParticipanteItem>();
 
@@ -287,12 +262,12 @@ namespace ZofraTacna.Presentacion
                     });
                 }
 
-                // Preparar request con los 3 campos del c�digo
+                // Un solo campo → NumeroDocumento vacío hace que negocio use CodigoDocumento tal cual en BD
                 var request = new RegistrarDocumentoRequest
                 {
-                    CodigoDocumento = txtCodigoDoc.Text.Trim().ToUpper(),
-                    NumeroDocumento = txtNumeroDoc.Text.Trim().Replace("0", "").PadLeft(4, '0'),
-                    AnoDocumento = anoDocumento,
+                    CodigoDocumento = codigoDocCompleto,
+                    NumeroDocumento = null,
+                    AnoDocumento = 0,
                     Asunto = txtAsunto.Text.Trim(),
                     Descripcion = txtDescripcion.Text.Trim(),
                     IdTipoDocumento = int.Parse(ddlCategoria.SelectedValue),
@@ -314,11 +289,9 @@ namespace ZofraTacna.Presentacion
                 }
 
                 // Limpiar
-                txtCodigoDoc.Text = "";
-                txtNumeroDoc.Text = "";
+                txtCodigoDocumentoCompleto.Text = "";
                 txtAsunto.Text = "";
                 txtDescripcion.Text = "";
-                txtAnoDoc.Text = "2026";
                 txtPlazoRevision.Text = "24";
                 txtPlazoFirma.Text = "48";
                 txtBuscador.Text = "";
