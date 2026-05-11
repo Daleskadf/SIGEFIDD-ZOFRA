@@ -35,12 +35,15 @@ namespace ZofraTacna.Presentacion
             litNombre.Text = login;
             litRol.Text = Session["RolNombre"] != null ? Session["RolNombre"].ToString() : "";
 
+            ViewState["IdDoc"] = idDoc;
+
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
             using (var cn = new SqlConnection(connStr))
             {
                 cn.Open();
                 int badge = GetBadgeCount(cn);
                 litSidebarNav.Text = BuildNav(rol, badge);
+
             }
 
             var repo = new RepositorioDocumentos();
