@@ -94,7 +94,7 @@
         .empty{text-align:center;padding:60px;color:#aaa;font-size:14px;background:white;border-radius:12px}
     </style>
 </head>
-<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>" data-zfn-reload-on-notify>
 <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <div class="sidebar">

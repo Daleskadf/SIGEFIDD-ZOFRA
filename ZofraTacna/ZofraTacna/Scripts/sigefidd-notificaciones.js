@@ -127,6 +127,11 @@
                         news.forEach(function (n) {
                             showToast(n.ToastText || n.toastText || (n.LoginUsuarioAccion + ' · ' + n.CodigoDocumento));
                         });
+                        // Auto-reload if page opted in (reviewer views)
+                        if (document.body.hasAttribute('data-zfn-reload-on-notify') && !window.__zfnReloadScheduled) {
+                            window.__zfnReloadScheduled = true;
+                            setTimeout(function () { location.reload(); }, 3000);
+                        }
                     }
                     var next = (typeof data.nextSince === 'number') ? data.nextSince : data.NextSince;
                     if (typeof next === 'number' && next > toastSince)

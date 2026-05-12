@@ -36,18 +36,18 @@
         .badge{padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600}
         .badge-estado{background:#e3f2fd;color:#1565c0}
         .badge-firma{background:#ffe0b2;color:#e65100}
-        .btn-volver{padding:9px 20px;border:1.5px solid #c9d0de;border-radius:8px;background:white;color:#1a2a4a;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-        .btn-volver:hover{background:#f4f6fa}
+        .btn-volver{padding:9px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#8b1a1a,#c0392b);color:#fff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(139,26,26,.22)}
+        .btn-volver:hover{filter:brightness(1.08)}
         /* ALERT */
         .alert{padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:16px}
         .alert-ok{background:#e8f5e9;color:#2e7d32}
         .alert-err{background:#fdecea;color:#c0392b}
         /* PANELES LADO A LADO */
         .panels{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-        .panel{flex:1;min-width:320px;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+        .panel{flex:1;min-width:320px;background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:visible}
         .panel-header{padding:16px 20px;border-bottom:1px solid #eef0f8;display:flex;align-items:center;gap:10px}
-        .panel-header h3{font-size:14px;font-weight:700;color:#1a2a4a}
-        .panel-header svg{width:18px;height:18px;fill:#1a2a4a}
+        .panel-header h3{font-size:15px;font-weight:700;color:#1a2a4a;margin:0}
+        .panel-header svg{width:20px;height:20px;fill:#1a2a4a;flex-shrink:0}
         .panel-body{padding:16px 20px}
         /* FORM AGREGAR */
         .agregar-form{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
@@ -111,7 +111,22 @@
         #dropdownResultadosGp{animation:gpSlideDown .15s ease-out;border-left:1.5px solid #1a2a4a !important;border-right:1.5px solid #1a2a4a !important;border-bottom:1.5px solid #1a2a4a !important}
         @keyframes gpSlideDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
         .empleado-resultado-item{transition:all .15s ease}
-        .plazos-title{font-size:14px;font-weight:600;color:#1a2a4a;margin-bottom:4px}
+        /* Searchable combo */
+        .combo-search-wrap{position:relative}
+        .combo-search-input{width:100%;padding:11px 36px 11px 13px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;color:#333;font-family:'Segoe UI',sans-serif;outline:none;background:white;cursor:text}
+        .combo-search-input:focus{border-color:#1a2a4a}
+        .combo-search-input.has-value{font-weight:600;color:#1a2a4a}
+        .combo-search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;fill:#999}
+        .combo-search-clear{position:absolute;right:34px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;width:20px;height:20px;font-size:16px;color:#c0392b;display:none;padding:0;line-height:1}
+        .combo-search-clear:hover{color:#8b1a1a}
+        .combo-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #1a2a4a;border-top:none;border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;z-index:1000;box-shadow:0 8px 16px rgba(0,0,0,.1);animation:gpSlideDown .15s ease-out}
+        .combo-dropdown-item{padding:10px 16px;cursor:pointer;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;transition:all .15s}
+        .combo-dropdown-item:last-child{border-bottom:none}
+        .combo-dropdown-item:hover{background:#f0f2ff;padding-left:20px;color:#1a2a4a;font-weight:600}
+        .combo-dropdown-item.selected{background:#e8f5e9;color:#2e7d32;font-weight:600}
+        .combo-dropdown-empty{padding:14px 16px;text-align:center;color:#999;font-size:13px}
+        .plazos-title{font-size:15px;font-weight:700;color:#283593;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+        .plazos-title svg{width:20px;height:20px;fill:#283593;flex-shrink:0}
         .plazos-sub{font-size:12px;color:#3b5bdb;margin-bottom:14px}
         .plazos-hint{font-size:11px;color:#888;margin-top:4px}
         .upload-zone{border:2px dashed #b0b8d0;border-radius:10px;padding:28px;text-align:center;cursor:pointer;background:#fafbff;margin-bottom:12px;position:relative}
@@ -126,12 +141,73 @@
         .guardar-doc-wrap p{font-size:12px;color:#63718f;margin:0 0 14px;line-height:1.5;max-width:920px}
         .guardar-doc-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;align-items:center}
         .doc-ayuda{font-size:11px;color:#888;margin-top:6px;line-height:1.45}
-        @media (max-width:720px){.form-row{grid-template-columns:1fr}.gp-grid-participantes{grid-template-columns:1fr !important}}
+        /* Adjuntar Documento - panel independiente */
+        .panel-adjuntar{background:linear-gradient(165deg,#f6f2fc 0%,#ece4f6 40%,#faf8fc 100%);border:1.5px solid #d4c4e8;border-radius:12px;box-shadow:0 2px 12px rgba(123,94,167,.06);padding:18px 22px;margin-bottom:20px;overflow:hidden}
+        .panel-adjuntar-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+        .panel-adjuntar-head svg{width:20px;height:20px;fill:#7b5ea7;flex-shrink:0}
+        .panel-adjuntar-title{font-size:15px;font-weight:700;color:#5c3d8f;letter-spacing:.3px}
+        .panel-adjuntar-sub{font-size:12px;color:#7b5ea7;margin-bottom:14px;line-height:1.45}
+        .form-group-adjuntar{border:none;border-radius:0;background:transparent;padding:0;margin-top:0}
+        /* PDF Preview Buttons */
+        .pdf-preview-btns{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:8px;margin-bottom:4px;flex-wrap:wrap}
+        .pdf-preview-btns-right{display:flex;gap:10px;flex-wrap:wrap}
+        .btn-pdf-preview{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #1a2a4a;background:linear-gradient(90deg,#1a2a4a,#2a3f6f);color:#fff;box-shadow:0 3px 10px rgba(26,42,74,.2);transition:all .15s ease}
+        .btn-pdf-preview:hover{filter:brightness(1.1);box-shadow:0 4px 14px rgba(26,42,74,.3)}
+        .btn-pdf-preview svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+        .btn-pdf-preview.btn-nuevo{background:linear-gradient(90deg,#2e7d32,#43a047);border-color:#2e7d32;box-shadow:0 3px 10px rgba(46,125,50,.2)}
+        .btn-pdf-preview.btn-nuevo:hover{filter:brightness(1.1);box-shadow:0 4px 14px rgba(46,125,50,.3)}
+        .btn-pdf-preview.btn-restaurar{background:linear-gradient(90deg,#7b5ea7,#5c3d8f);border-color:#7b5ea7;box-shadow:0 3px 10px rgba(123,94,167,.2)}
+        .btn-pdf-preview.btn-restaurar:hover{filter:brightness(1.1);box-shadow:0 4px 14px rgba(123,94,167,.3)}
+        /* Modal Restaurar Version */
+        .modal-gp-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:3000;align-items:center;justify-content:center}
+        .modal-gp-box{background:#fff;border-radius:14px;width:min(820px,95vw);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden}
+        .modal-gp-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:linear-gradient(90deg,#1a2a4a,#2a3f6f);color:#fff;flex-shrink:0}
+        .modal-gp-head h3{font-size:15px;font-weight:700;margin:0}
+        .modal-gp-close{background:none;border:none;color:rgba(255,255,255,.8);font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s}
+        .modal-gp-close:hover{background:rgba(255,255,255,.15)}
+        .modal-gp-body{padding:20px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;flex:1}
+        .modal-gp-desc{font-size:13px;color:#555;line-height:1.55;background:#f8f9fc;border-radius:8px;padding:10px 14px;border-left:3px solid #7b5ea7}
+        .modal-gp-label{font-size:12px;font-weight:700;color:#1a2a4a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+        .modal-gp-select{width:100%;padding:10px 12px;border:1.5px solid #cfd8ef;border-radius:8px;font-size:13px;font-weight:600;color:#1a2a4a;background:#fff;outline:none;cursor:pointer}
+        .modal-gp-select:focus{border-color:#7b5ea7;box-shadow:0 0 0 3px rgba(123,94,167,.12)}
+        .modal-gp-iframe-wrap{flex:1;min-height:340px;background:#3a3a42;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+        .modal-gp-iframe-wrap iframe{width:100%;height:100%;min-height:340px;border:none;display:none}
+        .modal-gp-iframe-spinner{text-align:center;color:#ccc;font-size:13px;padding:20px}
+        .modal-gp-footer{display:flex;justify-content:flex-end;align-items:center;padding:14px 22px;border-top:1.5px solid #eef0f8;flex-shrink:0;gap:12px;flex-wrap:wrap}
+        .modal-gp-success{font-size:13px;font-weight:600;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:8px 14px;border:1px solid #c8e6c9;display:none}
+        .modal-gp-actions{display:flex;gap:10px}
+        .btn-gp-cancel{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #ccc;background:#fff;color:#555;transition:all .15s}
+        .btn-gp-cancel:hover{background:#f5f5f5}
+        .btn-gp-confirm{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(90deg,#7b5ea7,#5c3d8f);color:#fff;box-shadow:0 4px 12px rgba(123,94,167,.3);transition:all .15s}
+        .btn-gp-confirm:hover{filter:brightness(1.08)}
+        /* Modal advertencia conflicto */
+        .modal-warn-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:4000;align-items:center;justify-content:center}
+        .modal-warn-box{background:#fff;border-radius:14px;width:min(420px,92vw);box-shadow:0 20px 48px rgba(0,0,0,.3);overflow:hidden}
+        .modal-warn-head{padding:14px 18px;background:linear-gradient(90deg,#8b4513,#c0392b);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .modal-warn-body{padding:18px;font-size:13px;color:#444;line-height:1.55}
+        .modal-warn-actions{padding:0 18px 16px;display:flex;justify-content:flex-end;gap:10px}
+        .btn-warn-no{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #ccc;background:#fff;color:#555}
+        .btn-warn-no:hover{background:#f5f5f5}
+        .btn-warn-yes{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(90deg,#8b1a1a,#c0392b);color:#fff;box-shadow:0 4px 10px rgba(139,26,26,.25)}
+        .btn-warn-yes:hover{filter:brightness(1.08)}
+        /* Modal Éxito Guardado */
+        .modal-exito-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center}
+        .modal-exito-box{background:#fff;border-radius:16px;width:min(400px,92vw);box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden;text-align:center}
+        .modal-exito-head{background:linear-gradient(135deg,#2e7d32,#43a047);padding:28px 24px 20px}
+        .modal-exito-icon{width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+        .modal-exito-icon svg{width:30px;height:30px;fill:#fff}
+        .modal-exito-title{color:#fff;font-size:17px;font-weight:700;margin:0}
+        .modal-exito-body{padding:20px 24px 24px}
+        .modal-exito-msg{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5}
+        .modal-exito-bar-wrap{background:#e8f5e9;border-radius:8px;height:6px;overflow:hidden}
+        .modal-exito-bar{height:100%;background:linear-gradient(90deg,#2e7d32,#43a047);width:100%;border-radius:8px;transition:width linear}
+        @media (max-width:720px){.form-row{grid-template-columns:1fr}.gp-grid-participantes{grid-template-columns:1fr !important}.pdf-preview-btns{flex-direction:column}.pdf-preview-btns-right{width:100%;justify-content:flex-end}}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" enctype="multipart/form-data" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <asp:HiddenField ID="hfDocId" runat="server"/>
+<asp:HiddenField ID="hfRestoredAdjId" runat="server" Value=""/>
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <!-- SIDEBAR -->
     <div class="sidebar">
@@ -176,13 +252,15 @@
             <!-- BANNER DEL DOCUMENTO -->
             <div class="doc-banner">
                 <div class="doc-banner-left">
-                    <h2><asp:Literal ID="litAsunto" runat="server"/></h2>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                        <h2><asp:Literal ID="litAsunto" runat="server"/></h2>
+                        <asp:Literal ID="litEstadoBadge" runat="server"/>
+                    </div>
                     <div class="codigo"><asp:Literal ID="litCodigo" runat="server"/></div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;">
-                    <asp:Literal ID="litEstadoBadge" runat="server"/>
                     <a href="BandejaTrabajo.aspx" class="btn-volver">
-                        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#1a2a4a"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#fff"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         Volver a Bandeja
                     </a>
                 </div>
@@ -215,7 +293,14 @@
                     <div class="form-row">
                         <div>
                             <label class="form-label">CATEGOR&Iacute;A <span class="required">*</span></label>
-                            <asp:DropDownList ID="ddlEditCategoria" runat="server" CssClass="form-input"/>
+                            <div class="combo-search-wrap">
+                                <input type="text" id="txtComboCategoriaGp" class="combo-search-input" placeholder="Buscar categor&iacute;a..." autocomplete="off"/>
+                                <button type="button" id="btnClearCategoriaGp" class="combo-search-clear" title="Limpiar">&times;</button>
+                                <svg class="combo-search-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                                <div id="dropdownCategoriaGp" class="combo-dropdown"></div>
+                                <asp:DropDownList ID="ddlEditCategoria" runat="server" CssClass="form-input" style="display:none"/>
+                            </div>
+                            <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las categor&iacute;as disponibles</div>
                         </div>
                         <div>
                             <label class="form-label">PRIORIDAD <span class="required">*</span></label>
@@ -228,10 +313,17 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">&Aacute;REA (UNIDAD ORG&Aacute;NICA) <span class="required">*</span></label>
-                        <asp:DropDownList ID="ddlEditArea" runat="server" CssClass="form-input"/>
+                        <div class="combo-search-wrap">
+                            <input type="text" id="txtComboAreaGp" class="combo-search-input" placeholder="Buscar &aacute;rea o unidad org&aacute;nica..." autocomplete="off"/>
+                            <button type="button" id="btnClearAreaGp" class="combo-search-clear" title="Limpiar">&times;</button>
+                            <svg class="combo-search-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                            <div id="dropdownAreaGp" class="combo-dropdown"></div>
+                            <asp:DropDownList ID="ddlEditArea" runat="server" CssClass="form-input" style="display:none"/>
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las &aacute;reas disponibles</div>
                     </div>
                     <div class="plazos-box plazos-zona-plazos">
-                        <div class="plazos-title">Plazos por etapa (desde este momento)</div>
+                        <div class="plazos-title"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>Plazos por etapa (desde este momento)</div>
                         <div class="plazos-sub">Al guardar se recalculan las fechas l&iacute;mite a partir de la hora actual, igual que al registrar un documento nuevo.</div>
                         <div class="form-row" style="margin-bottom:0">
                             <div>
@@ -246,23 +338,60 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">ARCHIVO PDF</label>
-                        <asp:Literal ID="litPdfVigente" runat="server"/>
-                        <div class="upload-zone" onclick="document.getElementById('<%= filePdfReemplazo.ClientID %>').click()">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
-                            <div class="uz-title">Opcional: nueva versi&oacute;n PDF</div>
-                            <div class="uz-sub">Solo PDF, m&aacute;x. 15 MB. La versi&oacute;n vigente queda archivada.</div>
-                            <asp:FileUpload ID="filePdfReemplazo" runat="server" style="display:none" accept=".pdf" onchange="gpMostrarNombrePdf(this)"/>
+                </div>
+            </div>
+
+            <!-- ADJUNTAR DOCUMENTO (panel independiente) -->
+            <div class="panel-adjuntar">
+                <div class="panel-adjuntar-head">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
+                    <span class="panel-adjuntar-title">Adjuntar Documento</span>
+                </div>
+                <div class="panel-adjuntar-sub">Adjunte una nueva versi&oacute;n del PDF o restaure una versi&oacute;n anterior. La versi&oacute;n vigente queda archivada autom&aacute;ticamente.</div>
+                <div class="form-group-adjuntar">
+                    <asp:Literal ID="litPdfVigente" runat="server"/>
+                    <div class="upload-zone" id="uploadZoneGp">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
+                        <div class="uz-title">Opcional: nueva versi&oacute;n PDF</div>
+                        <div class="uz-sub">Solo PDF, m&aacute;x. 15 MB. La versi&oacute;n vigente queda archivada.</div>
+                        <asp:FileUpload ID="filePdfReemplazo" runat="server" style="display:none" accept=".pdf" onchange="gpMostrarNombrePdf(this)"/>
+                    </div>
+                    <asp:Label ID="lblNombrePdfSeleccionado" runat="server" style="font-size:13px;color:#2e7d32;display:none"/>
+                    <div id="msgRestauradoOk" style="display:none;font-size:13px;font-weight:600;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:8px 14px;border:1px solid #c8e6c9;margin-top:6px">
+                        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#2e7d32;vertical-align:middle;margin-right:4px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        Versi&oacute;n restaurada lista para guardar.
+                    </div>
+                    <!-- Botones de accion PDF -->
+                    <div class="pdf-preview-btns">
+                        <!-- Izquierda: Restaurar Version + Ver Restaurado -->
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                            <button type="button" id="btnRestaurarVersion" class="btn-pdf-preview btn-restaurar" onclick="gpAbrirRestaurar()" style="display:none;">
+                                <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                                Restaurar Versi&oacute;n
+                            </button>
+                            <button type="button" id="btnVerDocRestaurado" class="btn-pdf-preview btn-nuevo" onclick="gpVerDocRestaurado()" style="display:none;">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                Documento Restaurado
+                            </button>
                         </div>
-                        <asp:Label ID="lblNombrePdfSeleccionado" runat="server" style="font-size:13px;color:#2e7d32;display:none"/>
+                        <!-- Derecha: Ver actual + ver nuevo -->
+                        <div class="pdf-preview-btns-right">
+                            <button type="button" id="btnVerDocActual" class="btn-pdf-preview" onclick="abrirVisorPdfActual()" style="<%= (litPdfVigente.Text.Contains("PDF vigente")) ? "" : "display:none;" %>">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                Documento Actual
+                            </button>
+                            <button type="button" id="btnVerDocNuevo" class="btn-pdf-preview btn-nuevo" onclick="abrirVisorPdfNuevo()" style="display:none;">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                Nuevo Documento
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Revisores y firmantes (misma experiencia que Cargar documento) -->
             <div class="plazos-box plazos-zona-asignacion" style="margin-bottom:20px">
-                <div class="plazos-title">Asignar revisores y firmantes</div>
+                <div class="plazos-title"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Asignar revisores y firmantes</div>
                 <div class="plazos-sub">Se muestran los ya asignados; puede buscar por nombre o login, reordenar firmas y guardar todo con el bot&oacute;n inferior.</div>
                 <div style="margin-bottom:20px;position:relative;">
                     <label class="form-label">BUSCAR EMPLEADO</label>
@@ -309,26 +438,598 @@
         </div>
     </div>
 </div>
+<!-- Modal Visor de PDF -->
+<div id="modalVisorPDF" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:12px;width:95%;height:95%;max-width:900px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <!-- Header del Modal -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1.5px solid #e8eaf0;background:#f8f9fc;border-radius:12px 12px 0 0;">
+            <div id="modalTitulo" style="font-size:16px;font-weight:700;color:#1a2a4a;">Previsualización de Documento PDF</div>
+            <button type="button" onclick="cerrarVisorPDF()" style="background:none;border:none;font-size:28px;cursor:pointer;color:#999;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;">&times;</button>
+        </div>
+        <!-- Contenedor del PDF -->
+        <div id="visorPDFContenedor" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:0 0 12px 12px;">
+            <div id="pdfSpinner" style="text-align:center;">
+                <div style="font-size:14px;color:#999;margin-bottom:16px;">Cargando documento...</div>
+                <div style="width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#1a2a4a;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>
+            </div>
+            <iframe id="pdfIframe" style="width:100%;height:100%;border:none;display:none;"></iframe>
+        </div>
+    </div>
+</div>
+<!-- Modal Restaurar Versión -->
+<div id="modalRestaurarVersion" class="modal-gp-overlay" aria-hidden="true">
+    <div class="modal-gp-box">
+        <div class="modal-gp-head">
+            <h3>Restaurar Versión</h3>
+            <button type="button" class="modal-gp-close" onclick="gpCerrarRestaurar()">&times;</button>
+        </div>
+        <div class="modal-gp-body">
+            <div class="modal-gp-desc">Aquí podrá restaurar una versión anterior del documento. Al restaurar, la versión seleccionada reemplazará al documento actual cuando guarde los datos.</div>
+            <div>
+                <div class="modal-gp-label">Historial de Versiones</div>
+                <select id="selVersionRestaurar" class="modal-gp-select" onchange="gpCambiarVersionVisor()"></select>
+            </div>
+            <div class="modal-gp-iframe-wrap">
+                <div id="restPdfSpinner" class="modal-gp-iframe-spinner">Seleccione una versión para previsualizarla.</div>
+                <iframe id="restPdfIframe"></iframe>
+            </div>
+        </div>
+        <div class="modal-gp-footer">
+            <div id="restMsgExito" class="modal-gp-success">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#2e7d32;vertical-align:middle;margin-right:4px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Versión restaurada exitosamente.
+            </div>
+            <div class="modal-gp-actions">
+                <button type="button" class="btn-gp-cancel" onclick="gpCerrarRestaurar()">Cancelar</button>
+                <button type="button" id="btnConfirmarRestaurar" class="btn-gp-confirm" onclick="gpConfirmarRestaurar()">Restaurar Versión</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Advertencia Conflicto -->
+<div id="modalWarnConflicto" class="modal-warn-overlay" aria-hidden="true">
+    <div class="modal-warn-box">
+        <div class="modal-warn-head">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            Advertencia
+        </div>
+        <div class="modal-warn-body" id="warnConflictoMsg"></div>
+        <div class="modal-warn-actions">
+            <button type="button" class="btn-warn-no" onclick="gpCerrarWarn()">No, cancelar</button>
+            <button type="button" class="btn-warn-yes" id="btnWarnSi" onclick="gpConfirmarWarn()">Sí, proseguir</button>
+        </div>
+    </div>
+</div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
+<!-- Modal Éxito Guardado -->
+<div id="modalExitoGuardado" class="modal-exito-overlay" aria-hidden="true">
+    <div class="modal-exito-box">
+        <div class="modal-exito-head">
+            <div class="modal-exito-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p class="modal-exito-title">Documento Modificado correctamente.</p>
+        </div>
+        <div class="modal-exito-body">
+            <p class="modal-exito-msg">Redirigiendo a la Bandeja de Trabajo en unos segundos&hellip;</p>
+            <div class="modal-exito-bar-wrap">
+                <div id="barraExito" class="modal-exito-bar"></div>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
+    // ============================================================
+    // SEARCHABLE COMBO: Categoría y Área (reutilizable)
+    // ============================================================
+    function initComboSearch(inputId, dropdownId, clearBtnId, ddlClientId) {
+        var input = document.getElementById(inputId);
+        var dropdown = document.getElementById(dropdownId);
+        var clearBtn = document.getElementById(clearBtnId);
+        var ddl = document.getElementById(ddlClientId);
+        if (!input || !dropdown || !ddl) return;
+
+        var allItems = [];
+        for (var i = 0; i < ddl.options.length; i++) {
+            var opt = ddl.options[i];
+            if (opt.value === '' || opt.value === 'Seleccionar...') continue;
+            allItems.push({ value: opt.value, text: opt.text });
+        }
+
+        if (ddl.value && ddl.value !== '') {
+            var selOpt = ddl.options[ddl.selectedIndex];
+            if (selOpt && selOpt.value !== '') {
+                input.value = selOpt.text;
+                input.classList.add('has-value');
+                if (clearBtn) clearBtn.style.display = 'block';
+            }
+        }
+
+        function renderDropdown(filtro) {
+            var filtered = allItems;
+            if (filtro && filtro.length > 0) {
+                var term = filtro.toLowerCase();
+                filtered = allItems.filter(function(it) { return it.text.toLowerCase().indexOf(term) >= 0; });
+            }
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="combo-dropdown-empty">No se encontraron resultados</div>';
+            } else {
+                var html = '';
+                filtered.forEach(function(it) {
+                    var sel = ddl.value === it.value ? ' selected' : '';
+                    html += '<div class="combo-dropdown-item' + sel + '" data-val="' + it.value + '">' + it.text + '</div>';
+                });
+                dropdown.innerHTML = html;
+                dropdown.querySelectorAll('.combo-dropdown-item').forEach(function(el) {
+                    el.addEventListener('click', function() {
+                        ddl.value = this.getAttribute('data-val');
+                        input.value = this.textContent;
+                        input.classList.add('has-value');
+                        dropdown.style.display = 'none';
+                        if (clearBtn) clearBtn.style.display = 'block';
+                    });
+                });
+            }
+            dropdown.style.display = 'block';
+        }
+
+        input.addEventListener('input', function() {
+            renderDropdown(this.value.trim());
+            var matchExact = allItems.find(function(it) { return it.text === input.value; });
+            if (!matchExact) {
+                ddl.value = '';
+                input.classList.remove('has-value');
+                if (clearBtn) clearBtn.style.display = 'none';
+            }
+        });
+
+        input.addEventListener('focus', function() {
+            renderDropdown(this.value.trim());
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') dropdown.style.display = 'none';
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target) && e.target !== clearBtn) {
+                dropdown.style.display = 'none';
+                if (ddl.value && ddl.value !== '') {
+                    var s = ddl.options[ddl.selectedIndex];
+                    if (s) input.value = s.text;
+                }
+            }
+        });
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                ddl.value = '';
+                input.value = '';
+                input.classList.remove('has-value');
+                clearBtn.style.display = 'none';
+                input.focus();
+                renderDropdown('');
+            });
+        }
+    }
+
+    // Inicializar combos al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        initComboSearch('txtComboCategoriaGp', 'dropdownCategoriaGp', 'btnClearCategoriaGp', '<%= ddlEditCategoria.ClientID %>');
+        initComboSearch('txtComboAreaGp', 'dropdownAreaGp', 'btnClearAreaGp', '<%= ddlEditArea.ClientID %>');
+    });
+
+    // ============================================================
+    // ESTADO: flags de conflicto
+    // ============================================================
+    var gpEstadoRestaurado = false;  // true si el usuario confirmó restaurar
+    var gpEstadoAdjuntado = false;   // true si el usuario adjuntó un PDF nuevo
+    var gpWarnCallback = null;       // callback para "Si, proseguir" en warning
+
+    var GP_SERVIR_PDF_URL = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx") %>';
+    var GP_DOC_ID_FIELD = '<%= hfDocId.ClientID %>';
+    var GP_RESTORED_FIELD = '<%= hfRestoredAdjId.ClientID %>';
+    var GP_LBL_PDF = '<%= lblNombrePdfSeleccionado.ClientID %>';
+    var GP_FILE_INPUT = '<%= filePdfReemplazo.ClientID %>';
+
+    // ============================================================
+    // PDF: Mostrar nombre del nuevo archivo seleccionado
+    // ============================================================
     function gpMostrarNombrePdf(input) {
-        var lbl = document.getElementById('<%= lblNombrePdfSeleccionado.ClientID %>');
+        var lbl = document.getElementById(GP_LBL_PDF);
+        var btnNuevo = document.getElementById('btnVerDocNuevo');
         if (!lbl) return;
         if (input.files && input.files.length > 0) {
             var f = input.files[0];
-            lbl.textContent = 'Seleccionado: ' + f.name + ' (' + (f.size / (1024 * 1024)).toFixed(2) + ' MB)';
+            lbl.textContent = '\u2713 Seleccionado: ' + f.name + ' (' + (f.size / (1024 * 1024)).toFixed(2) + ' MB)';
             lbl.style.display = 'block';
+            window.gpPdfArchivoNuevo = f;
+            gpEstadoAdjuntado = true;
+            if (btnNuevo) btnNuevo.style.display = 'inline-flex';
+            // Si se adjunta un nuevo PDF, la restauración queda anulada
+            if (gpEstadoRestaurado) {
+                gpEstadoRestaurado = false;
+                document.getElementById(GP_RESTORED_FIELD).value = '';
+                document.getElementById('msgRestauradoOk').style.display = 'none';
+                var btnVR2 = document.getElementById('btnVerDocRestaurado');
+                if (btnVR2) btnVR2.style.display = 'none';
+            }
         } else {
             lbl.textContent = '';
             lbl.style.display = 'none';
+            window.gpPdfArchivoNuevo = null;
+            gpEstadoAdjuntado = false;
+            if (btnNuevo) btnNuevo.style.display = 'none';
         }
     }
+
+    // ============================================================
+    // UPLOAD ZONE: Interceptar click para manejar conflicto
+    // ============================================================
+    function gpUploadZoneClick() {
+        if (gpEstadoRestaurado) {
+            // Conflicto: ya restauró, preguntar antes de adjuntar
+            document.getElementById('warnConflictoMsg').innerHTML =
+                'Ya ha restaurado una versión anterior del documento.<br><strong>¿Desea adjuntar un nuevo documento igualmente?</strong><br><small>Esto descartará la versión restaurada.</small>';
+            gpWarnCallback = function() {
+                gpCerrarWarn();
+                document.getElementById(GP_FILE_INPUT).click();
+            };
+            var modal = document.getElementById('modalWarnConflicto');
+            modal.style.display = 'flex';
+            return;
+        }
+        document.getElementById(GP_FILE_INPUT).click();
+    }
+
+    // ============================================================
+    // RESTAURAR: Abrir popup (con posible conflicto)
+    // ============================================================
+    function gpAbrirRestaurar() {
+        if (gpEstadoAdjuntado) {
+            // Conflicto: ya adjuntó un PDF nuevo, preguntar
+            document.getElementById('warnConflictoMsg').innerHTML =
+                'Ya ha adjuntado una nueva versión del documento.<br><strong>¿Desea restaurar igualmente una versión anterior del documento?</strong><br><small>Esto descartará el PDF adjuntado.</small>';
+            gpWarnCallback = function() {
+                gpCerrarWarn();
+                gpMostrarPopupRestaurar();
+            };
+            var modal = document.getElementById('modalWarnConflicto');
+            modal.style.display = 'flex';
+            return;
+        }
+        gpMostrarPopupRestaurar();
+    }
+
+    function gpMostrarPopupRestaurar() {
+        var versiones = window.__gpVersionesArchivadas || [];
+        var sel = document.getElementById('selVersionRestaurar');
+        sel.innerHTML = '';
+        if (versiones.length === 0) {
+            var opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'No hay versiones archivadas';
+            sel.appendChild(opt);
+        } else {
+            versiones.forEach(function(v) {
+                var opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = 'Archivado (' + v.fecha + ') \u2014 ' + v.nombre;
+                sel.appendChild(opt);
+            });
+        }
+        // Reset estado del modal
+        document.getElementById('restMsgExito').style.display = 'none';
+        document.getElementById('btnConfirmarRestaurar').style.display = 'inline-flex';
+        // Cargar primer version en el visor
+        gpCambiarVersionVisor();
+        // Mostrar modal
+        var modal = document.getElementById('modalRestaurarVersion');
+        modal.style.display = 'flex';
+    }
+
+    function gpCerrarRestaurar() {
+        var modal = document.getElementById('modalRestaurarVersion');
+        modal.style.display = 'none';
+        // Limpiar iframe
+        var ifr = document.getElementById('restPdfIframe');
+        ifr.src = '';
+        ifr.style.display = 'none';
+        document.getElementById('restPdfSpinner').style.display = 'block';
+    }
+
+    function gpCambiarVersionVisor() {
+        var sel = document.getElementById('selVersionRestaurar');
+        var idAdj = sel.value;
+        var idDoc = document.getElementById(GP_DOC_ID_FIELD).value;
+        var ifr = document.getElementById('restPdfIframe');
+        var spinner = document.getElementById('restPdfSpinner');
+
+        if (!idAdj || !idDoc) {
+            ifr.style.display = 'none';
+            spinner.style.display = 'block';
+            spinner.textContent = 'Seleccione una versión para previsualizarla.';
+            return;
+        }
+
+        spinner.textContent = 'Cargando documento...';
+        spinner.style.display = 'block';
+        ifr.style.display = 'none';
+        ifr.src = GP_SERVIR_PDF_URL + '?idDoc=' + idDoc + '&idAdj=' + idAdj;
+        ifr.onload = function() {
+            spinner.style.display = 'none';
+            ifr.style.display = 'block';
+            ifr.onload = null;
+        };
+        setTimeout(function() {
+            if (spinner.style.display !== 'none') {
+                spinner.style.display = 'none';
+                ifr.style.display = 'block';
+            }
+        }, 4000);
+    }
+
+    function gpConfirmarRestaurar() {
+        var sel = document.getElementById('selVersionRestaurar');
+        var idAdj = sel.value;
+        if (!idAdj) { alert('Seleccione una versión del historial.'); return; }
+
+        // Guardar en hidden field
+        document.getElementById(GP_RESTORED_FIELD).value = idAdj;
+        gpEstadoRestaurado = true;
+
+        // Si habia un PDF adjuntado, limpiarlo
+        if (gpEstadoAdjuntado) {
+            gpEstadoAdjuntado = false;
+            window.gpPdfArchivoNuevo = null;
+            var lbl = document.getElementById(GP_LBL_PDF);
+            if (lbl) { lbl.textContent = ''; lbl.style.display = 'none'; }
+            var btnNuevo = document.getElementById('btnVerDocNuevo');
+            if (btnNuevo) btnNuevo.style.display = 'none';
+        }
+
+        // Mostrar mensaje en el modal
+        document.getElementById('restMsgExito').style.display = 'block';
+        // Mostrar mensaje y botón en la zona de adjuntar
+        document.getElementById('msgRestauradoOk').style.display = 'block';
+        var btnVR = document.getElementById('btnVerDocRestaurado');
+        if (btnVR) btnVR.style.display = 'inline-flex';
+
+        // Cerrar modal después de un instante
+        setTimeout(function() { gpCerrarRestaurar(); }, 1200);
+    }
+
+    // ============================================================
+    // WARNING: Conflicto
+    // ============================================================
+    function gpCerrarWarn() {
+        var modal = document.getElementById('modalWarnConflicto');
+        modal.style.display = 'none';
+        gpWarnCallback = null;
+    }
+
+    function gpConfirmarWarn() {
+        if (typeof gpWarnCallback === 'function') gpWarnCallback();
+    }
+
+    // Abrir visor PDF con la versión restaurada
+    function gpVerDocRestaurado() {
+        var idAdj = document.getElementById(GP_RESTORED_FIELD).value;
+        var idDoc = document.getElementById(GP_DOC_ID_FIELD).value;
+        if (!idAdj || !idDoc) { alert('No hay versión restaurada seleccionada.'); return; }
+
+        var modal   = document.getElementById('modalVisorPDF');
+        var iframe  = document.getElementById('pdfIframe');
+        var spinner = document.getElementById('pdfSpinner');
+        var titulo  = document.getElementById('modalTitulo');
+
+        titulo.textContent = 'Documento Restaurado (vista previa)';
+        modal.style.display = 'flex';
+        spinner.style.display = 'block';
+        iframe.style.display  = 'none';
+        if (window.gpPdfBlobURL) { URL.revokeObjectURL(window.gpPdfBlobURL); window.gpPdfBlobURL = null; }
+
+        iframe.src = GP_SERVIR_PDF_URL + '?idDoc=' + idDoc + '&idAdj=' + idAdj;
+        iframe.onload = function() {
+            spinner.style.display = 'none';
+            iframe.style.display  = 'block';
+            iframe.onload = null;
+        };
+        setTimeout(function() {
+            if (spinner.style.display !== 'none') {
+                spinner.style.display = 'none';
+                iframe.style.display  = 'block';
+            }
+        }, 3500);
+    }
+
+    // ============================================================
+    // VISOR PDF: Abrir documento ACTUAL desde el servidor
+    // ============================================================
+    function abrirVisorPdfActual() {
+        var idDoc = document.getElementById(GP_DOC_ID_FIELD).value;
+        if (!idDoc) { alert('No se encontró el ID del documento.'); return; }
+
+        var modal = document.getElementById('modalVisorPDF');
+        var iframe = document.getElementById('pdfIframe');
+        var spinner = document.getElementById('pdfSpinner');
+        var titulo = document.getElementById('modalTitulo');
+
+        titulo.textContent = 'Documento Actual';
+        modal.style.display = 'flex';
+        spinner.style.display = 'block';
+        iframe.style.display = 'none';
+
+        if (window.gpPdfBlobURL) {
+            URL.revokeObjectURL(window.gpPdfBlobURL);
+            window.gpPdfBlobURL = null;
+        }
+
+        iframe.src = GP_SERVIR_PDF_URL + '?idDoc=' + idDoc;
+        iframe.onload = function() {
+            spinner.style.display = 'none';
+            iframe.style.display = 'block';
+            iframe.onload = null;
+        };
+        setTimeout(function() {
+            if (spinner.style.display !== 'none') {
+                spinner.style.display = 'none';
+                iframe.style.display = 'block';
+            }
+        }, 3000);
+    }
+
+    // ============================================================
+    // VISOR PDF: Abrir NUEVO documento (local, no subido aún)
+    // ============================================================
+    function abrirVisorPdfNuevo() {
+        if (!window.gpPdfArchivoNuevo) {
+            alert('No hay un nuevo PDF seleccionado.');
+            return;
+        }
+
+        var modal = document.getElementById('modalVisorPDF');
+        var iframe = document.getElementById('pdfIframe');
+        var spinner = document.getElementById('pdfSpinner');
+        var titulo = document.getElementById('modalTitulo');
+
+        titulo.textContent = 'Nuevo Documento (sin guardar)';
+        modal.style.display = 'flex';
+        spinner.style.display = 'block';
+        iframe.style.display = 'none';
+
+        if (window.gpPdfBlobURL) {
+            URL.revokeObjectURL(window.gpPdfBlobURL);
+        }
+
+        try {
+            window.gpPdfBlobURL = URL.createObjectURL(window.gpPdfArchivoNuevo);
+            iframe.src = window.gpPdfBlobURL;
+            setTimeout(function() {
+                spinner.style.display = 'none';
+                iframe.style.display = 'block';
+            }, 500);
+        } catch(e) {
+            console.error('Error al abrir PDF:', e);
+            spinner.innerHTML = '<div style="color:#c0392b;font-size:14px;">\u274C Error al cargar el PDF</div>';
+            setTimeout(function() { cerrarVisorPDF(); }, 2000);
+        }
+    }
+
+    // ============================================================
+    // VISOR PDF: Cerrar modal
+    // ============================================================
+    function cerrarVisorPDF() {
+        var modal = document.getElementById('modalVisorPDF');
+        var iframe = document.getElementById('pdfIframe');
+        var spinner = document.getElementById('pdfSpinner');
+
+        modal.style.display = 'none';
+        iframe.onload = null;
+        iframe.src = '';
+        iframe.style.display = 'none';
+        spinner.style.display = 'block';
+        spinner.innerHTML = '<div style="font-size:14px;color:#999;margin-bottom:16px;">Cargando documento...</div>' +
+            '<div style="width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#1a2a4a;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>';
+
+        if (window.gpPdfBlobURL) {
+            URL.revokeObjectURL(window.gpPdfBlobURL);
+            window.gpPdfBlobURL = null;
+        }
+    }
+
+    // ============================================================
+    // DOMContentLoaded: inicialización
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cerrar modales al click fuera
+        var modalVisor = document.getElementById('modalVisorPDF');
+        if (modalVisor) {
+            modalVisor.addEventListener('click', function(e) {
+                if (e.target === modalVisor) cerrarVisorPDF();
+            });
+        }
+        var modalRest = document.getElementById('modalRestaurarVersion');
+        if (modalRest) {
+            modalRest.addEventListener('click', function(e) {
+                if (e.target === modalRest) gpCerrarRestaurar();
+            });
+        }
+        var modalWarn = document.getElementById('modalWarnConflicto');
+        if (modalWarn) {
+            modalWarn.addEventListener('click', function(e) {
+                if (e.target === modalWarn) gpCerrarWarn();
+            });
+        }
+
+        // Upload zone click interceptor
+        var zone = document.getElementById('uploadZoneGp');
+        if (zone) {
+            zone.addEventListener('click', function(e) {
+                // Evitar que el click en el file input dispare el handler dos veces
+                if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'file') return;
+                e.preventDefault();
+                e.stopPropagation();
+                gpUploadZoneClick();
+            });
+        }
+
+        // Mostrar botón "Restaurar Versión" solo si hay versiones archivadas
+        var versiones = window.__gpVersionesArchivadas || [];
+        var btnRest = document.getElementById('btnRestaurarVersion');
+        if (btnRest && versiones.length > 0) {
+            btnRest.style.display = 'inline-flex';
+        }
+
+        // Mostrar modal de éxito si el guardado fue correcto
+        if (window.__gpMostrarExito) {
+            var mExito = document.getElementById('modalExitoGuardado');
+            var barra  = document.getElementById('barraExito');
+            if (mExito) {
+                mExito.style.display = 'flex';
+                // Animar barra de progreso: empieza en 100% y baja a 0% en 4 s
+                setTimeout(function() {
+                    barra.style.transition = 'width 4s linear';
+                    barra.style.width = '0%';
+                }, 50);
+                setTimeout(function() {
+                    window.location.href = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/BandejaTrabajo.aspx") %>';
+                }, 4100);
+            }
+        }
+    });
+
     window.GP_IDS = {
         txt: '<%= txtBuscadorParticipantes.ClientID %>',
         lst: '<%= lstBuscadorParticipantes.ClientID %>',
         hf: '<%= hfParticipantes.ClientID %>',
         dd: 'dropdownResultadosGp'
     };
+
+    // ============================================================
+    // ADM_EDIT lock: heartbeat + release on unload
+    // ============================================================
+    var gpLockToken = '<%= GpLockToken %>';
+    var gpLockTimer = null;
+    function gpEnviarBloqueo(accion) {
+        var idDoc = document.getElementById(GP_DOC_ID_FIELD).value;
+        if (!idDoc || !gpLockToken) return;
+        var url = '<%= ResolveUrl("~/Presentacion/BloqueoFlujo.ashx") %>'
+            + '?accion=' + encodeURIComponent(accion)
+            + '&idDocumento=' + encodeURIComponent(idDoc)
+            + '&tipo=ADM_EDIT'
+            + '&token=' + encodeURIComponent(gpLockToken);
+        try { fetch(url, { method: 'GET', credentials: 'same-origin', keepalive: accion === 'release' }); } catch(e) {}
+    }
+    window.addEventListener('load', function() {
+        gpEnviarBloqueo('touch');
+        gpLockTimer = setInterval(function() { gpEnviarBloqueo('touch'); }, 15000);
+    });
+    window.addEventListener('beforeunload', function() {
+        if (gpLockTimer) { clearInterval(gpLockTimer); gpLockTimer = null; }
+        gpEnviarBloqueo('release');
+    });
 </script>
 <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/gestionarParticipantesAsignacion.js") %>"></script>
 </form>

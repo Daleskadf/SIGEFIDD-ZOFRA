@@ -364,13 +364,12 @@ namespace ZofraTacna.Presentacion
             lblMensaje.CssClass = ok ? "alert-ok" : "alert-err";
             lblMensaje.Visible = true;
 
-            // Éxito: redirigir; la limpieza de sessionStorage se hace en MisDocumentos
+            // Éxito: mostrar modal de éxito y redirigir a MisDocumentos
             if (ok && msg.IndexOf("registrado", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 string url = ResolveUrl("~/Presentacion/GestionDocumentos/MisDocumentos.aspx");
-                string script =
-                    "(function(){setTimeout(function(){window.location.href='" + url + "';},2000);})();";
-                ClientScript.RegisterStartupScript(GetType(), "redirectToMisDocumentos", script, true);
+                string script = "mostrarModalExitoCarga('" + url + "');";
+                ClientScript.RegisterStartupScript(GetType(), "modalExitoCarga", script, true);
             }
         }
 

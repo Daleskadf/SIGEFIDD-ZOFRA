@@ -214,6 +214,67 @@ namespace ZofraTacna.Datos
             }
         }
 
+        /// <summary>
+        /// Restaura una versión archivada: archiva los adjuntos vigentes actuales y
+        /// marca el adjunto archivado indicado como vigente (EsSuperado=0).
+        /// </summary>
+        public bool RestaurarVersionArchivada(int idDocumento, int idAdjuntoArchivado, string loginUsuario, string motivo)
+        {
+            if (idAdjuntoArchivado <= 0) return false;
+            if (!AdjuntoPerteneceADocumento(idAdjuntoArchivado, idDocumento)) return false;
+
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // 1. Archivar vigentes actuales
+                        string sqlArchivar = @"UPDATE dbo.DocumentoAdjunto
+                                               SET EsSuperado = 1,
+                                                   FechaSuperacion = GETDATE(),
+                                                   LoginSuperacion = @login,
+                                                   MotivoSuperacion = @motivo
+                                               WHERE IdDocumento = @idDoc
+                                                 AND ISNULL(EsEliminado, 0) = 0
+                                                 AND ISNULL(EsSuperado, 0) = 0";
+                        using (var cmd = new SqlCommand(sqlArchivar, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                            cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
+                            cmd.Parameters.AddWithValue("@motivo", motivo ?? "Archivado por restauración de versión anterior.");
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // 2. Restaurar el adjunto archivado seleccionado como vigente
+                        string sqlRestaurar = @"UPDATE dbo.DocumentoAdjunto
+                                                SET EsSuperado = 0,
+                                                    FechaSuperacion = NULL,
+                                                    LoginSuperacion = NULL,
+                                                    MotivoSuperacion = NULL
+                                                WHERE IdAdjunto = @idAdj
+                                                  AND IdDocumento = @idDoc
+                                                  AND ISNULL(EsEliminado, 0) = 0";
+                        using (var cmd = new SqlCommand(sqlRestaurar, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@idAdj", idAdjuntoArchivado);
+                            cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        tx.Commit();
+                        return true;
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
         public byte[] ObtenerBytesAdjunto(int idAdjunto)
         {
             using (var conn = new SqlConnection(_connFiles))

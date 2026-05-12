@@ -281,6 +281,24 @@
             border-radius: 10px;
         }
         #lblMensaje { display: block; }
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:3000;align-items:center;justify-content:center}
+        .modal-box{background:#fff;border-radius:14px;width:min(420px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+        .modal-head{background:linear-gradient(135deg,#1a2a4a,#2a3f6f);color:#fff;padding:18px 24px;font-size:16px;font-weight:700}
+        .modal-body{padding:20px 24px;font-size:14px;color:#444;line-height:1.6}
+        .modal-actions{padding:14px 24px 18px;display:flex;justify-content:flex-end;gap:10px}
+        .btn-modal-ok{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(135deg,#1a2a4a,#2a3f6f);color:#fff;box-shadow:0 4px 12px rgba(26,42,74,.22)}
+        .btn-modal-ok:hover{filter:brightness(1.08)}
+        /* Modal Éxito */
+        .modal-exito-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center}
+        .modal-exito-box{background:#fff;border-radius:16px;width:min(400px,92vw);box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden;text-align:center}
+        .modal-exito-head{background:linear-gradient(135deg,#2e7d32,#43a047);padding:28px 24px 20px}
+        .modal-exito-icon{width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+        .modal-exito-icon svg{width:30px;height:30px;fill:#fff}
+        .modal-exito-title{color:#fff;font-size:17px;font-weight:700;margin:0}
+        .modal-exito-body{padding:20px 24px 24px}
+        .modal-exito-msg{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5}
+        .modal-exito-bar-wrap{background:#e8f5e9;border-radius:8px;height:6px;overflow:hidden}
+        .modal-exito-bar{height:100%;background:linear-gradient(90deg,#2e7d32,#43a047);width:100%;border-radius:8px;transition:width linear}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -434,11 +452,39 @@
             </div>
         </div>
         <div id="zfnToastHost" class="zfn-toast-host"></div>
+<!-- Modal Éxito Corrección -->
+<div id="modalExitoCorreccion" class="modal-exito-overlay" aria-hidden="true">
+    <div class="modal-exito-box">
+        <div class="modal-exito-head">
+            <div class="modal-exito-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p class="modal-exito-title">Corrección enviada correctamente.</p>
+        </div>
+        <div class="modal-exito-body">
+            <p class="modal-exito-msg">Redirigiendo a Mis Documentos en unos segundos&hellip;</p>
+            <div class="modal-exito-bar-wrap">
+                <div id="barraExitoCorreccion" class="modal-exito-bar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Bloqueo Admin -->
+<div id="modalBloqueoAdmin" class="modal-overlay" aria-hidden="true" style="<%= ModoBloqueado ? "display:flex;" : "display:none;" %>">
+    <div class="modal-box">
+        <div class="modal-head">Documento en edici&oacute;n</div>
+        <div class="modal-body"><%= System.Web.HttpUtility.HtmlEncode(MensajeBloqueo) %>.</div>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-ok" onclick="window.history.length > 1 ? window.history.back() : window.location.href='MisDocumentos.aspx'">Ok</button>
+        </div>
+    </div>
+</div>
     </form>
     <script type="text/javascript">
         window.editDocPdfArchivo = null;
         window.editDocPdfBlobUrl = null;
         window.editDocLockTimer = null;
+        window.editDocBloqueado = '<%= ModoBloqueado ? "1" : "0" %>' === '1';
         window.editDocId = parseInt('<%= Request.QueryString["id"] ?? "0" %>', 10) || 0;
         window.editDocLockToken = '<%= LockToken %>';
 
@@ -521,7 +567,7 @@
                     if (e.target === modal) editDocCerrarVisorPdf();
                 });
             }
-            if (window.editDocId > 0 && window.editDocLockToken) {
+            if (!window.editDocBloqueado && window.editDocId > 0 && window.editDocLockToken) {
                 editDocEnviarBloqueo('touch');
                 window.editDocLockTimer = setInterval(function () { editDocEnviarBloqueo('touch'); }, 15000);
             }
@@ -568,6 +614,28 @@
             }
             editDocEnviarBloqueo('release');
         });
+
+        function mostrarModalExitoEditar(urlDestino) {
+            var modal = editDocGet('modalExitoCorreccion');
+            var barra = editDocGet('barraExitoCorreccion');
+            if (!modal || !barra) {
+                window.location.href = urlDestino;
+                return;
+            }
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden', 'false');
+            barra.style.width = '100%';
+            barra.style.transition = 'none';
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    barra.style.transition = 'width 3s linear';
+                    barra.style.width = '0%';
+                });
+            });
+            setTimeout(function() {
+                window.location.href = urlDestino;
+            }, 3200);
+        }
     </script>
 </body>
 </html>

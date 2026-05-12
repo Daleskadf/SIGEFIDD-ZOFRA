@@ -35,8 +35,8 @@
         .badge{padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600}
         .badge-estado{background:#e3f2fd;color:#1565c0}
         .badge-firma{background:#ffe0b2;color:#e65100}
-        .btn-volver{padding:9px 20px;border:1.5px solid #c9d0de;border-radius:8px;background:white;color:#1a2a4a;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-        .btn-volver:hover{background:#f4f6fa}
+        .btn-volver{padding:9px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#8b1a1a,#c0392b);color:#fff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(139,26,26,.22)}
+        .btn-volver:hover{filter:brightness(1.08)}
         .card{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);max-width:600px}
         .card-header{padding:18px 24px;border-bottom:1px solid #fdecea;background:#fff8f8;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px}
         .card-header svg{width:20px;height:20px;fill:#c0392b}
@@ -93,13 +93,15 @@
         <div class="content">
             <div class="doc-banner">
                 <div class="doc-banner-left">
-                    <h2><asp:Literal ID="litAsunto" runat="server"/></h2>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                        <h2><asp:Literal ID="litAsunto" runat="server"/></h2>
+                        <asp:Literal ID="litEstadoBadge" runat="server"/>
+                    </div>
                     <div class="codigo"><asp:Literal ID="litCodigo" runat="server"/></div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;">
-                    <asp:Literal ID="litEstadoBadge" runat="server"/>
                     <a href="BandejaTrabajo.aspx" class="btn-volver">
-                        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#1a2a4a"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#fff"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         Volver a Bandeja
                     </a>
                 </div>
@@ -116,7 +118,7 @@
             <asp:Panel ID="pnlFormDevolver" runat="server" Visible="false">
                 <div class="card">
                     <div class="card-header">
-                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
                         <h3>Devolver al Registrador</h3>
                     </div>
                     <div class="card-body">

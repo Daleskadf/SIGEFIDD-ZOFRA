@@ -80,6 +80,12 @@ namespace ZofraTacna.Presentacion
                 MensajeBloqueo = "El registador se encuentra editando el documento";
                 return;
             }
+            if (_repoBloqueo.ExisteBloqueoActivo(idDoc, "ADM_EDIT", ""))
+            {
+                ModoBloqueado = true;
+                MensajeBloqueo = "El administrador se encuentra modificando el documento";
+                return;
+            }
 
             ModoBloqueado = false;
             MensajeBloqueo = "";

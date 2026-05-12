@@ -19,6 +19,11 @@ namespace ZofraTacna.Presentacion
         private string ConnStr => ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
         private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();
         private readonly RepositorioDocumentos _repoDocs = new RepositorioDocumentos();
+        private readonly RepositorioBloqueoFlujo _repoBloqueo = new RepositorioBloqueoFlujo();
+        protected string GpLockToken
+        {
+            get { return (ViewState["GpLockToken"] as string) ?? ""; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -37,6 +42,7 @@ namespace ZofraTacna.Presentacion
 
             if (!IsPostBack)
             {
+                ViewState["GpLockToken"] = Guid.NewGuid().ToString("N");
                 hfDocId.Value = idDoc.ToString();
                 CargarCombosEdit();
                 CargarInfoDocumento(idDoc);
@@ -47,6 +53,10 @@ namespace ZofraTacna.Presentacion
             {
                 idDoc = int.Parse(hfDocId.Value);
             }
+
+            // Registrar/tocar bloqueo ADM_EDIT
+            string loginBloqueo = Session["LoginUsuario"].ToString();
+            _repoBloqueo.RegistrarOTocarBloqueo(idDoc, "ADM_EDIT", loginBloqueo, GpLockToken);
 
             string login = Session["LoginUsuario"].ToString();
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
@@ -145,6 +155,28 @@ namespace ZofraTacna.Presentacion
                             }
                             else
                                 litPdfVigente.Text = "<p style=\"font-size:12px;color:#888;background:#f5f5f5;border-radius:8px;padding:10px 12px;margin-bottom:8px\">No hay PDF vigente en el sistema para este tr&aacute;mite.</p>";
+
+                            // Inyectar versiones archivadas al cliente para el popup de restauraci\u00f3n
+                            var archivados = _repoDocs.ObtenerAdjuntosArchivados(idDoc);
+                            var jsSerializer = new JavaScriptSerializer();
+                            var listaVersiones = new List<Dictionary<string, object>>();
+                            CultureInfo culturepe = CultureInfo.GetCultureInfo("es-PE");
+                            foreach (var a in archivados)
+                            {
+                                string fechaStr = a.FechaSuperacion.HasValue
+                                    ? a.FechaSuperacion.Value.ToString("g", culturepe)
+                                    : a.FechaCreacion.ToString("g", culturepe);
+                                string nomArch = string.IsNullOrEmpty(a.NombreArchivo) ? "archivo.pdf" : a.NombreArchivo;
+                                var item = new Dictionary<string, object>
+                                {
+                                    { "id", a.IdAdjunto },
+                                    { "nombre", nomArch },
+                                    { "fecha", fechaStr }
+                                };
+                                listaVersiones.Add(item);
+                            }
+                            ClientScript.RegisterClientScriptBlock(GetType(), "gpVersionesArchivadas",
+                                "window.__gpVersionesArchivadas = " + jsSerializer.Serialize(listaVersiones) + ";", true);
                         }
                         else
                         {
@@ -209,7 +241,7 @@ namespace ZofraTacna.Presentacion
         {
             var js = new JavaScriptSerializer();
             string json = js.Serialize(ObtenerParticipantesBootObject(idDoc));
-            ClientScript.RegisterStartupScript(GetType(), "gpParticipantesBoot",
+            ClientScript.RegisterClientScriptBlock(GetType(), "gpParticipantesBoot",
                 "window.__gpParticipantesBoot = " + json + ";", true);
         }
 
@@ -376,6 +408,10 @@ namespace ZofraTacna.Presentacion
                 nombrePdfNuevo = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) + "_" + Path.GetFileName(filePdfReemplazo.FileName);
             }
 
+            // Leer el ID de versión restaurada (si aplica)
+            int idAdjRestaurado = 0;
+            int.TryParse((hfRestoredAdjId.Value ?? "").Trim(), out idAdjRestaurado);
+
             string codigoAnterior;
             using (var cn0 = new SqlConnection(ConnStr))
             {
@@ -493,8 +529,23 @@ namespace ZofraTacna.Presentacion
 
             if (subePdf && pdfBytes != null)
             {
+                // Nuevo PDF tiene prioridad: descarta cualquier restauración pendiente
                 _repoDocs.ReemplazarPdfConHistorial(idDoc, pdfBytes, nombrePdfNuevo, loginAdm,
                     "Administrador reemplazó PDF desde Gestionar participantes.");
+            }
+            else if (idAdjRestaurado > 0)
+            {
+                // No hay PDF nuevo: aplicar restauración de versión archivada
+                try
+                {
+                    _repoDocs.RestaurarVersionArchivada(idDoc, idAdjRestaurado, loginAdm,
+                        "Administrador restauró versión anterior desde Gestionar participantes.");
+                }
+                catch (Exception ex)
+                {
+                    MostrarMsg("Error al restaurar versión: " + ex.Message, false);
+                    return;
+                }
             }
 
             ReiniciarFlujo(idDoc, "actualización de datos del documento / PDF por administrador");
@@ -502,7 +553,11 @@ namespace ZofraTacna.Presentacion
             try { _modulo.NotificarRevisores(idDoc); }
             catch { /* correo opcional */ }
 
-            Response.Redirect(Request.Url.PathAndQuery, false);
+            // Liberar bloqueo ADM_EDIT
+            _repoBloqueo.LiberarBloqueo(idDoc, "ADM_EDIT", GpLockToken);
+
+            ClientScript.RegisterStartupScript(GetType(), "guardadoExitoso",
+                "window.__gpMostrarExito = true;", true);
         }
 
         // ============================================================

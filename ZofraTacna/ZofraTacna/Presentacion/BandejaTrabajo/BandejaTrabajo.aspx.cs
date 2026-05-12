@@ -305,10 +305,9 @@ namespace ZofraTacna.Presentacion
             {
                 string svgDevolver = "<svg viewBox='0 0 24 24' style='width:14px;height:14px;fill:white'><path d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/></svg>";
                 return string.Format(
-                    "<button type='button' class='btn-detalle btn-detalle-activo' onclick=\"window.open('ServirPdf.ashx?idDoc={0}','_blank')\">{1}Ver Documento</button>" +
-                    "<button type='button' class='btn-revision' onclick=\"window.location.href='GestionarParticipantes.aspx?id={0}'\">{2}Gestionar Participantes</button>" +
-                    "<button type='button' class='btn-revision' style='background:linear-gradient(90deg,#8b1a1a,#c0392b);border-color:#7d1717' onclick=\"window.location.href='DevolverDocumento.aspx?id={0}'\">{3}Devolver</button>",
-                    idDoc, svgOjo, svgGrupo, svgDevolver);
+                    "<button type='button' class='btn-revision' onclick=\"window.location.href='GestionarParticipantes.aspx?id={0}'\">{1}Gestionar Documento</button>" +
+                    "<button type='button' class='btn-revision' style='background:linear-gradient(90deg,#8b1a1a,#c0392b);border-color:#7d1717' onclick=\"window.location.href='DevolverDocumento.aspx?id={0}'\">{2}Devolver</button>",
+                    idDoc, svgGrupo, svgDevolver);
             }
 
             string rolActual = Session["RolCodigo"] != null ? Session["RolCodigo"].ToString() : "";

@@ -333,6 +333,22 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Fallback: if boot data wasn't available when IIFE ran, try again now
+        if (revisores.length === 0 && firmantes.length === 0) {
+            try {
+                if (window.__gpParticipantesBoot) {
+                    var b = window.__gpParticipantesBoot;
+                    revisores = Array.isArray(b.revisores) ? b.revisores.slice() : [];
+                    firmantes = Array.isArray(b.firmantes) ? b.firmantes.slice() : [];
+                    window.__gpParticipantesBoot = null;
+                } else {
+                    reconstruirListasDesdeCampoOculto();
+                }
+            } catch (e) {
+                console.error('gp DOMContentLoaded boot fallback:', e);
+            }
+        }
+
         var txtBuscador = getTxt();
         var dropdown = getDd();
         if (txtBuscador && dropdown) {

@@ -80,7 +80,7 @@
         .sin-alertas { background: white; border-radius: 10px; padding: 30px; text-align: center; color: #aaa; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     </style>
 </head>
-<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>" data-zfn-reload-on-notify>
 <form id="form1" runat="server" style="display:flex; width:100%; height:100vh; overflow:hidden;">
 <div style="display:flex; width:100%; height:100vh; overflow:hidden;">
 

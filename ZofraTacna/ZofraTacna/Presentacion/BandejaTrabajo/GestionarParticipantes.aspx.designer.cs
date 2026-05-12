@@ -4,7 +4,8 @@ namespace ZofraTacna.Presentacion
     public partial class GestionarParticipantes
     {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-        protected global::System.Web.UI.WebControls.HiddenField hfDocId;
+        protected global::System.Web.UI.WebControls.HiddenField hfDocId;
+        protected global::System.Web.UI.WebControls.HiddenField hfRestoredAdjId;
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
         protected global::System.Web.UI.WebControls.Literal litAvatar;
         protected global::System.Web.UI.WebControls.Literal litNombre;

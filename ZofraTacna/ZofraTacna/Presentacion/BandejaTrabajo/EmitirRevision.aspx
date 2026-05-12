@@ -137,7 +137,7 @@
         @media (max-width:1024px){.emitir-wrap:not(.emitir-wrap--compare){flex-direction:column;flex:1;min-height:0}.emitir-left{width:100%;min-width:0}.emitir-right{min-height:min(70vh,640px)}.pdf-frame-wrap{min-height:min(55vh,520px)}.content-head{flex-direction:column}.content-head-actions{width:100%;align-items:flex-end}}
     </style>
 </head>
-<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
+<body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>" data-zfn-reload-on-notify>
 <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <div class="sidebar">
@@ -183,7 +183,7 @@
                 </div>
                 <div class="content-head-actions">
                     <a class="link-volver" href="BandejaTrabajo.aspx">&larr; Volver a Bandeja de Trabajo</a>
-                    <asp:Button ID="btnCompararDocumento" runat="server" CssClass="btn-comparar" Text="Comparar documento" ToolTip="Dividir la vista y elegir dos versiones del mismo tr&aacute;mite" OnClick="btnCompararDocumento_Click" CausesValidation="false" />
+                    <asp:Button ID="btnCompararDocumento" runat="server" CssClass="btn-comparar" Text="Comparar Documento" ToolTip="Dividir la vista y elegir dos versiones del mismo tr&aacute;mite" OnClick="btnCompararDocumento_Click" CausesValidation="false" />
                     <asp:Button ID="btnCerrarComparacion" runat="server" CssClass="btn-cerrar-cmp" Text="Cerrar comparaci&oacute;n" ToolTip="Volver a la vista &uacute;nica del PDF" OnClick="btnCerrarComparacion_Click" CausesValidation="false" Visible="false" />
                 </div>
             </div>

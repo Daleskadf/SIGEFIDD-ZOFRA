@@ -15,6 +15,16 @@ namespace ZofraTacna.Presentacion
         private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();
         private readonly RepositorioBloqueoFlujo _repoBloqueo = new RepositorioBloqueoFlujo();
         protected string LockToken => (ViewState["LockToken"] as string) ?? "";
+        protected bool ModoBloqueado
+        {
+            get { return ViewState["ModoBloqueado"] != null && (bool)ViewState["ModoBloqueado"]; }
+            set { ViewState["ModoBloqueado"] = value; }
+        }
+        protected string MensajeBloqueo
+        {
+            get { return (ViewState["MensajeBloqueo"] as string) ?? ""; }
+            set { ViewState["MensajeBloqueo"] = value; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -34,6 +44,22 @@ namespace ZofraTacna.Presentacion
             if (!IsPostBack)
             {
                 ViewState["LockToken"] = Guid.NewGuid().ToString("N");
+
+                // Verificar si el admin está editando
+                int idDocBloqueo;
+                if (int.TryParse(Request.QueryString["id"], out idDocBloqueo) && idDocBloqueo > 0)
+                {
+                    if (_repoBloqueo.ExisteBloqueoActivo(idDocBloqueo, "ADM_EDIT", ""))
+                    {
+                        ModoBloqueado = true;
+                        MensajeBloqueo = "El administrador se encuentra modificando el documento";
+                        CargarDatosUsuario();
+                        return;
+                    }
+                }
+                ModoBloqueado = false;
+                MensajeBloqueo = "";
+
                 CargarDatosUsuario();
                 CargarCombos();
                 CargarDocumento();
@@ -382,9 +408,10 @@ namespace ZofraTacna.Presentacion
 
                 LiberarBloqueoEdicionRegistrador();
 
-                MostrarMsg("Documento actualizado correctamente. Redirigiendo a Mis documentos...", true);
-                ClientScript.RegisterStartupScript(GetType(), "redirectEditDoc",
-                    "setTimeout(function(){ window.location = 'MisDocumentos.aspx'; }, 2000);", true);
+                MostrarMsg("Corrección enviada correctamente.", true);
+                string url = ResolveUrl("~/Presentacion/GestionDocumentos/MisDocumentos.aspx");
+                ClientScript.RegisterStartupScript(GetType(), "modalExitoCorreccion",
+                    "mostrarModalExitoEditar('" + url + "');", true);
             }
             catch (Exception ex)
             {
