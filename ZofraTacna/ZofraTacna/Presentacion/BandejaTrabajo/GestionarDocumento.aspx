@@ -1,9 +1,9 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GestionarParticipantes.aspx.cs" Inherits="ZofraTacna.Presentacion.GestionarParticipantes" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GestionarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.GestionarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta charset="utf-8" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>SIGEFIDD-ZOFRA | Gestionar Participantes</title>
+    <title>SIGEFIDD-ZOFRA | Gestionar Documento</title>
     <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
     <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
     <style>
@@ -304,11 +304,18 @@
                         </div>
                         <div>
                             <label class="form-label">PRIORIDAD <span class="required">*</span></label>
-                            <asp:DropDownList ID="ddlEditPrioridad" runat="server" CssClass="form-input">
-                                <asp:ListItem Value="ALTA">Alta</asp:ListItem>
-                                <asp:ListItem Value="MEDIA">Media</asp:ListItem>
-                                <asp:ListItem Value="BAJA">Baja</asp:ListItem>
-                            </asp:DropDownList>
+                            <div class="combo-search-wrap">
+                                <input type="text" id="txtComboPrioridadGp" class="combo-search-input" placeholder="Buscar prioridad..." autocomplete="off"/>
+                                <button type="button" id="btnClearPrioridadGp" class="combo-search-clear" title="Limpiar">&times;</button>
+                                <svg class="combo-search-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                                <div id="dropdownPrioridadGp" class="combo-dropdown"></div>
+                                <asp:DropDownList ID="ddlEditPrioridad" runat="server" CssClass="form-input" style="display:none">
+                                    <asp:ListItem Value="ALTA">Alta</asp:ListItem>
+                                    <asp:ListItem Value="MEDIA">Media</asp:ListItem>
+                                    <asp:ListItem Value="BAJA">Baja</asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+                            <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las prioridades disponibles</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -617,6 +624,7 @@
     // Inicializar combos al cargar
     document.addEventListener('DOMContentLoaded', function() {
         initComboSearch('txtComboCategoriaGp', 'dropdownCategoriaGp', 'btnClearCategoriaGp', '<%= ddlEditCategoria.ClientID %>');
+        initComboSearch('txtComboPrioridadGp', 'dropdownPrioridadGp', 'btnClearPrioridadGp', '<%= ddlEditPrioridad.ClientID %>');
         initComboSearch('txtComboAreaGp', 'dropdownAreaGp', 'btnClearAreaGp', '<%= ddlEditArea.ClientID %>');
     });
 

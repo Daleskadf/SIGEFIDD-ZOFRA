@@ -169,19 +169,19 @@
     <Compile Include="Presentacion\BandejaTrabajo\EmitirFirma.aspx.designer.cs">
       <DependentUpon>EmitirFirma.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx.cs">
-      <DependentUpon>GestionarParticipantes.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx.designer.cs">
-      <DependentUpon>GestionarParticipantes.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx.cs">
       <DependentUpon>DevolverDocumento.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx.designer.cs">
       <DependentUpon>DevolverDocumento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\GestionarDocumento.aspx.cs">
+      <DependentUpon>GestionarDocumento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\GestionarDocumento.aspx.designer.cs">
+      <DependentUpon>GestionarDocumento.aspx</DependentUpon>
     </Compile>
     <!-- Presentacion - GestionDocumentos -->
     <Compile Include="Presentacion\GestionDocumentos\CargarDocumento.aspx.designer.cs">
@@ -282,7 +282,7 @@
     <Content Include="Presentacion\BandejaTrabajo\EmitirFirma.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-    <Content Include="Presentacion\BandejaTrabajo\GestionarParticipantes.aspx">
+    <Content Include="Presentacion\BandejaTrabajo\GestionarDocumento.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx">

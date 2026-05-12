@@ -14,7 +14,7 @@ using ZofraTacna.Models;
 
 namespace ZofraTacna.Presentacion
 {
-    public partial class GestionarParticipantes : Page
+    public partial class GestionarDocumento : Page
     {
         private string ConnStr => ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
         private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();

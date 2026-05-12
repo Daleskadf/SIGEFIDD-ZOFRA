@@ -1158,11 +1158,24 @@
                                     </div>
                                     <div>
                                         <label class="form-label">PRIORIDAD <span class="required">*</span></label>
-                                        <asp:DropDownList ID="ddlPrioridad" runat="server" CssClass="form-input">
-                                            <asp:ListItem Value="ALTA">Alta</asp:ListItem>
-                                            <asp:ListItem Value="MEDIA" Selected="True">Media</asp:ListItem>
-                                            <asp:ListItem Value="BAJA">Baja</asp:ListItem>
-                                        </asp:DropDownList>
+                                        <div class="combo-search-wrap">
+                                            <input type="text" id="txtComboPrioridad" class="combo-search-input"
+                                                placeholder="Buscar prioridad..." autocomplete="off" />
+                                            <button type="button" id="btnClearPrioridad" class="combo-search-clear"
+                                                title="Limpiar">&times;</button>
+                                            <svg class="combo-search-icon" viewBox="0 0 24 24">
+                                                <path d="M7 10l5 5 5-5z" />
+                                            </svg>
+                                            <div id="dropdownPrioridad" class="combo-dropdown"></div>
+                                            <asp:DropDownList ID="ddlPrioridad" runat="server" CssClass="form-input"
+                                                style="display:none">
+                                                <asp:ListItem Value="ALTA">Alta</asp:ListItem>
+                                                <asp:ListItem Value="MEDIA">Media</asp:ListItem>
+                                                <asp:ListItem Value="BAJA">Baja</asp:ListItem>
+                                            </asp:DropDownList>
+                                        </div>
+                                        <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las
+                                            prioridades disponibles</div>
                                     </div>
                                 </div>
                                 <div class="form-group" style="margin-bottom:0">
@@ -1547,6 +1560,10 @@
                     initComboSearch(
                         'txtComboCategoria', 'dropdownCategoria', 'btnClearCategoria',
                         '<%= ddlCategoria.ClientID %>'
+                    );
+                    initComboSearch(
+                        'txtComboPrioridad', 'dropdownPrioridad', 'btnClearPrioridad',
+                        '<%= ddlPrioridad.ClientID %>'
                     );
                     initComboSearch(
                         'txtComboArea', 'dropdownArea', 'btnClearArea',
