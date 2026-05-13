@@ -160,5 +160,38 @@ namespace ZofraTacna.Presentacion
         /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnEnviarCorreccion;
+
+        /// <summary>Content area div (runat=server for class toggling).</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divContentArea;
+
+        /// <summary>Botón para abrir la comparación de versiones.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
+
+        /// <summary>Botón para cerrar la comparación de versiones.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
+
+        /// <summary>Panel contenedor de la sección de comparación.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlComparacion;
+
+        /// <summary>Panel grid de comparación de PDFs.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlVistaPdfComparar;
+
+        /// <summary>Dropdown de versiones - panel izquierdo.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareIzq;
+
+        /// <summary>Link nueva pestaña - panel izquierdo.</summary>
+        protected global::System.Web.UI.WebControls.HyperLink lnkPdfIzqNuevaPestana;
+
+        /// <summary>Iframe PDF panel izquierdo.</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfAnterior;
+
+        /// <summary>Dropdown de versiones - panel derecho.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareDer;
+
+        /// <summary>Link nueva pestaña - panel derecho.</summary>
+        protected global::System.Web.UI.WebControls.HyperLink lnkPdfDerNuevaPestana;
+
+        /// <summary>Iframe PDF panel derecho.</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfActualCompare;
     }
 }

@@ -87,7 +87,11 @@ namespace ZofraTacna.Presentacion
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
                            WHERE d.Activo = 1" + filtroRol + filtroEst + @"
-                           ORDER BY d.FechaCreacion DESC";
+                           ORDER BY ISNULL(
+                               (SELECT MAX(h.FechaCambio) FROM HistorialDocumento h
+                                INNER JOIN Maestro mh ON h.IdEstadoNuevo = mh.IdMaestro
+                                WHERE h.IdDocumento = d.IdDocumento AND mh.Codigo IN ('OBS','PEN')),
+                               d.FechaCreacion) DESC";
 
             using (var cn = new SqlConnection(connStr))
             {

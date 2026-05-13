@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ZofraTacna.Datos;
 using ZofraTacna.LogicaNegocio;
+using ZofraTacna.Models;
 
 namespace ZofraTacna.Presentacion
 {
@@ -24,6 +26,27 @@ namespace ZofraTacna.Presentacion
         {
             get { return (ViewState["MensajeBloqueo"] as string) ?? ""; }
             set { ViewState["MensajeBloqueo"] = value; }
+        }
+
+        /// <summary>Vista dividida con dos PDFs (solo tras pulsar Comparar documento).</summary>
+        private bool ModoComparacionActivo
+        {
+            get { return ViewState["ModoCmpAct"] != null && (bool)ViewState["ModoCmpAct"]; }
+            set { ViewState["ModoCmpAct"] = value; }
+        }
+
+        /// <summary>IdAdjunto para panel izquierdo; 0 = PDF vigente.</summary>
+        private int CmpAdjIzq
+        {
+            get { return ViewState["CmpAdjIzq"] != null ? Convert.ToInt32(ViewState["CmpAdjIzq"], CultureInfo.InvariantCulture) : 0; }
+            set { ViewState["CmpAdjIzq"] = value; }
+        }
+
+        /// <summary>IdAdjunto para panel derecho; 0 = vigente.</summary>
+        private int CmpAdjDer
+        {
+            get { return ViewState["CmpAdjDer"] != null ? Convert.ToInt32(ViewState["CmpAdjDer"], CultureInfo.InvariantCulture) : 0; }
+            set { ViewState["CmpAdjDer"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -68,6 +91,10 @@ namespace ZofraTacna.Presentacion
             else
             {
                 TocarBloqueoEdicionRegistrador();
+                // Mantener comparación activa en postback
+                int idDocPb;
+                if (ModoComparacionActivo && int.TryParse(Request.QueryString["id"], out idDocPb) && idDocPb > 0)
+                    InitComparacion(idDocPb);
             }
         }
 
@@ -152,8 +179,11 @@ namespace ZofraTacna.Presentacion
                     }
                 }
 
-                // Cargar observaciones en una conexi�n separada
+                // Cargar observaciones en una conexión separada
                 CargarObservaciones(idDocumento);
+
+                // Inicializar comparación de versiones
+                InitComparacion(idDocumento);
             }
             catch (Exception ex)
             {
@@ -200,6 +230,153 @@ namespace ZofraTacna.Presentacion
             {
                 litObservaciones.Text = string.Join("", observaciones);
             }
+        }
+
+        // ── Comparación de versiones ──
+
+        private void InitComparacion(int idDocumento)
+        {
+            var repo = new RepositorioDocumentos();
+            // Obtener TODAS las versiones (vigentes + archivadas), más reciente primero
+            List<AdjuntoArchivadoInfo> todas = repo.ObtenerTodasVersiones(idDocumento);
+            if (todas == null) todas = new List<AdjuntoArchivadoInfo>();
+
+            // Mostrar botón siempre que haya al menos 1 versión
+            bool puedeComparar = todas.Count > 0;
+
+            if (!puedeComparar)
+                ModoComparacionActivo = false;
+
+            bool modoComparar = puedeComparar && ModoComparacionActivo;
+
+            // Validar ids seleccionados
+            if (modoComparar)
+            {
+                var idsValidos = new HashSet<int>();
+                foreach (AdjuntoArchivadoInfo a in todas)
+                    idsValidos.Add(a.IdAdjunto);
+                if (!idsValidos.Contains(CmpAdjIzq)) CmpAdjIzq = todas.Count > 1 ? todas[1].IdAdjunto : todas[0].IdAdjunto;
+                if (!idsValidos.Contains(CmpAdjDer)) CmpAdjDer = todas[0].IdAdjunto;
+            }
+            else
+            {
+                CmpAdjIzq = 0;
+                CmpAdjDer = 0;
+            }
+
+            // Ajustar clase del content para scroll
+            divContentArea.Attributes["class"] = modoComparar ? "content content--compare-pdf" : "content";
+
+            // Visibilidad de botones
+            btnCompararDocumento.Visible = puedeComparar && !modoComparar;
+            btnCerrarComparacion.Visible = modoComparar;
+            pnlComparacion.Visible = modoComparar;
+
+            if (!modoComparar) return;
+
+            // Construir URLs del PDF (siempre con idAdj explícito)
+            string basePdf = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + idDocumento);
+            CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
+
+            LlenarComboVersiones(ddlPdfCompareIzq, todas, pe);
+            LlenarComboVersiones(ddlPdfCompareDer, todas, pe);
+            SeleccionarValorCombo(ddlPdfCompareIzq, CmpAdjIzq);
+            SeleccionarValorCombo(ddlPdfCompareDer, CmpAdjDer);
+
+            string urlIzq = basePdf + "&idAdj=" + CmpAdjIzq;
+            string urlDer = basePdf + "&idAdj=" + CmpAdjDer;
+
+            lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
+            lnkPdfDerNuevaPestana.NavigateUrl = urlDer;
+            ifrPdfAnterior.Attributes["src"] = urlIzq;
+            ifrPdfActualCompare.Attributes["src"] = urlDer;
+        }
+
+        protected void btnCompararDocumento_Click(object sender, EventArgs e)
+        {
+            int idDoc;
+            if (!int.TryParse(Request.QueryString["id"], out idDoc) || idDoc <= 0) return;
+
+            ModoComparacionActivo = true;
+            var repo = new RepositorioDocumentos();
+            List<AdjuntoArchivadoInfo> todas = repo.ObtenerTodasVersiones(idDoc);
+            if (todas != null && todas.Count > 1)
+            {
+                // todas[0] = último (más reciente), todas[1] = penúltimo
+                CmpAdjDer = todas[0].IdAdjunto;
+                CmpAdjIzq = todas[1].IdAdjunto;
+            }
+            else if (todas != null && todas.Count == 1)
+            {
+                CmpAdjIzq = todas[0].IdAdjunto;
+                CmpAdjDer = todas[0].IdAdjunto;
+            }
+            else
+            {
+                CmpAdjIzq = 0;
+                CmpAdjDer = 0;
+            }
+
+            InitComparacion(idDoc);
+        }
+
+        protected void btnCerrarComparacion_Click(object sender, EventArgs e)
+        {
+            ModoComparacionActivo = false;
+            int idDoc;
+            if (int.TryParse(Request.QueryString["id"], out idDoc) && idDoc > 0)
+                InitComparacion(idDoc);
+        }
+
+        protected void ddlPdfCompareIzq_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int v;
+            int.TryParse(ddlPdfCompareIzq.SelectedValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out v);
+            CmpAdjIzq = v < 0 ? 0 : v;
+            int idDoc;
+            if (int.TryParse(Request.QueryString["id"], out idDoc) && idDoc > 0)
+                InitComparacion(idDoc);
+        }
+
+        protected void ddlPdfCompareDer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int v;
+            int.TryParse(ddlPdfCompareDer.SelectedValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out v);
+            CmpAdjDer = v < 0 ? 0 : v;
+            int idDoc;
+            if (int.TryParse(Request.QueryString["id"], out idDoc) && idDoc > 0)
+                InitComparacion(idDoc);
+        }
+
+        /// <summary>Llena el combo con TODAS las versiones, etiquetando cada una con su fecha y nombre.</summary>
+        private static void LlenarComboVersiones(DropDownList ddl, List<AdjuntoArchivadoInfo> todas, CultureInfo pe)
+        {
+            ddl.Items.Clear();
+            if (todas == null || todas.Count == 0) return;
+            // todas viene ordenado por IdAdjunto DESC (más reciente primero)
+            for (int i = 0; i < todas.Count; i++)
+            {
+                AdjuntoArchivadoInfo a = todas[i];
+                string fecha = a.FechaCreacion != DateTime.MinValue ? a.FechaCreacion.ToString("g", pe) : "—";
+                string nom = string.IsNullOrEmpty(a.NombreArchivo) ? "archivo.pdf" : a.NombreArchivo;
+                string etiqueta = i == 0
+                    ? "Versión actual — " + nom + " (" + fecha + ")"
+                    : "Versión anterior #" + (todas.Count - i) + " — " + nom + " (" + fecha + ")";
+                ddl.Items.Add(new ListItem(etiqueta, a.IdAdjunto.ToString(CultureInfo.InvariantCulture)));
+            }
+        }
+
+        private static void SeleccionarValorCombo(DropDownList ddl, int idAdjunto)
+        {
+            string val = idAdjunto.ToString(CultureInfo.InvariantCulture);
+            ListItem it = ddl.Items.FindByValue(val);
+            if (it != null)
+            {
+                ddl.ClearSelection();
+                it.Selected = true;
+            }
+            else if (ddl.Items.Count > 0)
+                ddl.SelectedIndex = 0;
         }
 
         protected void btnEnviarCorreccion_Click(object sender, EventArgs e)
@@ -294,7 +471,8 @@ namespace ZofraTacna.Presentacion
                                                Asunto = @asunto,
                                                Descripcion = @desc,
                                                IdTipoDocumento = @tipo,
-                                               Prioridad = @pri
+                                               Prioridad = @pri,
+                                               FechaModificacion = GETDATE()
                                            WHERE IdDocumento = @id";
 
                             using (var cmd = new SqlCommand(sql, cn, transaction))
@@ -408,10 +586,15 @@ namespace ZofraTacna.Presentacion
 
                 LiberarBloqueoEdicionRegistrador();
 
-                MostrarMsg("Corrección enviada correctamente.", true);
-                string url = ResolveUrl("~/Presentacion/GestionDocumentos/MisDocumentos.aspx");
-                ClientScript.RegisterStartupScript(GetType(), "modalExitoCorreccion",
-                    "mostrarModalExitoEditar('" + url + "');", true);
+                string rol = Session["RolCodigo"] != null ? Session["RolCodigo"].ToString() : "";
+                if (rol == "REG")
+                {
+                    Response.Redirect("~/Presentacion/GestionDocumentos/MisDocumentos.aspx");
+                }
+                else
+                {
+                    MostrarMsg("Corrección enviada correctamente.", true);
+                }
             }
             catch (Exception ex)
             {

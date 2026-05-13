@@ -166,6 +166,41 @@ namespace ZofraTacna.Datos
             return lista;
         }
 
+        /// <summary>TODAS las versiones del documento (vigentes + archivadas), mas reciente primero por IdAdjunto DESC.</summary>
+        public List<AdjuntoArchivadoInfo> ObtenerTodasVersiones(int idDocumento)
+        {
+            var lista = new List<AdjuntoArchivadoInfo>();
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"SELECT IdAdjunto, NombreArchivo, FechaSuperacion, MotivoSuperacion, FechaCreacion,
+                                      ISNULL(EsSuperado,0) AS EsSuperado
+                               FROM DocumentoAdjunto
+                               WHERE IdDocumento=@id
+                                 AND ISNULL(EsEliminado,0)=0
+                               ORDER BY IdAdjunto DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new AdjuntoArchivadoInfo
+                            {
+                                IdAdjunto = (int)dr["IdAdjunto"],
+                                NombreArchivo = dr["NombreArchivo"] != DBNull.Value ? dr["NombreArchivo"].ToString() : "",
+                                FechaSuperacion = dr["FechaSuperacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaSuperacion"]) : (DateTime?)null,
+                                MotivoSuperacion = dr["MotivoSuperacion"] != DBNull.Value ? dr["MotivoSuperacion"].ToString() : "",
+                                FechaCreacion = dr["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaCreacion"]) : DateTime.MinValue
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
         public bool AdjuntoPerteneceADocumento(int idAdjunto, int idDocumento)
         {
             using (var conn = new SqlConnection(_connFiles))

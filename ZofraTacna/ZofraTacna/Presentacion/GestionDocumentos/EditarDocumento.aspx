@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.EditarDocumento" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs" Inherits="ZofraTacna.Presentacion.EditarDocumento, ZofraTacna" ResponseEncoding="utf-8" ContentType="text/html; charset=utf-8" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -299,6 +299,37 @@
         .modal-exito-msg{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5}
         .modal-exito-bar-wrap{background:#e8f5e9;border-radius:8px;height:6px;overflow:hidden}
         .modal-exito-bar{height:100%;background:linear-gradient(90deg,#2e7d32,#43a047);width:100%;border-radius:8px;transition:width linear}
+        /* ── Comparación de versiones PDF ── */
+        .content.content--compare-pdf{overflow-y:auto;overflow-x:hidden;padding-bottom:24px;min-height:0;-webkit-overflow-scrolling:touch}
+        .btn-comparar{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#3d5faf,#2a4588);border:1.5px solid #1e3770;box-shadow:0 4px 14px rgba(42,69,136,.35);text-decoration:none;font-weight:700;cursor:pointer;font-family:inherit}
+        .btn-comparar:hover{background:linear-gradient(135deg,#4a6fc4,#335099);border-color:#2a4588;box-shadow:0 6px 18px rgba(42,69,136,.42)}
+        .btn-cerrar-cmp{display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#2a3f6f,#1a2a4a);border:1px solid #17243f;font-weight:700;cursor:pointer;font-family:inherit}
+        .btn-cerrar-cmp:hover{filter:brightness(1.06)}
+        .cmp-section{margin-top:20px}
+        .cmp-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+        .cmp-section-head h2{font-size:16px;font-weight:700;color:#1a2a4a;margin:0}
+        .pdf-compare-bar{background:#fafbfd;border-bottom:1px solid #eef0f8;padding:10px 18px;margin:0;flex-shrink:0;border-radius:10px 10px 0 0}
+        .pdf-compare-hint{font-size:12px;color:#5c6478;line-height:1.45}
+        .pdf-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:min(720px,72vh);width:100%;border-radius:0 0 10px 10px;overflow:hidden;background:#3a3a42}
+        .pdf-col{display:flex;flex-direction:column;min-width:0;background:#2a2a32;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);min-height:0}
+        .pdf-col-title{font-size:11px;font-weight:700;padding:10px 12px;background:#1a2a4a;color:#fff;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+        .pdf-col-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;background:#fafbfd;border-bottom:1px solid #dde1f0;flex-shrink:0}
+        .pdf-col-toolbar select{flex:1;min-width:140px;max-width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid #cfd8ef;font-size:12px;font-weight:600;color:#1a2a4a;background:#fff}
+        .cmp-tablink{font-size:11px;font-weight:600;color:#2a3f6f;text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px;white-space:nowrap}
+        .cmp-tablink:hover{border-bottom-color:#2a3f6f;color:#1a2a4a}
+        .pdf-col iframe{flex:1;min-height:380px;border:none;width:100%;background:#52525b}
+        .pdf-compare-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(26,42,74,.12)}
+        .pdf-compare-view-btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+        .pdf-compare-toolbar-label{font-size:11px;font-weight:700;color:#1a2a4a;text-transform:uppercase;letter-spacing:.4px;margin-right:4px}
+        .cmp-chip{border:1.5px solid #cfd8ef;background:#fff;color:#1a2a4a;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+        .cmp-chip:hover{border-color:#1a2a4a;background:#f5f7fc}
+        .cmp-chip.cmp-chip-on{background:linear-gradient(135deg,#1a2a4a,#2a3f6f);color:#fff;border-color:#1a2a4a;box-shadow:0 4px 12px rgba(26,42,74,.25)}
+        .pdf-compare-open-links{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+        .pdf-mode-prev .pdf-col:nth-child(2),.pdf-mode-next .pdf-col:nth-child(1){display:none}
+        .pdf-compare-grid.pdf-mode-prev,.pdf-compare-grid.pdf-mode-next{grid-template-columns:1fr!important}
+        @media (max-width:1100px){
+            .pdf-compare-grid:not(.pdf-mode-prev):not(.pdf-mode-next){grid-template-columns:1fr}
+        }
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -348,10 +379,16 @@
                 </div>
 
                 <!-- CONTENT -->
-                <div class="content">
+                <div runat="server" id="divContentArea" class="content">
                     <div class="head">
-                        <h1>Editar Documento</h1>
-                        <a class="btn-back" href='VerObservaciones.aspx?id=<%= Request.QueryString["id"] %>'><span class="btn-back-arrow" aria-hidden="true">&#8592;</span> Regresar</a>
+                        <div>
+                            <h1>Editar Documento</h1>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <asp:Button ID="btnCompararDocumento" runat="server" CssClass="btn-comparar" Text="Comparar Documento" ToolTip="Dividir la vista y elegir dos versiones del mismo tr&aacute;mite" OnClick="btnCompararDocumento_Click" CausesValidation="false" Visible="false" />
+                            <asp:Button ID="btnCerrarComparacion" runat="server" CssClass="btn-cerrar-cmp" Text="Cerrar comparaci&oacute;n" ToolTip="Volver a la vista &uacute;nica" OnClick="btnCerrarComparacion_Click" CausesValidation="false" Visible="false" />
+                            <a class="btn-back" href='VerObservaciones.aspx?id=<%= Request.QueryString["id"] %>'><span class="btn-back-arrow" aria-hidden="true">&#8592;</span> Regresar</a>
+                        </div>
                     </div>
 
                     <!-- CÓDIGO DOCUMENTO (un solo campo, igual que en Cargar documento) -->
@@ -431,6 +468,34 @@
                         <button type="button" id="btnVisualizarPdf" class="btn-visualizar" style="display:none;" onclick="editDocAbrirVisorPdf();">📄 Visualizar documento</button>
                         <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección" CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click" OnClientClick="return editDocValidarAntesEnviar();" />
                     </div>
+
+                    <!-- ══ SECCIÓN COMPARAR DOCUMENTO ══ -->
+                    <asp:Panel ID="pnlComparacion" runat="server" Visible="false" CssClass="cmp-section">
+                        <div class="cmp-section-head">
+                            <h2>Comparaci&oacute;n de versiones</h2>
+                        </div>
+                        <div class="pdf-compare-bar">
+                            <p class="pdf-compare-hint">Elija la versi&oacute;n en cada panel (vigente o archivada). Los archivos provienen del historial del mismo registro.</p>
+                        </div>
+                        <asp:Panel ID="pnlVistaPdfComparar" runat="server" CssClass="pdf-compare-grid">
+                            <div class="pdf-col">
+                                <div class="pdf-col-title">Panel izquierdo</div>
+                                <div class="pdf-col-toolbar">
+                                    <asp:DropDownList ID="ddlPdfCompareIzq" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPdfCompareIzq_SelectedIndexChanged" />
+                                    <asp:HyperLink ID="lnkPdfIzqNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Nueva pesta&ntilde;a" />
+                                </div>
+                                <iframe runat="server" id="ifrPdfAnterior" title="PDF panel izquierdo"></iframe>
+                            </div>
+                            <div class="pdf-col">
+                                <div class="pdf-col-title">Panel derecho</div>
+                                <div class="pdf-col-toolbar">
+                                    <asp:DropDownList ID="ddlPdfCompareDer" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPdfCompareDer_SelectedIndexChanged" />
+                                    <asp:HyperLink ID="lnkPdfDerNuevaPestana" runat="server" CssClass="cmp-tablink" Target="_blank" Text="Nueva pesta&ntilde;a" />
+                                </div>
+                                <iframe runat="server" id="ifrPdfActualCompare" title="PDF panel derecho"></iframe>
+                            </div>
+                        </asp:Panel>
+                    </asp:Panel>
 
                     <!-- Modal visor PDF (mismo criterio que CargarDocumento) -->
                     <div id="modalVisorPDFEdit" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;">
