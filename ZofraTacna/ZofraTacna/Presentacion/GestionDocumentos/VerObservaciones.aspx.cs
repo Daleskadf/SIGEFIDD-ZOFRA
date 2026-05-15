@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Data.SqlClient;
 using System.Text;
 using System.Web;
@@ -52,14 +54,58 @@ namespace ZofraTacna.Presentacion
                 ifrPdf.Attributes["src"] = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + id);
             }
 
-            var obs = repo.ObtenerObservacionesDocumento(id);
-            if (obs.Count == 0) litObservaciones.Text = "<div class='obs-item'>No hay observaciones registradas.</div>";
+            var pendientes = repo.ObtenerObservacionesPendientesEstructuradas(id);
+            var levantadas = repo.ObtenerObservacionesLevantadasHistorial(id);
+            litObservaciones.Text = ConstruirHtmlFlujoObservaciones(pendientes, levantadas);
+        }
+
+        private static string ConstruirHtmlFlujoObservaciones(List<ObservacionFlujoItem> pendientes, List<ObservacionFlujoItem> levantadas)
+        {
+            var sb = new StringBuilder();
+            CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
+
+            if ((pendientes == null || pendientes.Count == 0) && (levantadas == null || levantadas.Count == 0))
+            {
+                sb.Append("<div class='obs-item'>No hay observaciones registradas en este documento.</div>");
+                return sb.ToString();
+            }
+
+            sb.Append("<div class='obs-section'><h4>Pendientes de correcci&oacute;n</h4>");
+            if (pendientes == null || pendientes.Count == 0)
+                sb.Append("<div class='obs-meta'>Ninguna observaci&oacute;n vigente. Si ya envi&oacute; correcci&oacute;n tras una observaci&oacute;n, consulte la secci&oacute;n siguiente.</div>");
             else
             {
-                var sb = new StringBuilder();
-                foreach (string o in obs) sb.Append("<div class='obs-item'>").Append(HttpUtility.HtmlEncode(o)).Append("</div>");
-                litObservaciones.Text = sb.ToString();
+                foreach (ObservacionFlujoItem o in pendientes)
+                {
+                    sb.Append("<div class='obs-item'><span class='badge-estado badge-pend'>Pendiente</span>");
+                    sb.Append("<div style='margin-top:6px'>");
+                    sb.Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("g", pe)));
+                    sb.Append(" &mdash; Revisor: <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "")).Append("</strong></div>");
+                    sb.Append("<div style='margin-top:6px'>").Append(HttpUtility.HtmlEncode(o.Comentario ?? "")).Append("</div></div>");
+                }
             }
+            sb.Append("</div>");
+
+            sb.Append("<div class='obs-section'><h4>Ya subsanadas</h4>");
+            if (levantadas == null || levantadas.Count == 0)
+                sb.Append("<div class='obs-meta'>Las observaciones subsanadas aparecen aqu&iacute; despu&eacute;s de que el registrador env&iacute;e la correcci&oacute;n y se reinicie el flujo de revisi&oacute;n.</div>");
+            else
+            {
+                foreach (ObservacionFlujoItem o in levantadas)
+                {
+                    sb.Append("<div class='obs-item obs-levantada'><span class='badge-estado badge-ok'>Subsanada</span>");
+                    sb.Append("<div class='obs-meta'>Observada el ").Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("g", pe)));
+                    sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "")).Append("</strong>");
+                    if (o.FechaLevantamiento.HasValue)
+                        sb.Append(" &mdash; Levantada el ").Append(HttpUtility.HtmlEncode(o.FechaLevantamiento.Value.ToString("g", pe)));
+                    sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginLevantamiento ?? "")).Append("</strong></div>");
+                    sb.Append("<div style='margin-top:6px;font-weight:600'>Texto de la observaci&oacute;n:</div>");
+                    sb.Append("<div style='margin-top:4px'>").Append(HttpUtility.HtmlEncode(o.Comentario ?? "")).Append("</div></div>");
+                }
+            }
+            sb.Append("</div>");
+
+            return sb.ToString();
         }
 
         protected void btnEditarDocumento_Click(object sender, EventArgs e)

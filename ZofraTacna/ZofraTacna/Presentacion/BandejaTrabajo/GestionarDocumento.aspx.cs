@@ -514,7 +514,7 @@ namespace ZofraTacna.Presentacion
             try
             {
                 _modulo.CrearUsuariosParticipantes(participantes);
-                _repoDocs.ReemplazarParticipantesDesdeLista(idDoc, participantes);
+                _repoDocs.ReemplazarParticipantesDesdeLista(idDoc, participantes, loginAdm);
             }
             catch (ArgumentException ex)
             {

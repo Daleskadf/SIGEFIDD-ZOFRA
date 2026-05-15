@@ -373,6 +373,203 @@ namespace ZofraTacna.Datos
             return lista;
         }
 
+        /// <summary>Indica si existe la tabla de historial de observaciones (migracion en BD).</summary>
+        public bool ExisteTablaDocumentoObservacionHistorial()
+        {
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionHistorial'", conn))
+                {
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value;
+                }
+            }
+        }
+
+        /// <summary>Copia observaciones vigentes del revisor al historial antes de borrar RevisionDetalle.</summary>
+        public void ArchivarObservacionesRevisorAntesDeLimpiar(SqlConnection conn, SqlTransaction tx, int idDocumento, string loginLevantamiento)
+        {
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+            using (var cmdCheck = new SqlCommand(
+                       @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+                         WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionHistorial'", conn, tx))
+            {
+                object exists = cmdCheck.ExecuteScalar();
+                if (exists == null || exists == DBNull.Value)
+                    return;
+            }
+
+            string sql = @"INSERT INTO dbo.DocumentoObservacionHistorial
+                (IdDocumento, LoginRevisor, Comentario, FechaObservacion, FechaLevantamiento, LoginLevantamiento)
+                SELECT dp.IdDocumento, dp.LoginUsuario, rd.Comentario, rd.FechaRevision, GETDATE(), @loginLev
+                FROM dbo.RevisionDetalle rd
+                INNER JOIN dbo.DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
+                INNER JOIN dbo.Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                WHERE dp.IdDocumento = @id
+                  AND mt.Tipo = 'TIPO_PARTICIPANTE' AND mt.Codigo = 'REV'
+                  AND rd.EsObservacion = 1";
+            using (var cmd = new SqlCommand(sql, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@id", idDocumento);
+                cmd.Parameters.AddWithValue("@loginLev", loginLevantamiento ?? "");
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public List<ObservacionFlujoItem> ObtenerObservacionesPendientesEstructuradas(int idDocumento)
+        {
+            var lista = new List<ObservacionFlujoItem>();
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"SELECT dp.LoginUsuario AS LoginRev, rd.Comentario, rd.FechaRevision
+                               FROM RevisionDetalle rd
+                               INNER JOIN DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
+                               INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                               WHERE dp.IdDocumento = @id
+                                 AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='REV'
+                                 AND rd.EsObservacion = 1
+                               ORDER BY rd.FechaRevision DESC, rd.IdRevision DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new ObservacionFlujoItem
+                            {
+                                Levantada = false,
+                                LoginRevisor = dr["LoginRev"].ToString(),
+                                Comentario = dr["Comentario"] != DBNull.Value ? dr["Comentario"].ToString() : "",
+                                FechaObservacion = dr["FechaRevision"] != DBNull.Value ? Convert.ToDateTime(dr["FechaRevision"]) : DateTime.Now,
+                                FechaLevantamiento = null,
+                                LoginLevantamiento = null
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public List<ObservacionFlujoItem> ObtenerObservacionesLevantadasHistorial(int idDocumento)
+        {
+            var lista = new List<ObservacionFlujoItem>();
+            if (!ExisteTablaDocumentoObservacionHistorial())
+                return lista;
+
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"SELECT LoginRevisor, Comentario, FechaObservacion, FechaLevantamiento, LoginLevantamiento
+                               FROM dbo.DocumentoObservacionHistorial
+                               WHERE IdDocumento = @id
+                               ORDER BY FechaLevantamiento DESC, FechaObservacion DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new ObservacionFlujoItem
+                            {
+                                Levantada = true,
+                                LoginRevisor = dr["LoginRevisor"].ToString(),
+                                Comentario = dr["Comentario"] != DBNull.Value ? dr["Comentario"].ToString() : "",
+                                FechaObservacion = dr["FechaObservacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaObservacion"]) : DateTime.MinValue,
+                                FechaLevantamiento = dr["FechaLevantamiento"] != DBNull.Value ? Convert.ToDateTime(dr["FechaLevantamiento"]) : (DateTime?)null,
+                                LoginLevantamiento = dr["LoginLevantamiento"] != DBNull.Value ? dr["LoginLevantamiento"].ToString() : ""
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        /// <summary>Documentos activos más recientes para el panel de inicio (admin).</summary>
+        public List<DashboardDocReciente> ObtenerDocumentosRecientesDashboard(int cantidad)
+        {
+            var lista = new List<DashboardDocReciente>();
+            if (cantidad <= 0) cantidad = 8;
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"SELECT TOP (@n) d.IdDocumento, d.Asunto, d.CodigoDocumento,
+                    CASE WHEN d.FechaModificacion IS NOT NULL THEN CAST(d.FechaModificacion AS DATETIME) ELSE CAST(d.FechaCreacion AS DATETIME) END AS FechaRef,
+                    d.LoginUsuarioRegistrador, m.Codigo AS EstadoCod, m.Descripcion AS EstadoDesc
+                    FROM Documento d
+                    INNER JOIN Maestro m ON d.IdEstadoDocumento = m.IdMaestro AND m.Tipo = 'ESTADO_DOC'
+                    WHERE d.Activo = 1
+                    ORDER BY FechaRef DESC, d.IdDocumento DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@n", cantidad);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new DashboardDocReciente
+                            {
+                                IdDocumento = (int)dr["IdDocumento"],
+                                Asunto = dr["Asunto"] != DBNull.Value ? dr["Asunto"].ToString() : "",
+                                CodigoDocumento = dr["CodigoDocumento"] != DBNull.Value ? dr["CodigoDocumento"].ToString() : "",
+                                FechaReferencia = dr["FechaRef"] != DBNull.Value ? Convert.ToDateTime(dr["FechaRef"]) : DateTime.MinValue,
+                                LoginRegistrador = dr["LoginUsuarioRegistrador"] != DBNull.Value ? dr["LoginUsuarioRegistrador"].ToString() : "",
+                                EstadoCod = dr["EstadoCod"] != DBNull.Value ? dr["EstadoCod"].ToString() : "",
+                                EstadoDesc = dr["EstadoDesc"] != DBNull.Value ? dr["EstadoDesc"].ToString() : ""
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        /// <summary>Últimos movimientos de historial de documentos para panel de actividad.</summary>
+        public List<DashboardActividadItem> ObtenerActividadHistorialDashboard(int cantidad)
+        {
+            var lista = new List<DashboardActividadItem>();
+            if (cantidad <= 0) cantidad = 12;
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"SELECT TOP (@n) h.FechaCambio, h.LoginUsuarioAccion, h.DetalleAccion,
+                    m.Codigo AS EstadoCod, m.Descripcion AS EstadoDesc, h.IdDocumento,
+                    ISNULL(d.CodigoDocumento, '') AS CodigoDocumento
+                    FROM HistorialDocumento h
+                    INNER JOIN Maestro m ON h.IdEstadoNuevo = m.IdMaestro AND m.Tipo = 'ESTADO_DOC'
+                    LEFT JOIN Documento d ON h.IdDocumento = d.IdDocumento
+                    ORDER BY h.FechaCambio DESC, h.IdHistorial DESC";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@n", cantidad);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new DashboardActividadItem
+                            {
+                                FechaCambio = dr["FechaCambio"] != DBNull.Value ? Convert.ToDateTime(dr["FechaCambio"]) : DateTime.MinValue,
+                                LoginUsuarioAccion = dr["LoginUsuarioAccion"] != DBNull.Value ? dr["LoginUsuarioAccion"].ToString() : "",
+                                DetalleAccion = dr["DetalleAccion"] != DBNull.Value ? dr["DetalleAccion"].ToString() : "",
+                                EstadoCod = dr["EstadoCod"] != DBNull.Value ? dr["EstadoCod"].ToString() : "",
+                                EstadoDesc = dr["EstadoDesc"] != DBNull.Value ? dr["EstadoDesc"].ToString() : "",
+                                IdDocumento = dr["IdDocumento"] != DBNull.Value ? Convert.ToInt32(dr["IdDocumento"]) : 0,
+                                CodigoDocumento = dr["CodigoDocumento"] != DBNull.Value ? dr["CodigoDocumento"].ToString() : ""
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
         public List<LineaTiempoEvento> ObtenerLineaTiempoDocumento(int idDocumento)
         {
             var eventos = new List<LineaTiempoEvento>();
@@ -593,7 +790,7 @@ namespace ZofraTacna.Datos
         /// <summary>
         /// Elimina detalle de revision/firma y participantes del documento; inserta la lista (misma regla que al registrar).
         /// </summary>
-        public void ReemplazarParticipantesDesdeLista(int idDocumento, List<RegistrarParticipanteItem> participantes)
+        public void ReemplazarParticipantesDesdeLista(int idDocumento, List<RegistrarParticipanteItem> participantes, string loginArchivoObservaciones)
         {
             if (participantes == null || participantes.Count == 0)
                 throw new ArgumentException("Debe haber al menos un participante.");
@@ -605,6 +802,8 @@ namespace ZofraTacna.Datos
                 {
                     try
                     {
+                        ArchivarObservacionesRevisorAntesDeLimpiar(conn, tx, idDocumento, loginArchivoObservaciones ?? "");
+
                         using (var cmd = new SqlCommand(@"
                             DELETE rd FROM dbo.RevisionDetalle rd
                             INNER JOIN dbo.DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
@@ -1064,6 +1263,7 @@ namespace ZofraTacna.Datos
                                              INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
                                              WHERE dp.IdDocumento=@id
                                                AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='REV'";
+                        ArchivarObservacionesRevisorAntesDeLimpiar(conn, tx, idDocumento, loginUsuario);
                         using (var cmd = new SqlCommand(sqlDelRev, conn, tx))
                         {
                             cmd.Parameters.AddWithValue("@id", idDocumento);

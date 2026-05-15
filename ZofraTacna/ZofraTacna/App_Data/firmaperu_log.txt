@@ -517,3 +517,24 @@
 2026-05-14 22:15:03 - [DOC] tamanioBytes: 262858
 2026-05-14 22:15:03 - [DOC] Tamaño contenido leído: 262858 bytes
 2026-05-14 22:15:03 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-14 22:24:43 - === Inicio de solicitud ===
+2026-05-14 22:24:43 - Método: POST
+2026-05-14 22:24:43 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=15
+2026-05-14 22:24:43 - QueryString: idDoc=15
+2026-05-14 22:24:43 - Form: param_token=doc_15
+2026-05-14 22:24:43 - idDoc: 15
+2026-05-14 22:24:43 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-14 22:24:43 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15
+2026-05-14 22:24:43 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15"}
+2026-05-14 22:24:43 - Base64 generado (longitud): 720
+2026-05-14 22:24:43 - === Fin de solicitud (éxito) ===
+2026-05-14 22:24:44 - [DOC] === Inicio solicitud documento ===
+2026-05-14 22:24:44 - [DOC] Método: GET
+2026-05-14 22:24:44 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-14 22:24:44 - [DOC] QueryString: idDoc=15
+2026-05-14 22:24:44 - [DOC] idDoc: 15
+2026-05-14 22:24:44 - [DOC] idAdjunto: 3
+2026-05-14 22:24:44 - [DOC] nombreArchivo: 20260510215637_Ficha_Inscripcion_Desarrollo_Web_Challenge.pdf
+2026-05-14 22:24:44 - [DOC] tamanioBytes: 117020
+2026-05-14 22:24:44 - [DOC] Tamaño contenido leído: 117020 bytes
+2026-05-14 22:24:44 - [DOC] === Fin solicitud documento (éxito) ===

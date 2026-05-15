@@ -10,8 +10,8 @@ namespace ZofraTacna
         protected global::System.Web.UI.WebControls.Literal litNombre;
         protected global::System.Web.UI.WebControls.Literal litRol;
         protected global::System.Web.UI.WebControls.Literal litBienvenido;
-        protected global::System.Web.UI.WebControls.Literal litDocUser1;
-        protected global::System.Web.UI.WebControls.Literal litActUser;
+        protected global::System.Web.UI.WebControls.Literal litDocumentosRecientes;
+        protected global::System.Web.UI.WebControls.Literal litActividadSistema;
         protected global::System.Web.UI.WebControls.Literal litTotal;
         protected global::System.Web.UI.WebControls.Literal litPendientes;
         protected global::System.Web.UI.WebControls.Literal litCompletados;

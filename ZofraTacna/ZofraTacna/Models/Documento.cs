@@ -87,6 +87,17 @@ namespace ZofraTacna.Models
         public DateTime FechaRevision  { get; set; }
     }
 
+    /// <summary>Observacion vigente o ya archivada al subsanar (VerObservaciones).</summary>
+    public class ObservacionFlujoItem
+    {
+        public bool     Levantada            { get; set; }
+        public string   LoginRevisor         { get; set; }
+        public string   Comentario           { get; set; }
+        public DateTime FechaObservacion     { get; set; }
+        public DateTime? FechaLevantamiento { get; set; }
+        public string   LoginLevantamiento   { get; set; }
+    }
+
     public class FirmaDetalle
     {
         public int      IdFirma          { get; set; }
@@ -134,5 +145,29 @@ namespace ZofraTacna.Models
         public string Detalle { get; set; }
         /// <summary>CSS: tl-reg | tl-estado | tl-aprob | tl-obs</summary>
         public string TipoCss { get; set; }
+    }
+
+    /// <summary>Fila para panel Documentos recientes (Default.aspx admin).</summary>
+    public class DashboardDocReciente
+    {
+        public int      IdDocumento          { get; set; }
+        public string   Asunto               { get; set; }
+        public string   CodigoDocumento      { get; set; }
+        public DateTime FechaReferencia      { get; set; }
+        public string   LoginRegistrador     { get; set; }
+        public string   EstadoCod            { get; set; }
+        public string   EstadoDesc           { get; set; }
+    }
+
+    /// <summary>Fila para panel Actividad del sistema (historial de documentos).</summary>
+    public class DashboardActividadItem
+    {
+        public DateTime FechaCambio          { get; set; }
+        public string   LoginUsuarioAccion   { get; set; }
+        public string   DetalleAccion      { get; set; }
+        public string   EstadoCod          { get; set; }
+        public string   EstadoDesc         { get; set; }
+        public int      IdDocumento        { get; set; }
+        public string   CodigoDocumento    { get; set; }
     }
 }

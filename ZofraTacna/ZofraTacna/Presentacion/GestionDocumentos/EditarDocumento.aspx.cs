@@ -520,6 +520,8 @@ namespace ZofraTacna.Presentacion
                                                             WHERE dp.IdDocumento = @id
                                                               AND mt.Tipo = 'TIPO_PARTICIPANTE'
                                                               AND mt.Codigo = 'REV'";
+                            string loginUsuario = Session["LoginUsuario"].ToString();
+                            new RepositorioDocumentos().ArchivarObservacionesRevisorAntesDeLimpiar(cn, transaction, idDocumento, loginUsuario);
                             using (var cmd = new SqlCommand(sqlLimpiarRevisiones, cn, transaction))
                             {
                                 cmd.Parameters.AddWithValue("@id", idDocumento);
@@ -527,7 +529,6 @@ namespace ZofraTacna.Presentacion
                             }
 
                             // Registrar en historial que el registrador levant� correcci�n
-                            string loginUsuario = Session["LoginUsuario"].ToString();
                             string sqlHistorial = @"INSERT INTO HistorialDocumento 
                                 (IdDocumento, IdEstadoAnterior, IdEstadoNuevo, LoginUsuarioAccion, DetalleAccion, FechaCambio)
                                 VALUES (@idDoc, @estAnterior, @estNuevo, @login, @detalle, GETDATE())";

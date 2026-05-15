@@ -529,6 +529,32 @@ ELSE
 GO
 
 -- ============================================================
+-- 2.7.1  DocumentoObservacionHistorial
+--   Observaciones del revisor archivadas al enviar correccion
+--   (antes de borrar RevisionDetalle). Permite ver subsanadas vs pendientes.
+-- ============================================================
+IF OBJECT_ID('dbo.DocumentoObservacionHistorial', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.DocumentoObservacionHistorial (
+        IdHistorialObs       INT          IDENTITY(1,1) NOT NULL,
+        IdDocumento          INT                        NOT NULL,
+        LoginRevisor         VARCHAR(60)                NOT NULL,
+        Comentario           VARCHAR(1000)              NOT NULL,
+        FechaObservacion     DATETIME                   NOT NULL,
+        FechaLevantamiento   DATETIME                   NOT NULL CONSTRAINT df_DocObsHist_FechaLev DEFAULT GETDATE(),
+        LoginLevantamiento   VARCHAR(50)                NOT NULL,
+        CONSTRAINT pk_DocumentoObservacionHistorial PRIMARY KEY CLUSTERED (IdHistorialObs),
+        CONSTRAINT fk_DocObsHist_Documento FOREIGN KEY (IdDocumento) REFERENCES dbo.Documento(IdDocumento)
+    );
+    CREATE NONCLUSTERED INDEX ix_DocObsHist_Documento
+        ON dbo.DocumentoObservacionHistorial (IdDocumento, FechaLevantamiento DESC);
+    PRINT 'Tabla DocumentoObservacionHistorial creada.';
+END
+ELSE
+    PRINT 'Tabla DocumentoObservacionHistorial ya existe.';
+GO
+
+-- ============================================================
 -- 2.8  LogErrorSistema
 --   Registro de excepciones no controladas de la aplicacion.
 --   Capa -> Presentacion | Negocio | Datos | ServiciosExternos
@@ -1941,3 +1967,4 @@ WHERE IdUsuario = 1008;
 SELECT * FROM dbo.UsuarioSistema WHERE IdUsuario = 1008;
 */
 
+select * from documentoadjunto

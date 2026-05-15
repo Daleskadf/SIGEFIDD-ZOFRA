@@ -272,7 +272,7 @@
                     <h1>Bienvenido, <asp:Literal ID="litBienvenido" runat="server" /></h1>
                     <p>Panel de Administraci&oacute;n del Sistema</p>
                 </div>
-                <button class="btn-new" type="button">&#43; Nuevo Documento</button>
+                <button class="btn-new" type="button" onclick="location.href='<%= ResolveUrl("~/Presentacion/GestionDocumentos/CargarDocumento.aspx") %>'">&#43; Nuevo Documento</button>
             </div>
 
             <!-- STATS -->
@@ -308,46 +308,17 @@
                 <div class="panel">
                     <div class="panel-header">
                         <h3>Documentos recientes</h3>
-                        <a href="#">Ver todos</a>
+                        <a href="<%= ResolveUrl("~/Presentacion/BandejaTrabajo/BandejaTrabajo.aspx") %>">Ver todos</a>
                     </div>
-                    <div class="doc-item">
-                        <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div>
-                        <div><div class="doc-name">Contrato_Suministro_2025.pdf</div><div class="doc-meta">Hace 2 horas · <asp:Literal ID="litDocUser1" runat="server" /></div></div>
-                        <span class="doc-status status-pend">Pendiente</span>
-                    </div>
-                    <div class="doc-item">
-                        <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div>
-                        <div><div class="doc-name">Resolución_Administrativa_04.pdf</div><div class="doc-meta">Ayer · Jefatura</div></div>
-                        <span class="doc-status status-comp">Completado</span>
-                    </div>
-                    <div class="doc-item">
-                        <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div>
-                        <div><div class="doc-name">Informe_Inventario_Q1.xlsx</div><div class="doc-meta">15 abr · Farmacia</div></div>
-                        <span class="doc-status status-rev">En revisi&oacute;n</span>
-                    </div>
+                    <asp:Literal ID="litDocumentosRecientes" runat="server" />
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <h3>Actividad del sistema</h3>
-                        <a href="#">Ver todo</a>
+                        <a href="<%= ResolveUrl("~/Presentacion/BandejaTrabajo/BandejaTrabajo.aspx") %>">Ver bandeja</a>
                     </div>
-                    <div class="act-item">
-                        <div class="act-dot" style="background:#3b5bdb;"></div>
-                        <div><div class="act-text"><asp:Literal ID="litActUser" runat="server" /> subi&oacute; un nuevo documento</div><div class="act-time">Hace 2 horas</div></div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-dot" style="background:#c0392b;"></div>
-                        <div><div class="act-text">Jefatura firm&oacute; Resolución_04</div><div class="act-time">Hace 5 horas</div></div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-dot" style="background:#2e7d32;"></div>
-                        <div><div class="act-text">Usuario Farmacia inici&oacute; sesi&oacute;n</div><div class="act-time">Ayer, 09:12</div></div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-dot" style="background:#8b6914;"></div>
-                        <div><div class="act-text">2 documentos pendientes de revisi&oacute;n</div><div class="act-time">15 abr, 16:40</div></div>
-                    </div>
+                    <asp:Literal ID="litActividadSistema" runat="server" />
                 </div>
             </div>
 
