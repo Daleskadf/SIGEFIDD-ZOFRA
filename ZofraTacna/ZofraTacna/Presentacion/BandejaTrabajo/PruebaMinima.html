@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba Mínima Firma Perú</title>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var jqFirmaPeru = jQuery.noConflict(true);
+    </script>
+    <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
+</head>
+<body style="padding: 50px; font-family: Arial;">
+    <h1>Prueba Mínima</h1>
+    <div id="addComponent"></div>
+    <button onclick="probar()" style="padding: 20px 40px; font-size: 20px; background: #8b1a1a; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        Probar Firma Perú
+    </button>
+
+    <script>
+        function signatureInit() {
+            console.log('signatureInit OK');
+            alert('signatureInit llamado!');
+        }
+        
+        function signatureOk() {
+            console.log('signatureOk OK');
+            alert('¡Firma completada!');
+        }
+        
+        function signatureCancel() {
+            console.log('signatureCancel');
+            alert('Firma cancelada.');
+        }
+        
+        function probar() {
+            console.log('Iniciando...');
+            
+            var urlParams = 'http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1';
+            
+            var paramObj = {
+                param_url: urlParams,
+                param_token: 'test_token_minimo',
+                document_extension: 'pdf'
+            };
+            
+            console.log('Parametros:', paramObj);
+            
+            var json = JSON.stringify(paramObj);
+            console.log('JSON:', json);
+            
+            var base64 = btoa(unescape(encodeURIComponent(json)));
+            console.log('Base64:', base64);
+            
+            try {
+                console.log('Llamando a startSignature(48596, ...)');
+                startSignature(48596, base64);
+                console.log('startSignature llamado');
+                alert('startSignature ejecutado! Ahora busca la ventana de Firma Perú.');
+            } catch (e) {
+                console.error('Error:', e);
+                alert('Error: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

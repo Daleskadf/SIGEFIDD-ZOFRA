@@ -1,0 +1,1 @@
+<%@ WebHandler Language="C#" CodeBehind="FirmaPeruParametros.ashx.cs" Class="ZofraTacna.Presentacion.FirmaPeruParametros" %>

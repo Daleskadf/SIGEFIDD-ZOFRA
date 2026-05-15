@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -12,10 +13,18 @@ namespace ZofraTacna.Presentacion
 {
     public partial class EmitirFirma : Page
     {
-        private int IdDocumentoActual
+        private static ConcurrentDictionary<string, string> TokenLoginMap = new ConcurrentDictionary<string, string>();
+
+        protected int IdDocumentoActual
         {
             get { return ViewState["IdDocumentoActual"] != null ? Convert.ToInt32(ViewState["IdDocumentoActual"]) : 0; }
             set { ViewState["IdDocumentoActual"] = value; }
+        }
+
+        protected string TokenActual
+        {
+            get { return ViewState["TokenActual"] != null ? ViewState["TokenActual"].ToString() : ""; }
+            set { ViewState["TokenActual"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -32,6 +41,15 @@ namespace ZofraTacna.Presentacion
             }
 
             IdDocumentoActual = idDoc;
+
+            if (!IsPostBack)
+            {
+                string login = Session["LoginUsuario"].ToString();
+                string token = idDoc + "_" + DateTime.Now.Ticks;
+                FirmaPeruTokenStore.StoreToken(token, login);
+                TokenActual = token;
+            }
+
             CargarVista(idDoc, rol);
         }
 

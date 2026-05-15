@@ -148,6 +148,16 @@
     <Compile Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx.cs">
       <DependentUpon>LanzarFirmaPeru.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\FirmaPeruParametros.ashx.cs">
+      <DependentUpon>FirmaPeruParametros.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\FirmaPeruSubir.ashx.cs">
+      <DependentUpon>FirmaPeruSubir.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\FirmaPeruTokenStore.cs" />
+    <Compile Include="Presentacion\BandejaTrabajo\FirmaPeruDocumento.ashx.cs">
+      <DependentUpon>FirmaPeruDocumento.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx.cs">
       <DependentUpon>EmitirRevision.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -268,6 +278,9 @@
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\FirmaPeruParametros.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\FirmaPeruSubir.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\FirmaPeruDocumento.ashx" />
     <Content Include="Presentacion\Notificaciones.ashx" />
     <Content Include="Presentacion\BloqueoFlujo.ashx" />
     <Content Include="Content\sigefidd-notificaciones.css" />
@@ -279,6 +292,14 @@
     <Content Include="Presentacion\BandejaTrabajo\VerDocumento.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Presentacion\BandejaTrabajo\PruebaFirmaPeru.aspx" />
+    <Content Include="Presentacion\BandejaTrabajo\EmitirFirmaSimple.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Compile Include="Presentacion\BandejaTrabajo\EmitirFirmaSimple.aspx.cs">
+      <DependentUpon>EmitirFirmaSimple.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Content Include="Presentacion\BandejaTrabajo\EmitirFirma.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

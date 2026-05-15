@@ -3,9 +3,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta charset="utf-8" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <title>SIGEFIDD-ZOFRA | Emitir firma</title>
     <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
     <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var jqFirmaPeru = jQuery.noConflict(true);
+    </script>
+    <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}
         body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:100vh}
@@ -19,6 +25,12 @@
         .tiempo-ok{color:#2e7d32;font-weight:700}.tiempo-vencido{color:#c0392b;font-weight:700}.tl-wrap{position:relative;padding-left:4px}.tl-line{position:absolute;left:11px;top:6px;bottom:8px;width:2px;background:linear-gradient(180deg,#1a2a4a22,#1a2a4a44)}.tl-item{position:relative;padding-left:26px;padding-bottom:16px;font-size:12px}.tl-item:last-child{padding-bottom:4px}.tl-dot{position:absolute;left:5px;top:3px;width:12px;height:12px;border-radius:50%;background:#1a2a4a;border:2px solid #fff;box-shadow:0 0 0 1px #dde1f0}.tl-reg .tl-dot{background:#1a2a4a}.tl-estado .tl-dot{background:#5c6bc0}.tl-aprob .tl-dot{background:#2e7d32}.tl-obs .tl-dot{background:#e65100}.tl-time{color:#888;font-size:11px;margin-bottom:4px}.tl-title{font-weight:700;color:#1a2a4a;margin-bottom:4px}.tl-detail{color:#555;line-height:1.45}
         .pdf-head{padding:14px 18px;border-bottom:1px solid #eef0f8;font-size:14px;font-weight:700;color:#1a2a4a;background:#fafbfd}.pdf-frame-wrap{flex:1;min-height:420px;background:#3a3a42;position:relative}.pdf-frame-wrap iframe{display:block;width:100%;height:100%;min-height:420px;border:none}.pdf-empty{display:flex;align-items:center;justify-content:center;height:100%;min-height:320px;color:#aaa;font-size:14px;padding:24px;text-align:center}
         .pdf-float-actions{position:absolute;bottom:18px;right:18px;display:flex;z-index:8}.btn-firma{border:none;border-radius:12px;padding:13px 18px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.3);background:linear-gradient(135deg,#8b1a1a,#c0392b);border:1px solid #7d1717}
+        #firma-peru-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;display:none;}
+        #firma-peru-modal{background:white;padding:30px;border-radius:16px;text-align:center;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+        #firma-peru-modal h3{margin:0 0 15px 0;color:#1a2a4a;}
+        #firma-peru-modal p{margin:0 0 20px 0;color:#666;}
+        .spinner{width:40px;height:40px;border:4px solid #e8eaf0;border-top:4px solid #8b1a1a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px auto;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -40,7 +52,9 @@
                 <div class="emitir-right">
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <div class="pdf-frame-wrap">
-                        <div class="pdf-float-actions"><button type="button" id="btnLanzarFirma" class="btn-firma" onclick="lanzarFirmaPeru()">&#9998; Abrir Firma Per&uacute;</button></div>
+                        <div class="pdf-float-actions">
+                            <button type="button" id="btnLanzarFirma" class="btn-firma" onclick="iniciarFirmaDigital()">&#9998; Firmar con Firma Per&uacute;</button>
+                        </div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
                     </div>
@@ -49,31 +63,63 @@
         </div>
     </div>
 </div>
+<div id="addComponent"></div>
+<div id="firma-peru-overlay">
+    <div id="firma-peru-modal">
+        <div class="spinner"></div>
+        <h3>Proceso de Firma Digital</h3>
+        <p id="firma-peru-mensaje">Iniciando Firma Perú...</p>
+    </div>
+</div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 <script>
-function lanzarFirmaPeru() {
-    var btn = document.getElementById('btnLanzarFirma');
-    if (btn) { btn.disabled = true; btn.textContent = 'Abriendo Firma Perú...'; }
+var idDocumentoActual = <%= IdDocumentoActual %>;
+var baseUrlNgrok = ''; // Pon aquí tu URL de ngrok, ej: 'https://abc123.ngrok.io' (sin barra al final)
+var urlParametros = baseUrlNgrok 
+    ? baseUrlNgrok + '/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=' + idDocumentoActual
+    : '<%= new Uri(Request.Url, ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=" + IdDocumentoActual)).AbsoluteUri %>';
 
-    fetch('LanzarFirmaPeru.ashx', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.ok) {
-            alert('✅ ' + data.msg);
-        } else {
-            alert('⚠️ ' + data.msg);
-        }
-        if (btn) { btn.disabled = false; btn.textContent = '✎ Abrir Firma Perú'; }
-    })
-    .catch(function(err) {
-        alert('❌ Error de conexión al intentar abrir Firma Perú.');
-        if (btn) { btn.disabled = false; btn.textContent = '✎ Abrir Firma Perú'; }
-    });
+function signatureInit() {
+    console.log('signatureInit OK');
+}
+
+function signatureOk() {
+    console.log('signatureOk OK');
+    alert('¡Firma completada!');
+    window.location.href = 'BandejaTrabajo.aspx';
+}
+
+function signatureCancel() {
+    console.log('signatureCancel');
+    alert('Firma cancelada.');
+}
+
+function iniciarFirmaDigital() {
+    console.log('Iniciando firma para documento:', idDocumentoActual);
+    console.log('URL:', urlParametros);
+    
+    var paramObj = {
+        param_url: urlParametros,
+        param_token: 'doc_' + idDocumentoActual,
+        document_extension: 'pdf'
+    };
+    
+    console.log('Parametros:', paramObj);
+    
+    var json = JSON.stringify(paramObj);
+    console.log('JSON:', json);
+    
+    var base64 = btoa(unescape(encodeURIComponent(json)));
+    console.log('Base64:', base64);
+    
+    try {
+        startSignature(48596, base64);
+        console.log('startSignature llamado OK');
+    } catch (e) {
+        console.error('Error:', e);
+        alert('Error: ' + e.message);
+    }
 }
 </script>
 </body>

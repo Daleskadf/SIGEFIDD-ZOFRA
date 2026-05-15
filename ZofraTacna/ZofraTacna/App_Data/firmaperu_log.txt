@@ -1,0 +1,519 @@
+2026-05-13 11:37:55 - === Inicio de solicitud ===
+2026-05-13 11:37:55 - Método: POST
+2026-05-13 11:37:55 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:37:55 - QueryString: idDoc=1
+2026-05-13 11:37:55 - Form: param_token=doc_1
+2026-05-13 11:37:55 - idDoc: 1
+2026-05-13 11:37:55 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:37:55 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:37:55 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:37:55 - Base64 generado (longitud): 720
+2026-05-13 11:37:55 - === Fin de solicitud (éxito) ===
+2026-05-13 11:38:00 - === Inicio de solicitud ===
+2026-05-13 11:38:00 - Método: POST
+2026-05-13 11:38:00 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:38:00 - QueryString: idDoc=1
+2026-05-13 11:38:00 - Form: param_token=doc_1
+2026-05-13 11:38:00 - idDoc: 1
+2026-05-13 11:38:00 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:38:00 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:38:00 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:38:00 - Base64 generado (longitud): 720
+2026-05-13 11:38:00 - === Fin de solicitud (éxito) ===
+2026-05-13 11:38:18 - === Inicio de solicitud ===
+2026-05-13 11:38:18 - Método: POST
+2026-05-13 11:38:18 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:38:18 - QueryString: idDoc=1
+2026-05-13 11:38:18 - Form: param_token=prueba_token_123
+2026-05-13 11:38:18 - idDoc: 1
+2026-05-13 11:38:18 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:38:18 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:38:18 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:38:18 - Base64 generado (longitud): 720
+2026-05-13 11:38:18 - === Fin de solicitud (éxito) ===
+2026-05-13 11:42:14 - === Inicio de solicitud ===
+2026-05-13 11:42:14 - Método: POST
+2026-05-13 11:42:14 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:42:14 - QueryString: idDoc=1
+2026-05-13 11:42:14 - Form: param_token=prueba_1_1778690531913
+2026-05-13 11:42:14 - idDoc: 1
+2026-05-13 11:42:14 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:42:14 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:42:14 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:42:14 - Base64 generado (longitud): 720
+2026-05-13 11:42:14 - === Fin de solicitud (éxito) ===
+2026-05-13 11:42:15 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:42:15 - [DOC] Método: GET
+2026-05-13 11:42:15 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:42:15 - [DOC] QueryString: idDoc=1
+2026-05-13 11:42:15 - [DOC] idDoc: 1
+2026-05-13 11:42:15 - [DOC] idAdjunto: 1
+2026-05-13 11:42:15 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 11:42:15 - [DOC] tamanioBytes: 262858
+2026-05-13 11:42:15 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 11:42:15 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 11:42:20 - === Inicio de solicitud ===
+2026-05-13 11:42:20 - Método: POST
+2026-05-13 11:42:20 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=2
+2026-05-13 11:42:20 - QueryString: idDoc=2
+2026-05-13 11:42:20 - Form: param_token=prueba_2_1778690539125
+2026-05-13 11:42:20 - idDoc: 2
+2026-05-13 11:42:20 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=2
+2026-05-13 11:42:20 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_2
+2026-05-13 11:42:20 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=2","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_2"}
+2026-05-13 11:42:20 - Base64 generado (longitud): 720
+2026-05-13 11:42:20 - === Fin de solicitud (éxito) ===
+2026-05-13 11:42:21 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:42:21 - [DOC] Método: GET
+2026-05-13 11:42:21 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=2
+2026-05-13 11:42:21 - [DOC] QueryString: idDoc=2
+2026-05-13 11:42:21 - [DOC] idDoc: 2
+2026-05-13 11:42:21 - [DOC] ERROR: No hay adjunto para idDoc=2
+2026-05-13 11:42:30 - === Inicio de solicitud ===
+2026-05-13 11:42:30 - Método: POST
+2026-05-13 11:42:30 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=3
+2026-05-13 11:42:30 - QueryString: idDoc=3
+2026-05-13 11:42:30 - Form: param_token=prueba_3_1778690548563
+2026-05-13 11:42:30 - idDoc: 3
+2026-05-13 11:42:30 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=3
+2026-05-13 11:42:30 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_3
+2026-05-13 11:42:30 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=3","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_3"}
+2026-05-13 11:42:30 - Base64 generado (longitud): 720
+2026-05-13 11:42:30 - === Fin de solicitud (éxito) ===
+2026-05-13 11:42:30 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:42:30 - [DOC] Método: GET
+2026-05-13 11:42:30 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=3
+2026-05-13 11:42:30 - [DOC] QueryString: idDoc=3
+2026-05-13 11:42:30 - [DOC] idDoc: 3
+2026-05-13 11:42:30 - [DOC] ERROR: No hay adjunto para idDoc=3
+2026-05-13 11:42:36 - === Inicio de solicitud ===
+2026-05-13 11:42:36 - Método: POST
+2026-05-13 11:42:36 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:42:36 - QueryString: idDoc=1
+2026-05-13 11:42:36 - Form: param_token=prueba_1_1778690554329
+2026-05-13 11:42:36 - idDoc: 1
+2026-05-13 11:42:36 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:42:36 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:42:36 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:42:36 - Base64 generado (longitud): 720
+2026-05-13 11:42:36 - === Fin de solicitud (éxito) ===
+2026-05-13 11:42:36 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:42:36 - [DOC] Método: GET
+2026-05-13 11:42:36 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:42:36 - [DOC] QueryString: idDoc=1
+2026-05-13 11:42:36 - [DOC] idDoc: 1
+2026-05-13 11:42:36 - [DOC] idAdjunto: 1
+2026-05-13 11:42:36 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 11:42:36 - [DOC] tamanioBytes: 262858
+2026-05-13 11:42:36 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 11:42:36 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 11:43:19 - === Inicio de solicitud ===
+2026-05-13 11:43:19 - Método: POST
+2026-05-13 11:43:19 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:43:19 - QueryString: idDoc=1
+2026-05-13 11:43:19 - Form: param_token=prueba_1_1778690598270
+2026-05-13 11:43:19 - idDoc: 1
+2026-05-13 11:43:19 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:43:19 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:43:19 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:43:19 - Base64 generado (longitud): 720
+2026-05-13 11:43:19 - === Fin de solicitud (éxito) ===
+2026-05-13 11:43:20 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:43:20 - [DOC] Método: GET
+2026-05-13 11:43:20 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:43:20 - [DOC] QueryString: idDoc=1
+2026-05-13 11:43:20 - [DOC] idDoc: 1
+2026-05-13 11:43:20 - [DOC] idAdjunto: 1
+2026-05-13 11:43:20 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 11:43:20 - [DOC] tamanioBytes: 262858
+2026-05-13 11:43:20 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 11:43:20 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 11:51:15 - === Inicio de solicitud ===
+2026-05-13 11:51:15 - Método: GET
+2026-05-13 11:51:15 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 11:51:15 - QueryString: idDoc=1
+2026-05-13 11:51:15 - Form: 
+2026-05-13 11:51:15 - idDoc: 1
+2026-05-13 11:51:15 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:51:15 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 11:51:15 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 11:51:15 - Base64 generado (longitud): 720
+2026-05-13 11:51:15 - === Fin de solicitud (éxito) ===
+2026-05-13 11:51:24 - [DOC] === Inicio solicitud documento ===
+2026-05-13 11:51:24 - [DOC] Método: GET
+2026-05-13 11:51:24 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 11:51:24 - [DOC] QueryString: idDoc=1
+2026-05-13 11:51:24 - [DOC] idDoc: 1
+2026-05-13 11:51:24 - [DOC] idAdjunto: 1
+2026-05-13 11:51:24 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 11:51:24 - [DOC] tamanioBytes: 262858
+2026-05-13 11:51:24 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 11:51:24 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 12:01:24 - === Inicio de solicitud ===
+2026-05-13 12:01:24 - Método: POST
+2026-05-13 12:01:24 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 12:01:24 - QueryString: idDoc=1
+2026-05-13 12:01:24 - Form: param_token=test_token_minimo
+2026-05-13 12:01:24 - idDoc: 1
+2026-05-13 12:01:24 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 12:01:24 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 12:01:24 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 12:01:24 - Base64 generado (longitud): 720
+2026-05-13 12:01:24 - === Fin de solicitud (éxito) ===
+2026-05-13 12:01:24 - [DOC] === Inicio solicitud documento ===
+2026-05-13 12:01:24 - [DOC] Método: GET
+2026-05-13 12:01:24 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 12:01:24 - [DOC] QueryString: idDoc=1
+2026-05-13 12:01:24 - [DOC] idDoc: 1
+2026-05-13 12:01:24 - [DOC] idAdjunto: 1
+2026-05-13 12:01:24 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 12:01:24 - [DOC] tamanioBytes: 262858
+2026-05-13 12:01:24 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 12:01:24 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 12:01:33 - === Inicio de solicitud ===
+2026-05-13 12:01:33 - Método: POST
+2026-05-13 12:01:33 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 12:01:33 - QueryString: idDoc=1
+2026-05-13 12:01:33 - Form: param_token=doc_1
+2026-05-13 12:01:33 - idDoc: 1
+2026-05-13 12:01:33 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 12:01:33 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 12:01:33 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 12:01:33 - Base64 generado (longitud): 720
+2026-05-13 12:01:33 - === Fin de solicitud (éxito) ===
+2026-05-13 12:01:33 - [DOC] === Inicio solicitud documento ===
+2026-05-13 12:01:33 - [DOC] Método: GET
+2026-05-13 12:01:33 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 12:01:33 - [DOC] QueryString: idDoc=1
+2026-05-13 12:01:33 - [DOC] idDoc: 1
+2026-05-13 12:01:33 - [DOC] idAdjunto: 1
+2026-05-13 12:01:33 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 12:01:33 - [DOC] tamanioBytes: 262858
+2026-05-13 12:01:33 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 12:01:33 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 16:07:58 - === Inicio de solicitud ===
+2026-05-13 16:07:58 - Método: POST
+2026-05-13 16:07:58 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 16:07:58 - QueryString: idDoc=1
+2026-05-13 16:07:58 - Form: param_token=doc_1
+2026-05-13 16:07:58 - idDoc: 1
+2026-05-13 16:07:58 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:07:58 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 16:07:58 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 16:07:58 - Base64 generado (longitud): 720
+2026-05-13 16:07:58 - === Fin de solicitud (éxito) ===
+2026-05-13 16:08:00 - [DOC] === Inicio solicitud documento ===
+2026-05-13 16:08:00 - [DOC] Método: GET
+2026-05-13 16:08:00 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:08:00 - [DOC] QueryString: idDoc=1
+2026-05-13 16:08:00 - [DOC] idDoc: 1
+2026-05-13 16:08:00 - [DOC] idAdjunto: 1
+2026-05-13 16:08:00 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 16:08:00 - [DOC] tamanioBytes: 262858
+2026-05-13 16:08:00 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 16:08:00 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 16:52:23 - === Inicio de solicitud ===
+2026-05-13 16:52:23 - Método: POST
+2026-05-13 16:52:23 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 16:52:23 - QueryString: idDoc=1
+2026-05-13 16:52:23 - Form: param_token=doc_1
+2026-05-13 16:52:23 - idDoc: 1
+2026-05-13 16:52:23 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:52:23 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 16:52:23 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 16:52:23 - Base64 generado (longitud): 720
+2026-05-13 16:52:23 - === Fin de solicitud (éxito) ===
+2026-05-13 16:52:24 - [DOC] === Inicio solicitud documento ===
+2026-05-13 16:52:24 - [DOC] Método: GET
+2026-05-13 16:52:24 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:52:24 - [DOC] QueryString: idDoc=1
+2026-05-13 16:52:24 - [DOC] idDoc: 1
+2026-05-13 16:52:24 - [DOC] idAdjunto: 1
+2026-05-13 16:52:24 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 16:52:24 - [DOC] tamanioBytes: 262858
+2026-05-13 16:52:25 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 16:52:25 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 16:52:33 - === Inicio de solicitud ===
+2026-05-13 16:52:33 - Método: POST
+2026-05-13 16:52:33 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 16:52:33 - QueryString: idDoc=1
+2026-05-13 16:52:33 - Form: param_token=doc_1
+2026-05-13 16:52:33 - idDoc: 1
+2026-05-13 16:52:33 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:52:33 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 16:52:33 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 16:52:33 - Base64 generado (longitud): 720
+2026-05-13 16:52:33 - === Fin de solicitud (éxito) ===
+2026-05-13 16:52:33 - [DOC] === Inicio solicitud documento ===
+2026-05-13 16:52:33 - [DOC] Método: GET
+2026-05-13 16:52:33 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 16:52:33 - [DOC] QueryString: idDoc=1
+2026-05-13 16:52:33 - [DOC] idDoc: 1
+2026-05-13 16:52:33 - [DOC] idAdjunto: 1
+2026-05-13 16:52:33 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 16:52:34 - [DOC] tamanioBytes: 262858
+2026-05-13 16:52:34 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 16:52:34 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:10:29 - === Inicio de solicitud ===
+2026-05-13 17:10:29 - Método: POST
+2026-05-13 17:10:29 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:10:29 - QueryString: idDoc=1
+2026-05-13 17:10:29 - Form: param_token=doc_1
+2026-05-13 17:10:29 - idDoc: 1
+2026-05-13 17:10:29 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:10:29 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:10:29 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:10:29 - Base64 generado (longitud): 720
+2026-05-13 17:10:29 - === Fin de solicitud (éxito) ===
+2026-05-13 17:10:30 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:10:30 - [DOC] Método: GET
+2026-05-13 17:10:30 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:10:30 - [DOC] QueryString: idDoc=1
+2026-05-13 17:10:30 - [DOC] idDoc: 1
+2026-05-13 17:10:30 - [DOC] idAdjunto: 1
+2026-05-13 17:10:30 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 17:10:30 - [DOC] tamanioBytes: 262858
+2026-05-13 17:10:30 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 17:10:30 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:11:06 - === Inicio de solicitud ===
+2026-05-13 17:11:06 - Método: POST
+2026-05-13 17:11:06 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=4
+2026-05-13 17:11:06 - QueryString: idDoc=4
+2026-05-13 17:11:06 - Form: param_token=doc_4
+2026-05-13 17:11:06 - idDoc: 4
+2026-05-13 17:11:06 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:11:06 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4
+2026-05-13 17:11:06 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4"}
+2026-05-13 17:11:06 - Base64 generado (longitud): 720
+2026-05-13 17:11:06 - === Fin de solicitud (éxito) ===
+2026-05-13 17:11:08 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:11:08 - [DOC] Método: GET
+2026-05-13 17:11:08 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:11:08 - [DOC] QueryString: idDoc=4
+2026-05-13 17:11:08 - [DOC] idDoc: 4
+2026-05-13 17:11:08 - [DOC] idAdjunto: 3
+2026-05-13 17:11:08 - [DOC] nombreArchivo: 20260513170104_Ejercicios.pdf
+2026-05-13 17:11:08 - [DOC] tamanioBytes: 190517
+2026-05-13 17:11:08 - [DOC] Tamaño contenido leído: 190517 bytes
+2026-05-13 17:11:08 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:11:46 - === Inicio de solicitud ===
+2026-05-13 17:11:46 - Método: POST
+2026-05-13 17:11:46 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=4
+2026-05-13 17:11:46 - QueryString: idDoc=4
+2026-05-13 17:11:46 - Form: param_token=doc_4
+2026-05-13 17:11:46 - idDoc: 4
+2026-05-13 17:11:46 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:11:46 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4
+2026-05-13 17:11:46 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4"}
+2026-05-13 17:11:46 - Base64 generado (longitud): 720
+2026-05-13 17:11:46 - === Fin de solicitud (éxito) ===
+2026-05-13 17:11:47 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:11:47 - [DOC] Método: GET
+2026-05-13 17:11:47 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:11:47 - [DOC] QueryString: idDoc=4
+2026-05-13 17:11:47 - [DOC] idDoc: 4
+2026-05-13 17:11:47 - [DOC] idAdjunto: 3
+2026-05-13 17:11:47 - [DOC] nombreArchivo: 20260513170104_Ejercicios.pdf
+2026-05-13 17:11:47 - [DOC] tamanioBytes: 190517
+2026-05-13 17:11:47 - [DOC] Tamaño contenido leído: 190517 bytes
+2026-05-13 17:11:47 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:12:14 - === Inicio de solicitud ===
+2026-05-13 17:12:14 - Método: POST
+2026-05-13 17:12:14 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=4
+2026-05-13 17:12:14 - QueryString: idDoc=4
+2026-05-13 17:12:14 - Form: param_token=doc_4
+2026-05-13 17:12:14 - idDoc: 4
+2026-05-13 17:12:14 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:12:14 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4
+2026-05-13 17:12:14 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4"}
+2026-05-13 17:12:14 - Base64 generado (longitud): 720
+2026-05-13 17:12:14 - === Fin de solicitud (éxito) ===
+2026-05-13 17:12:14 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:12:14 - [DOC] Método: GET
+2026-05-13 17:12:14 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:12:14 - [DOC] QueryString: idDoc=4
+2026-05-13 17:12:14 - [DOC] idDoc: 4
+2026-05-13 17:12:14 - [DOC] idAdjunto: 3
+2026-05-13 17:12:14 - [DOC] nombreArchivo: 20260513170104_Ejercicios.pdf
+2026-05-13 17:12:14 - [DOC] tamanioBytes: 190517
+2026-05-13 17:12:14 - [DOC] Tamaño contenido leído: 190517 bytes
+2026-05-13 17:12:14 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:14:06 - === Inicio de solicitud ===
+2026-05-13 17:14:06 - Método: POST
+2026-05-13 17:14:06 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=4
+2026-05-13 17:14:06 - QueryString: idDoc=4
+2026-05-13 17:14:06 - Form: param_token=doc_4
+2026-05-13 17:14:06 - idDoc: 4
+2026-05-13 17:14:06 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:14:06 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4
+2026-05-13 17:14:06 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4"}
+2026-05-13 17:14:06 - Base64 generado (longitud): 720
+2026-05-13 17:14:06 - === Fin de solicitud (éxito) ===
+2026-05-13 17:14:06 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:14:06 - [DOC] Método: GET
+2026-05-13 17:14:06 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:14:06 - [DOC] QueryString: idDoc=4
+2026-05-13 17:14:06 - [DOC] idDoc: 4
+2026-05-13 17:14:06 - [DOC] idAdjunto: 3
+2026-05-13 17:14:06 - [DOC] nombreArchivo: 20260513170104_Ejercicios.pdf
+2026-05-13 17:14:06 - [DOC] tamanioBytes: 190517
+2026-05-13 17:14:06 - [DOC] Tamaño contenido leído: 190517 bytes
+2026-05-13 17:14:06 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:14:39 - === Inicio de solicitud ===
+2026-05-13 17:14:39 - Método: POST
+2026-05-13 17:14:39 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=4
+2026-05-13 17:14:39 - QueryString: idDoc=4
+2026-05-13 17:14:39 - Form: param_token=doc_4
+2026-05-13 17:14:39 - idDoc: 4
+2026-05-13 17:14:39 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:14:39 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4
+2026-05-13 17:14:39 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_4"}
+2026-05-13 17:14:39 - Base64 generado (longitud): 720
+2026-05-13 17:14:39 - === Fin de solicitud (éxito) ===
+2026-05-13 17:14:39 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:14:39 - [DOC] Método: GET
+2026-05-13 17:14:39 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=4
+2026-05-13 17:14:39 - [DOC] QueryString: idDoc=4
+2026-05-13 17:14:39 - [DOC] idDoc: 4
+2026-05-13 17:14:40 - [DOC] idAdjunto: 3
+2026-05-13 17:14:40 - [DOC] nombreArchivo: 20260513170104_Ejercicios.pdf
+2026-05-13 17:14:40 - [DOC] tamanioBytes: 190517
+2026-05-13 17:14:40 - [DOC] Tamaño contenido leído: 190517 bytes
+2026-05-13 17:14:40 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:15:48 - === Inicio de solicitud ===
+2026-05-13 17:15:48 - Método: GET
+2026-05-13 17:15:48 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:15:48 - QueryString: idDoc=1
+2026-05-13 17:15:48 - Form: 
+2026-05-13 17:15:48 - idDoc: 1
+2026-05-13 17:15:48 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:15:48 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:15:48 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:15:48 - Base64 generado (longitud): 720
+2026-05-13 17:15:48 - === Fin de solicitud (éxito) ===
+2026-05-13 17:17:01 - === Inicio de solicitud ===
+2026-05-13 17:17:01 - Método: POST
+2026-05-13 17:17:01 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:17:01 - QueryString: idDoc=1
+2026-05-13 17:17:01 - Form: param_token=doc_1
+2026-05-13 17:17:01 - idDoc: 1
+2026-05-13 17:17:01 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:17:01 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:17:01 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:17:01 - Base64 generado (longitud): 720
+2026-05-13 17:17:01 - === Fin de solicitud (éxito) ===
+2026-05-13 17:17:02 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:17:02 - [DOC] Método: GET
+2026-05-13 17:17:02 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:17:02 - [DOC] QueryString: idDoc=1
+2026-05-13 17:17:02 - [DOC] idDoc: 1
+2026-05-13 17:17:02 - [DOC] idAdjunto: 1
+2026-05-13 17:17:02 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 17:17:02 - [DOC] tamanioBytes: 262858
+2026-05-13 17:17:02 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 17:17:02 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:17:28 - === Inicio de solicitud ===
+2026-05-13 17:17:28 - Método: POST
+2026-05-13 17:17:28 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:17:28 - QueryString: idDoc=1
+2026-05-13 17:17:28 - Form: param_token=doc_1
+2026-05-13 17:17:28 - idDoc: 1
+2026-05-13 17:17:28 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:17:28 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:17:28 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:17:28 - Base64 generado (longitud): 720
+2026-05-13 17:17:28 - === Fin de solicitud (éxito) ===
+2026-05-13 17:17:28 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:17:28 - [DOC] Método: GET
+2026-05-13 17:17:28 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:17:28 - [DOC] QueryString: idDoc=1
+2026-05-13 17:17:28 - [DOC] idDoc: 1
+2026-05-13 17:17:28 - [DOC] idAdjunto: 1
+2026-05-13 17:17:28 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 17:17:28 - [DOC] tamanioBytes: 262858
+2026-05-13 17:17:28 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 17:17:28 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:18:22 - === Inicio de solicitud ===
+2026-05-13 17:18:22 - Método: POST
+2026-05-13 17:18:22 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:18:22 - QueryString: idDoc=1
+2026-05-13 17:18:22 - Form: param_token=doc_1
+2026-05-13 17:18:22 - idDoc: 1
+2026-05-13 17:18:22 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:18:22 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:18:22 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:18:22 - Base64 generado (longitud): 720
+2026-05-13 17:18:22 - === Fin de solicitud (éxito) ===
+2026-05-13 17:18:22 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:18:22 - [DOC] Método: GET
+2026-05-13 17:18:22 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:18:22 - [DOC] QueryString: idDoc=1
+2026-05-13 17:18:22 - [DOC] idDoc: 1
+2026-05-13 17:18:22 - [DOC] idAdjunto: 1
+2026-05-13 17:18:22 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 17:18:22 - [DOC] tamanioBytes: 262858
+2026-05-13 17:18:22 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 17:18:22 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-13 17:19:31 - === Inicio de solicitud ===
+2026-05-13 17:19:31 - Método: POST
+2026-05-13 17:19:31 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-13 17:19:31 - QueryString: idDoc=1
+2026-05-13 17:19:31 - Form: param_token=doc_1
+2026-05-13 17:19:31 - idDoc: 1
+2026-05-13 17:19:31 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:19:31 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-13 17:19:31 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-13 17:19:31 - Base64 generado (longitud): 720
+2026-05-13 17:19:31 - === Fin de solicitud (éxito) ===
+2026-05-13 17:19:33 - [DOC] === Inicio solicitud documento ===
+2026-05-13 17:19:33 - [DOC] Método: GET
+2026-05-13 17:19:33 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-13 17:19:33 - [DOC] QueryString: idDoc=1
+2026-05-13 17:19:33 - [DOC] idDoc: 1
+2026-05-13 17:19:33 - [DOC] idAdjunto: 1
+2026-05-13 17:19:33 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-13 17:19:33 - [DOC] tamanioBytes: 262858
+2026-05-13 17:19:33 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-13 17:19:33 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-14 22:14:58 - === Inicio de solicitud ===
+2026-05-14 22:14:58 - Método: POST
+2026-05-14 22:14:58 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-14 22:14:58 - QueryString: idDoc=1
+2026-05-14 22:14:58 - Form: param_token=doc_1
+2026-05-14 22:14:58 - idDoc: 1
+2026-05-14 22:14:58 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-14 22:14:58 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-14 22:14:58 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-14 22:14:58 - Base64 generado (longitud): 720
+2026-05-14 22:14:58 - === Fin de solicitud (éxito) ===
+2026-05-14 22:14:58 - [DOC] === Inicio solicitud documento ===
+2026-05-14 22:14:58 - [DOC] Método: GET
+2026-05-14 22:14:58 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-14 22:14:58 - [DOC] QueryString: idDoc=1
+2026-05-14 22:14:58 - [DOC] idDoc: 1
+2026-05-14 22:14:58 - [DOC] idAdjunto: 1
+2026-05-14 22:14:58 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-14 22:14:58 - [DOC] tamanioBytes: 262858
+2026-05-14 22:14:59 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-14 22:14:59 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-14 22:15:03 - === Inicio de solicitud ===
+2026-05-14 22:15:03 - Método: POST
+2026-05-14 22:15:03 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1
+2026-05-14 22:15:03 - QueryString: idDoc=1
+2026-05-14 22:15:03 - Form: param_token=doc_1
+2026-05-14 22:15:03 - idDoc: 1
+2026-05-14 22:15:03 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-14 22:15:03 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1
+2026-05-14 22:15:03 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1"}
+2026-05-14 22:15:03 - Base64 generado (longitud): 720
+2026-05-14 22:15:03 - === Fin de solicitud (éxito) ===
+2026-05-14 22:15:03 - [DOC] === Inicio solicitud documento ===
+2026-05-14 22:15:03 - [DOC] Método: GET
+2026-05-14 22:15:03 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1
+2026-05-14 22:15:03 - [DOC] QueryString: idDoc=1
+2026-05-14 22:15:03 - [DOC] idDoc: 1
+2026-05-14 22:15:03 - [DOC] idAdjunto: 1
+2026-05-14 22:15:03 - [DOC] nombreArchivo: 20260513090012_FD02_Informe Vision.pdf
+2026-05-14 22:15:03 - [DOC] tamanioBytes: 262858
+2026-05-14 22:15:03 - [DOC] Tamaño contenido leído: 262858 bytes
+2026-05-14 22:15:03 - [DOC] === Fin solicitud documento (éxito) ===

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba Firma Perú Simple</title>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var jqFirmaPeru = jQuery.noConflict(true);
+    </script>
+    <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; max-width: 900px; margin: 0 auto; }
+        button { padding: 15px 30px; font-size: 16px; background: #8b1a1a; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px; }
+        .info { background: #f0f0f0; padding: 20px; border-radius: 8px; margin: 20px 0; font-family: monospace; word-break: break-all; }
+        .select-row { margin: 15px 0; }
+        select { padding: 10px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; min-width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Prueba Firma Perú - Diferentes Valores</h1>
+    
+    <div class="info">
+        <p><strong>Paso 1:</strong> Selecciona un valor para el primer parámetro</p>
+        <p><strong>Paso 2:</strong> Haz clic en "Probar"</p>
+    </div>
+    
+    <div class="select-row">
+        <label>Primer parámetro (idIntegrador):</label>
+        <select id="selIdIntegrador">
+            <option value="48596">48596 (el que veníamos usando)</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="12345">12345</option>
+            <option value="-1">-1</option>
+        </select>
+    </div>
+    
+    <div class="select-row">
+        <label>idDoc:</label>
+        <select id="selIdDoc">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+    </div>
+    
+    <button onclick="iniciarPrueba()">Probar Firma Perú</button>
+    
+    <div id="resultado" class="info" style="display:none; margin-top:20px;"></div>
+
+    <script>
+        function signatureInit() {
+            console.log('signatureInit OK');
+            document.getElementById('resultado').style.display = 'block';
+            document.getElementById('resultado').innerHTML += 'signatureInit llamado<br>';
+        }
+        
+        function signatureOk() {
+            console.log('signatureOk OK');
+            document.getElementById('resultado').innerHTML += 'signatureOk llamado - ¡Éxito!<br>';
+            alert('¡Firma completada!');
+        }
+        
+        function signatureCancel() {
+            console.log('signatureCancel');
+            document.getElementById('resultado').innerHTML += 'signatureCancel llamado<br>';
+            alert('Firma cancelada');
+        }
+        
+        function iniciarPrueba() {
+            var idIntegrador = parseInt(document.getElementById('selIdIntegrador').value);
+            var idDoc = document.getElementById('selIdDoc').value;
+            
+            console.log('Iniciando prueba con idIntegrador=' + idIntegrador + ', idDoc=' + idDoc);
+            
+            var urlParams = 'http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=' + idDoc;
+            
+            var paramObj = {
+                param_url: urlParams,
+                param_token: 'prueba_' + idDoc + '_' + Date.now(),
+                document_extension: 'pdf'
+            };
+            
+            console.log('Parametros:', paramObj);
+            
+            var json = JSON.stringify(paramObj);
+            console.log('JSON:', json);
+            
+            var base64 = btoa(unescape(encodeURIComponent(json)));
+            console.log('Base64:', base64);
+            
+            document.getElementById('resultado').style.display = 'block';
+            document.getElementById('resultado').innerHTML = '<strong>Probando con idIntegrador=' + idIntegrador + '</strong><br>';
+            document.getElementById('resultado').innerHTML += 'URL: ' + urlParams + '<br>';
+            document.getElementById('resultado').innerHTML += 'Token: ' + paramObj.param_token + '<br>';
+            document.getElementById('resultado').innerHTML += 'JSON: ' + json + '<br><br>';
+            document.getElementById('resultado').innerHTML += 'Llamando a startSignature(' + idIntegrador + ', ...)<br>';
+            
+            try {
+                startSignature(idIntegrador, base64);
+                document.getElementById('resultado').innerHTML += 'startSignature llamado exitosamente!<br>';
+            } catch (e) {
+                console.error('Error:', e);
+                document.getElementById('resultado').innerHTML += 'ERROR: ' + e.message + '<br>';
+                alert('Error: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

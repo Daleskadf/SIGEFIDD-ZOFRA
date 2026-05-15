@@ -1360,5 +1360,49 @@ namespace ZofraTacna.Datos
         }
 
         #endregion
+
+        #region Métodos para Firma Perú
+
+        public bool ObtenerAdjuntoPrincipal(int idDocumento, out int idAdjunto, out string nombreArchivo, out byte[] contenidoPdf)
+        {
+            idAdjunto = 0;
+            nombreArchivo = null;
+            contenidoPdf = null;
+
+            using (var conn = new SqlConnection(_connFiles))
+            {
+                conn.Open();
+                string sql = @"SELECT TOP (1) IdAdjunto, NombreArchivo, ContenidoPDF
+                               FROM DocumentoAdjunto
+                               WHERE IdDocumento=@id
+                                 AND ISNULL(EsEliminado,0)=0
+                                 AND ISNULL(EsSuperado,0)=0
+                               ORDER BY IdAdjunto DESC";
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read()) return false;
+
+                        idAdjunto = (int)dr["IdAdjunto"];
+                        nombreArchivo = dr["NombreArchivo"].ToString();
+                        contenidoPdf = dr["ContenidoPDF"] != DBNull.Value ? (byte[])dr["ContenidoPDF"] : null;
+                        return contenidoPdf != null && contenidoPdf.Length > 0;
+                    }
+                }
+            }
+        }
+
+        public void ActualizarAdjuntoFirmado(int idDocumento, byte[] nuevoPdf, string nombreArchivo)
+        {
+            if (nuevoPdf == null || nuevoPdf.Length == 0) return;
+
+            ArchivarAdjuntosVigentes(idDocumento, "Sistema", "Documento firmado digitalmente con Firma Perú");
+            InsertarAdjuntoPDF(idDocumento, nuevoPdf, nombreArchivo, "Sistema");
+        }
+
+        #endregion
     }
 }

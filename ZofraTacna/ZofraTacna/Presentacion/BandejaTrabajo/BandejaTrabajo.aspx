@@ -246,27 +246,7 @@
 })();
 
 function lanzarFirmaPeru(idDoc) {
-    var btn = event && event.target ? event.target : null;
-    if (btn) { btn.disabled = true; btn.innerHTML = 'Abriendo Firma Per\u00fa...'; }
-
-    fetch('LanzarFirmaPeru.ashx', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        if (data.ok) {
-            alert('\u2705 ' + data.msg);
-        } else {
-            alert('\u26a0\ufe0f ' + data.msg);
-        }
-        if (btn) { btn.disabled = false; btn.innerHTML = 'Firmar Documento'; }
-    })
-    .catch(function(err) {
-        alert('\u274c Error de conexi\u00f3n al intentar abrir Firma Per\u00fa.');
-        if (btn) { btn.disabled = false; btn.innerHTML = 'Firmar Documento'; }
-    });
+    window.location.href = 'EmitirFirma.aspx?id=' + idDoc;
 }
 </script>
 </form>

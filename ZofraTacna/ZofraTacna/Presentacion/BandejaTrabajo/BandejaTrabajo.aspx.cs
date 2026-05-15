@@ -312,13 +312,16 @@ namespace ZofraTacna.Presentacion
 
             string rolActual = Session["RolCodigo"] != null ? Session["RolCodigo"].ToString() : "";
             
-            // Si es revisor (REV) y el documento está en PEN o FPAR, mostrar botones de firma
-            if (rolActual == "REV" && (estadoCodigo == "PEN" || estadoCodigo == "FPAR"))
+            // Si es revisor (REV) o firmante (FIR) y el documento está en PEN o FPAR, mostrar botones de firma
+            if ((rolActual == "REV" || rolActual == "FIR") && (estadoCodigo == "PEN" || estadoCodigo == "FPAR"))
             {
                 string verBtn = string.Format(
                     "<button type='button' class='btn-detalle' onclick=\"window.location.href='VerDocumento.aspx?id={0}'\">{1}Ver</button>",
                     idDoc, svgOjo);
-                string firmarBtn = puedeFirmarDocumento
+                
+                bool puedeFirmar = (rolActual == "FIR") ? PuedeFirmarSecuencial(idDoc, Session["LoginUsuario"].ToString(), estadoCodigo) : puedeFirmarDocumento;
+                
+                string firmarBtn = puedeFirmar
                     ? string.Format("<button type='button' class='btn-firma' onclick=\"lanzarFirmaPeru({0})\">{1}Firmar Documento</button>", idDoc, svgEdit)
                     : string.Format("<button type='button' class='btn-firma' disabled>{0}Firmar Documento</button>", svgEdit);
                 return verBtn + firmarBtn;
