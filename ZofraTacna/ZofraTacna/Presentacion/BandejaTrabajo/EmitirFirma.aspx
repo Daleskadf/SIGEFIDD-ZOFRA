@@ -31,6 +31,19 @@
         #firma-peru-modal p{margin:0 0 20px 0;color:#666;}
         .spinner{width:40px;height:40px;border:4px solid #e8eaf0;border-top:4px solid #8b1a1a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px auto;}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .modal-opciones-firma { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9000; display:flex; align-items:center; justify-content:center; display:none; }
+        .modal-opciones-content { background:white; padding:25px; border-radius:12px; width:400px; max-width:90%; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
+        .modal-opciones-content h3 { margin-top:0; color:#1a2a4a; font-size:18px; border-bottom:1px solid #eef0f8; padding-bottom:10px; margin-bottom:15px; }
+        .form-group { margin-bottom:15px; }
+        .form-group label { display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:6px; }
+        .form-select { width:100%; padding:10px; font-size:14px; border:1px solid #ccc; border-radius:6px; background:#fff; }
+        .panel-opcion { display:none; margin-top:15px; padding:15px; background:#f9fafc; border-radius:8px; border:1px solid #eef0f8; }
+        .panel-opcion.active { display:block; }
+        .btn-accion { display:inline-block; background:linear-gradient(135deg,#1a2a4a,#2a3f6f); color:#fff; border:none; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; width:100%; text-align:center; box-shadow:0 4px 10px rgba(26,42,74,.2); }
+        .btn-accion:hover { background:linear-gradient(135deg,#2a3f6f,#1a2a4a); }
+        .btn-secundario { display:inline-block; background:#e8ecf7; color:#1a2a4a; border:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; margin-top:10px; }
+        .btn-cerrar-modal { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#999; }
+        .mensaje-error { color:#c0392b; font-size:12px; margin-top:10px; font-weight:600; }
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -53,7 +66,7 @@
                     <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <div class="pdf-frame-wrap">
                         <div class="pdf-float-actions">
-                            <button type="button" id="btnLanzarFirma" class="btn-firma" onclick="iniciarFirmaDigital()">&#9998; Firmar con Firma Per&uacute;</button>
+                            <button type="button" id="btnLanzarFirma" class="btn-firma" onclick="abrirModalOpcionesFirma()">&#9998; Firmar con Firma Per&uacute;</button>
                         </div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
@@ -64,6 +77,37 @@
     </div>
 </div>
 <div id="addComponent"></div>
+<div id="modalOpcionesFirma" class="modal-opciones-firma">
+    <div class="modal-opciones-content">
+        <button type="button" class="btn-cerrar-modal" onclick="cerrarModalOpcionesFirma()">&times;</button>
+        <h3>Opciones de Firma</h3>
+        <div class="form-group">
+            <label>Seleccione el método de firma:</label>
+            <select id="ddlMetodoFirma" class="form-select" onchange="cambiarMetodoFirma()">
+                <option value="dnie1">DNIe 1</option>
+                <option value="dnie2">DNIe 2</option>
+                <option value="usb">Token USB</option>
+            </select>
+        </div>
+        
+        <div id="panelDnie" class="panel-opcion active">
+            <p style="font-size:13px; color:#666; margin-bottom:15px;">Se abrirá el cliente de Firma Perú para proceder con la firma usando su DNI electrónico.</p>
+            <button type="button" class="btn-accion" onclick="ejecutarFirmaDnie()">Continuar con Firma Perú</button>
+        </div>
+        
+        <div id="panelUsb" class="panel-opcion">
+            <p style="font-size:13px; color:#666; margin-bottom:10px;">Seleccione su certificado local (asegúrese de tener el token USB conectado):</p>
+            <div style="margin-bottom:10px;">
+                <asp:DropDownList ID="ddlCertificados" runat="server" CssClass="form-select" />
+            </div>
+            <asp:Button ID="btnRefrescar" runat="server" Text="Refrescar Certificados" CssClass="btn-secundario" OnClick="btnRefrescar_Click" />
+            <div style="margin-top:15px;">
+                <asp:Button ID="btnFirmarUsb" runat="server" Text="Firmar con Token USB" CssClass="btn-accion" OnClick="btnFirmarUsb_Click" />
+            </div>
+            <asp:Label ID="lblErrorUsb" runat="server" CssClass="mensaje-error" />
+        </div>
+    </div>
+</div>
 <div id="firma-peru-overlay">
     <div id="firma-peru-modal">
         <div class="spinner"></div>
@@ -121,6 +165,44 @@ function iniciarFirmaDigital() {
         alert('Error: ' + e.message);
     }
 }
+function abrirModalOpcionesFirma() {
+    document.getElementById('modalOpcionesFirma').style.display = 'flex';
+    cambiarMetodoFirma();
+}
+
+function cerrarModalOpcionesFirma() {
+    document.getElementById('modalOpcionesFirma').style.display = 'none';
+}
+
+function cambiarMetodoFirma() {
+    var ddl = document.getElementById('ddlMetodoFirma');
+    var val = ddl.value;
+    document.getElementById('panelDnie').classList.remove('active');
+    document.getElementById('panelUsb').classList.remove('active');
+    
+    if(val === 'usb') {
+        document.getElementById('panelUsb').classList.add('active');
+    } else {
+        document.getElementById('panelDnie').classList.add('active');
+    }
+}
+
+function ejecutarFirmaDnie() {
+    cerrarModalOpcionesFirma();
+    iniciarFirmaDigital();
+}
+
+// Si hay error desde servidor y necesitamos mostrar el modal (opcional, para UX)
+function mostrarModalPorError() {
+    var errorLabel = document.getElementById('<%= lblErrorUsb.ClientID %>');
+    if(errorLabel && errorLabel.innerText.trim() !== "") {
+        document.getElementById('ddlMetodoFirma').value = 'usb';
+        abrirModalOpcionesFirma();
+    }
+}
+window.onload = function() {
+    mostrarModalPorError();
+};
 </script>
 </body>
 </html>

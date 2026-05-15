@@ -3,9 +3,15 @@ using System.Collections.Concurrent;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.security;
+using Org.BouncyCastle.Security;
 using ZofraTacna.Datos;
 using ZofraTacna.Models;
 
@@ -48,6 +54,7 @@ namespace ZofraTacna.Presentacion
                 string token = idDoc + "_" + DateTime.Now.Ticks;
                 FirmaPeruTokenStore.StoreToken(token, login);
                 TokenActual = token;
+                CargarCertificados();
             }
 
             CargarVista(idDoc, rol);
@@ -255,6 +262,168 @@ namespace ZofraTacna.Presentacion
             Session.Clear();
             Session.Abandon();
             Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
+        }
+
+        protected void btnRefrescar_Click(object sender, EventArgs e)
+        {
+            CargarCertificados();
+            lblErrorUsb.Text = "";
+            ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModal", "document.getElementById('modalOpcionesFirma').style.display='flex'; document.getElementById('panelDnie').classList.remove('active'); document.getElementById('panelUsb').classList.add('active'); document.getElementById('ddlMetodoFirma').value='usb';", true);
+        }
+
+        private void CargarCertificados()
+        {
+            ddlCertificados.Items.Clear();
+            ddlCertificados.Items.Add(new ListItem("-- Seleccione un certificado --", ""));
+
+            try
+            {
+                X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly);
+
+                int count = 0;
+                foreach (X509Certificate2 cert in store.Certificates)
+                {
+                    if (!cert.HasPrivateKey) continue;
+
+                    string titular = cert.GetNameInfo(X509NameType.SimpleName, false);
+                    string emisor  = cert.GetNameInfo(X509NameType.SimpleName, true);
+                    string vence   = cert.NotAfter.ToString("dd/MM/yyyy");
+                    string label   = $"{titular} — {emisor} — vence {vence}";
+
+                    ddlCertificados.Items.Add(new ListItem(label, cert.Thumbprint));
+                    count++;
+                }
+
+                store.Close();
+                lblErrorUsb.Text = count == 0 ? "No se encontraron certificados con clave privada." : "";
+            }
+            catch (Exception ex)
+            {
+                lblErrorUsb.Text = "Error al cargar certificados: " + ex.Message;
+            }
+        }
+
+        protected void btnFirmarUsb_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int idDoc = IdDocumentoActual;
+                if (idDoc <= 0) throw new Exception("ID de documento inválido.");
+
+                string login = Session["LoginUsuario"] != null ? Session["LoginUsuario"].ToString() : "";
+                if (string.IsNullOrWhiteSpace(login)) throw new Exception("Sesión expirada.");
+
+                if (string.IsNullOrWhiteSpace(ddlCertificados.SelectedValue))
+                    throw new Exception("Debe seleccionar un certificado de la lista.");
+
+                X509Certificate2 selectedCert = ObtenerCertificado(ddlCertificados.SelectedValue);
+                if (selectedCert == null)
+                    throw new Exception("No se pudo obtener el certificado seleccionado.");
+
+                // Validar participante firmante
+                string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+                int idParticipante = 0;
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    string sql = @"SELECT TOP(1) dp.IdParticipante 
+                                   FROM DocumentoParticipante dp
+                                   INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                                   WHERE dp.IdDocumento = @idDoc
+                                     AND dp.LoginUsuario = @login
+                                     AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
+                                   ORDER BY dp.OrdenSecuencial ASC";
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@idDoc", idDoc);
+                        cmd.Parameters.AddWithValue("@login", login);
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                            idParticipante = Convert.ToInt32(result);
+                    }
+                }
+
+                if (idParticipante <= 0)
+                    throw new Exception("No es un participante firmante válido.");
+
+                // Obtener PDF
+                var repo = new RepositorioDocumentos();
+                int idAdjunto; string nombreArchivo; int tamBytes;
+                if (!repo.IntentarAdjuntoPrincipal(idDoc, out idAdjunto, out nombreArchivo, out tamBytes))
+                    throw new Exception("El documento no tiene un archivo PDF adjunto válido.");
+
+                byte[] inputBytes = repo.ObtenerBytesAdjunto(idAdjunto);
+                if (inputBytes == null || inputBytes.Length == 0)
+                    throw new Exception("No se pudo leer el contenido del PDF.");
+
+                // Firmar PDF
+                string titular = selectedCert.GetNameInfo(X509NameType.SimpleName, false);
+                byte[] outputBytes = null;
+
+                using (PdfReader reader = new PdfReader(inputBytes))
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0');
+                    PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                    appearance.Reason = "Firma Oficial ZOFRATACNA";
+                    appearance.Location = "Tacna, Perú";
+                    appearance.SignatureCreator = titular;
+                    appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(36, 36, 270, 100), 1, "Firma_Digital_" + DateTime.Now.Ticks);
+
+                    IExternalSignature externalSignature = new X509Certificate2Signature(selectedCert, "SHA-256");
+                    MakeSignature.SignDetached(appearance, externalSignature,
+                        new Org.BouncyCastle.X509.X509Certificate[] { DotNetUtilities.FromX509Certificate(selectedCert) },
+                        null, null, null, 0, CryptoStandard.CMS);
+
+                    stamper.Close();
+                    outputBytes = outputStream.ToArray();
+                }
+
+                if (outputBytes == null || outputBytes.Length == 0)
+                    throw new Exception("Error al generar el documento firmado.");
+
+                // Guardar PDF actualizado
+                repo.ReemplazarPdfConHistorial(idDoc, outputBytes, nombreArchivo, login, "Documento firmado con Token USB por " + titular);
+
+                // Registrar Firma en el Flujo
+                var modulo = new ZofraTacna.LogicaNegocio.ModuloGestionDocumental();
+                string mensajeFirma;
+                string hashFirma = "USB_" + selectedCert.Thumbprint;
+                bool ok = modulo.RegistrarFirmaConEstado(idDoc, idParticipante, login, hashFirma, out mensajeFirma);
+
+                if (ok)
+                {
+                    Response.Redirect("BandejaTrabajo.aspx");
+                }
+                else
+                {
+                    throw new Exception("El archivo se firmó, pero hubo un problema al actualizar el estado: " + mensajeFirma);
+                }
+            }
+            catch (Exception ex)
+            {
+                lblErrorUsb.Text = ex.Message;
+                // Reabrir modal en caso de error usando JS inyectado
+                ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalError", "document.getElementById('modalOpcionesFirma').style.display='flex'; document.getElementById('panelDnie').classList.remove('active'); document.getElementById('panelUsb').classList.add('active'); document.getElementById('ddlMetodoFirma').value='usb';", true);
+            }
+        }
+
+        private X509Certificate2 ObtenerCertificado(string thumbprint)
+        {
+            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly);
+
+            foreach (X509Certificate2 cert in store.Certificates)
+            {
+                if (cert.Thumbprint.Equals(thumbprint, StringComparison.OrdinalIgnoreCase))
+                {
+                    store.Close();
+                    return cert;
+                }
+            }
+            store.Close();
+            return null;
         }
     }
 }
