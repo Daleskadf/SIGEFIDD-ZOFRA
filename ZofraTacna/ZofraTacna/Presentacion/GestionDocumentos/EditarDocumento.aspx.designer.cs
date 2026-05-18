@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// <generado autom�ticamente>
-//     Este c�digo fue generado por una herramienta.
+// <generado automáticamente>
+//     Este código fue generado por una herramienta.
 //
-//     Los cambios en este archivo podr�an causar un comportamiento incorrecto y se perder�n si
-//     se vuelve a generar el c�digo. 
-// </generado autom�ticamente>
+//     Los cambios en este archivo podrían causar un comportamiento incorrecto y se perderán si
+//     se vuelve a generar el código. 
+// </generado automáticamente>
 //------------------------------------------------------------------------------
 
 namespace ZofraTacna.Presentacion
@@ -18,8 +18,8 @@ namespace ZofraTacna.Presentacion
         /// Control form1.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
@@ -27,8 +27,8 @@ namespace ZofraTacna.Presentacion
         /// Control litSidebarNav.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSidebarNav;
 
@@ -36,8 +36,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnCerrarSesion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
 
@@ -45,8 +45,8 @@ namespace ZofraTacna.Presentacion
         /// Control litAvatar.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litAvatar;
 
@@ -54,8 +54,8 @@ namespace ZofraTacna.Presentacion
         /// Control litNombre.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litNombre;
 
@@ -63,29 +63,53 @@ namespace ZofraTacna.Presentacion
         /// Control litRol.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litRol;
 
         /// <summary>
-        /// Control lblMensaje.
+        /// Control divContentArea.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMensaje;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divContentArea;
 
-        /// <summary>C�digo completo del documento (mismo criterio que CargarDocumento).</summary>
+        /// <summary>
+        /// Control btnCompararDocumento.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
+
+        /// <summary>
+        /// Control btnCerrarComparacion.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
+
+        /// <summary>
+        /// Control txtCodigoDocumentoCompleto.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCodigoDocumentoCompleto;
 
         /// <summary>
         /// Control txtAsunto.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAsunto;
 
@@ -93,8 +117,8 @@ namespace ZofraTacna.Presentacion
         /// Control txtDescripcion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDescripcion;
 
@@ -102,8 +126,8 @@ namespace ZofraTacna.Presentacion
         /// Control ddlCategoria.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlCategoria;
 
@@ -111,8 +135,8 @@ namespace ZofraTacna.Presentacion
         /// Control ddlPrioridad.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPrioridad;
 
@@ -120,8 +144,8 @@ namespace ZofraTacna.Presentacion
         /// Control txtPlazoRevision.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPlazoRevision;
 
@@ -129,8 +153,8 @@ namespace ZofraTacna.Presentacion
         /// Control txtPlazoFirma.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPlazoFirma;
 
@@ -138,8 +162,8 @@ namespace ZofraTacna.Presentacion
         /// Control litObservaciones.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litObservaciones;
 
@@ -147,51 +171,99 @@ namespace ZofraTacna.Presentacion
         /// Control filePDF.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload filePDF;
+
+        /// <summary>
+        /// Control lblMensaje.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMensaje;
 
         /// <summary>
         /// Control btnEnviarCorreccion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom�ticamente.
-        /// Para modificarlo, mueva la declaraci�n del campo del archivo del dise�ador al archivo de c�digo subyacente.
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnEnviarCorreccion;
 
-        /// <summary>Content area div (runat=server for class toggling).</summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divContentArea;
-
-        /// <summary>Botón para abrir la comparación de versiones.</summary>
-        protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
-
-        /// <summary>Botón para cerrar la comparación de versiones.</summary>
-        protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
-
-        /// <summary>Panel contenedor de la sección de comparación.</summary>
+        /// <summary>
+        /// Control pnlComparacion.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlComparacion;
 
-        /// <summary>Panel grid de comparación de PDFs.</summary>
+        /// <summary>
+        /// Control pnlVistaPdfComparar.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlVistaPdfComparar;
 
-        /// <summary>Dropdown de versiones - panel izquierdo.</summary>
+        /// <summary>
+        /// Control ddlPdfCompareIzq.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareIzq;
 
-        /// <summary>Link nueva pestaña - panel izquierdo.</summary>
+        /// <summary>
+        /// Control lnkPdfIzqNuevaPestana.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink lnkPdfIzqNuevaPestana;
 
-        /// <summary>Iframe PDF panel izquierdo.</summary>
+        /// <summary>
+        /// Control ifrPdfAnterior.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfAnterior;
 
-        /// <summary>Dropdown de versiones - panel derecho.</summary>
+        /// <summary>
+        /// Control ddlPdfCompareDer.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareDer;
 
-        /// <summary>Link nueva pestaña - panel derecho.</summary>
+        /// <summary>
+        /// Control lnkPdfDerNuevaPestana.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink lnkPdfDerNuevaPestana;
 
-        /// <summary>Iframe PDF panel derecho.</summary>
+        /// <summary>
+        /// Control ifrPdfActualCompare.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfActualCompare;
     }
 }

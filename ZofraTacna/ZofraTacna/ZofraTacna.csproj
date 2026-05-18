@@ -151,6 +151,9 @@
     <Compile Include="Presentacion\BandejaTrabajo\ServirPdf.ashx.cs">
       <DependentUpon>ServirPdf.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\ObservacionMarcador.ashx.cs">
+      <DependentUpon>ObservacionMarcador.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx.cs">
       <DependentUpon>LanzarFirmaPeru.ashx</DependentUpon>
     </Compile>
@@ -283,6 +286,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\ObservacionMarcador.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\FirmaPeruParametros.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\FirmaPeruSubir.ashx" />
@@ -290,7 +294,9 @@
     <Content Include="Presentacion\Notificaciones.ashx" />
     <Content Include="Presentacion\BloqueoFlujo.ashx" />
     <Content Include="Content\sigefidd-notificaciones.css" />
+    <Content Include="Content\pdf-observaciones.css" />
     <Content Include="Scripts\sigefidd-notificaciones.js" />
+    <Content Include="Scripts\pdf-observaciones-visor.js" />
     <Content Include="Scripts\gestionarParticipantesAsignacion.js" />
     <Content Include="Presentacion\BandejaTrabajo\EmitirRevision.aspx">
       <SubType>ASPXCodeBehind</SubType>

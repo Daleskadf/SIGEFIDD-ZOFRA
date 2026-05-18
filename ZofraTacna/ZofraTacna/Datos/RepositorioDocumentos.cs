@@ -1604,5 +1604,269 @@ namespace ZofraTacna.Datos
         }
 
         #endregion
+
+        #region Marcadores PDF (observaciones ancladas)
+
+        public bool ExisteTablaDocumentoObservacionMarcador()
+        {
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionMarcador'", conn))
+                {
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value;
+                }
+            }
+        }
+
+        public List<ObservacionMarcadorItem> ListarMarcadoresObservacion(
+            int idDocumento, string loginLector, bool incluirBorradoresPropios)
+        {
+            var lista = new List<ObservacionMarcadorItem>();
+            if (!ExisteTablaDocumentoObservacionMarcador())
+                return lista;
+
+            string filtro = incluirBorradoresPropios && !string.IsNullOrWhiteSpace(loginLector)
+                ? " AND (m.EsBorrador = 0 OR (m.EsBorrador = 1 AND m.LoginUsuario = @login))"
+                : " AND m.EsBorrador = 0";
+
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"SELECT m.IdMarcador, m.IdDocumento, m.LoginUsuario, m.TipoMarcador, m.Pagina,
+                                      m.PosX, m.PosY, m.Ancho, m.Alto, m.TextoSeleccionado, m.Comentario,
+                                      m.EsBorrador, m.FechaCreacion
+                               FROM dbo.DocumentoObservacionMarcador m
+                               WHERE m.IdDocumento = @id" + filtro + @"
+                               ORDER BY m.Pagina, m.FechaCreacion, m.IdMarcador";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    if (incluirBorradoresPropios && !string.IsNullOrWhiteSpace(loginLector))
+                        cmd.Parameters.AddWithValue("@login", loginLector);
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                            lista.Add(MapearMarcador(dr));
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public int GuardarMarcadorObservacion(ObservacionMarcadorItem item, out string mensaje)
+        {
+            mensaje = "";
+            if (!ExisteTablaDocumentoObservacionMarcador())
+            {
+                mensaje = "La tabla de marcadores no existe. Ejecute Script/DocumentoObservacionMarcador.sql.";
+                return 0;
+            }
+            if (item == null || item.IdDocumento <= 0)
+            {
+                mensaje = "Documento invalido.";
+                return 0;
+            }
+            if (string.IsNullOrWhiteSpace(item.Comentario))
+            {
+                mensaje = "El comentario es obligatorio.";
+                return 0;
+            }
+            if (item.Pagina < 1)
+            {
+                mensaje = "Pagina invalida.";
+                return 0;
+            }
+
+            string tipo = (item.TipoMarcador ?? "pin").Trim().ToLowerInvariant();
+            if (tipo != "pin" && tipo != "highlight")
+                tipo = "pin";
+
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                if (item.IdMarcador > 0)
+                {
+                    string sqlUpd = @"UPDATE dbo.DocumentoObservacionMarcador
+                                      SET TipoMarcador=@tipo, Pagina=@pag, PosX=@x, PosY=@y,
+                                          Ancho=@an, Alto=@al, TextoSeleccionado=@txt, Comentario=@com
+                                      WHERE IdMarcador=@id AND IdDocumento=@idDoc AND LoginUsuario=@login AND EsBorrador=1";
+                    using (var cmd = new SqlCommand(sqlUpd, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@tipo", tipo);
+                        cmd.Parameters.AddWithValue("@pag", item.Pagina);
+                        cmd.Parameters.AddWithValue("@x", item.PosX);
+                        cmd.Parameters.AddWithValue("@y", item.PosY);
+                        cmd.Parameters.AddWithValue("@an", (object)item.Ancho ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@al", (object)item.Alto ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@txt", (object)(item.TextoSeleccionado ?? "") ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@com", item.Comentario.Trim());
+                        cmd.Parameters.AddWithValue("@id", item.IdMarcador);
+                        cmd.Parameters.AddWithValue("@idDoc", item.IdDocumento);
+                        cmd.Parameters.AddWithValue("@login", item.LoginUsuario ?? "");
+                        if (cmd.ExecuteNonQuery() > 0)
+                            return item.IdMarcador;
+                    }
+                    mensaje = "No se pudo actualizar el marcador.";
+                    return 0;
+                }
+
+                string sqlIns = @"INSERT INTO dbo.DocumentoObservacionMarcador
+                    (IdDocumento, LoginUsuario, TipoMarcador, Pagina, PosX, PosY, Ancho, Alto, TextoSeleccionado, Comentario, EsBorrador)
+                    VALUES (@idDoc, @login, @tipo, @pag, @x, @y, @an, @al, @txt, @com, 1);
+                    SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                using (var cmd = new SqlCommand(sqlIns, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idDoc", item.IdDocumento);
+                    cmd.Parameters.AddWithValue("@login", item.LoginUsuario ?? "");
+                    cmd.Parameters.AddWithValue("@tipo", tipo);
+                    cmd.Parameters.AddWithValue("@pag", item.Pagina);
+                    cmd.Parameters.AddWithValue("@x", item.PosX);
+                    cmd.Parameters.AddWithValue("@y", item.PosY);
+                    cmd.Parameters.AddWithValue("@an", (object)item.Ancho ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@al", (object)item.Alto ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@txt", (object)(item.TextoSeleccionado ?? "") ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@com", item.Comentario.Trim());
+                    object o = cmd.ExecuteScalar();
+                    if (o != null && o != DBNull.Value)
+                        return Convert.ToInt32(o);
+                }
+            }
+            mensaje = "No se pudo guardar el marcador.";
+            return 0;
+        }
+
+        public bool EliminarMarcadorBorrador(int idMarcador, int idDocumento, string loginUsuario, out string mensaje)
+        {
+            mensaje = "";
+            if (!ExisteTablaDocumentoObservacionMarcador())
+            {
+                mensaje = "Tabla de marcadores no disponible.";
+                return false;
+            }
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                string sql = @"DELETE FROM dbo.DocumentoObservacionMarcador
+                               WHERE IdMarcador=@id AND IdDocumento=@idDoc AND LoginUsuario=@login AND EsBorrador=1";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idMarcador);
+                    cmd.Parameters.AddWithValue("@idDoc", idDocumento);
+                    cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
+                    if (cmd.ExecuteNonQuery() > 0)
+                        return true;
+                }
+            }
+            mensaje = "Marcador no encontrado o ya fue enviado.";
+            return false;
+        }
+
+        public int ContarMarcadoresBorrador(int idDocumento, string loginUsuario)
+        {
+            if (!ExisteTablaDocumentoObservacionMarcador())
+                return 0;
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           @"SELECT COUNT(*) FROM dbo.DocumentoObservacionMarcador
+                             WHERE IdDocumento=@id AND LoginUsuario=@login AND EsBorrador=1", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value ? Convert.ToInt32(o) : 0;
+                }
+            }
+        }
+
+        public void PublicarMarcadoresBorrador(int idDocumento, string loginUsuario)
+        {
+            if (!ExisteTablaDocumentoObservacionMarcador())
+                return;
+            using (var conn = new SqlConnection(_connDoc))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                           @"UPDATE dbo.DocumentoObservacionMarcador SET EsBorrador=0
+                             WHERE IdDocumento=@id AND LoginUsuario=@login AND EsBorrador=1", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idDocumento);
+                    cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Elimina todos los marcadores de observación (borradores y publicados) de un documento.
+        /// Se invoca cuando el registrador envía corrección y levanta las observaciones.
+        /// </summary>
+        public void EliminarMarcadoresObservacionDocumento(SqlConnection conn, SqlTransaction tx, int idDocumento)
+        {
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+            using (var cmdCheck = new SqlCommand(
+                       @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+                         WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionMarcador'", conn, tx))
+            {
+                object exists = cmdCheck.ExecuteScalar();
+                if (exists == null || exists == DBNull.Value)
+                    return;
+            }
+
+            string sql = @"DELETE FROM dbo.DocumentoObservacionMarcador
+                           WHERE IdDocumento = @id";
+            using (var cmd = new SqlCommand(sql, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@id", idDocumento);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public string ConstruirResumenMarcadoresPublicados(int idDocumento, string loginUsuario)
+        {
+            var marcadores = ListarMarcadoresObservacion(idDocumento, loginUsuario, false);
+            if (marcadores == null || marcadores.Count == 0)
+                return "";
+
+            var sb = new System.Text.StringBuilder();
+            int n = 1;
+            foreach (ObservacionMarcadorItem m in marcadores)
+            {
+                if (!string.Equals(m.LoginUsuario, loginUsuario, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (sb.Length > 0) sb.Append("\n");
+                sb.Append("[Marcador ").Append(n).Append(" - Pag. ").Append(m.Pagina).Append("] ");
+                sb.Append(m.Comentario ?? "");
+                n++;
+            }
+            return sb.ToString();
+        }
+
+        private static ObservacionMarcadorItem MapearMarcador(SqlDataReader dr)
+        {
+            return new ObservacionMarcadorItem
+            {
+                IdMarcador = Convert.ToInt32(dr["IdMarcador"]),
+                IdDocumento = Convert.ToInt32(dr["IdDocumento"]),
+                LoginUsuario = dr["LoginUsuario"].ToString(),
+                TipoMarcador = dr["TipoMarcador"].ToString(),
+                Pagina = Convert.ToInt32(dr["Pagina"]),
+                PosX = Convert.ToDouble(dr["PosX"]),
+                PosY = Convert.ToDouble(dr["PosY"]),
+                Ancho = dr["Ancho"] != DBNull.Value ? (double?)Convert.ToDouble(dr["Ancho"]) : null,
+                Alto = dr["Alto"] != DBNull.Value ? (double?)Convert.ToDouble(dr["Alto"]) : null,
+                TextoSeleccionado = dr["TextoSeleccionado"] != DBNull.Value ? dr["TextoSeleccionado"].ToString() : null,
+                Comentario = dr["Comentario"] != DBNull.Value ? dr["Comentario"].ToString() : "",
+                EsBorrador = dr["EsBorrador"] != DBNull.Value && Convert.ToBoolean(dr["EsBorrador"]),
+                FechaCreacion = dr["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(dr["FechaCreacion"]) : DateTime.Now
+            };
+        }
+
+        #endregion
     }
 }

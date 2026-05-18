@@ -7,7 +7,7 @@ namespace ZofraTacna.Datos
     public class RepositorioBloqueoFlujo
     {
         private readonly string _conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
-        private const int MinutosExpiracion = 20;
+        private const int MinutosExpiracion = 2;
 
         public bool ExisteBloqueoActivo(int idDocumento, string tipoBloqueo, string tokenIgnorar)
         {
@@ -115,7 +115,7 @@ namespace ZofraTacna.Datos
             string sql = @"UPDATE DocumentoBloqueoEdicion
                            SET Activo = 0
                            WHERE Activo = 1
-                             AND FechaUltimaActividad < DATEADD(MINUTE, -20, GETDATE())";
+                             AND FechaUltimaActividad < DATEADD(MINUTE, -" + MinutosExpiracion + @", GETDATE())";
             using (var cmd = new SqlCommand(sql, cn))
                 cmd.ExecuteNonQuery();
         }

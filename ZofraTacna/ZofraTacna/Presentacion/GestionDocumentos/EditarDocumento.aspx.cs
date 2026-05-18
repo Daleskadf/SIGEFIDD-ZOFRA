@@ -83,6 +83,12 @@ namespace ZofraTacna.Presentacion
                 ModoBloqueado = false;
                 MensajeBloqueo = "";
 
+                // Al entrar el registrador, liberar bloqueos de revisores residuales
+                // para evitar conflictos con sesiones abandonadas
+                int idDocLiberar;
+                if (int.TryParse(Request.QueryString["id"], out idDocLiberar) && idDocLiberar > 0)
+                    _repoBloqueo.LiberarBloqueo(idDocLiberar, "REV_EDIT", "");
+
                 CargarDatosUsuario();
                 CargarCombos();
                 CargarDocumento();
@@ -288,8 +294,8 @@ namespace ZofraTacna.Presentacion
 
             lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
             lnkPdfDerNuevaPestana.NavigateUrl = urlDer;
-            ifrPdfAnterior.Attributes["src"] = urlIzq;
-            ifrPdfActualCompare.Attributes["src"] = urlDer;
+                ifrPdfAnterior.Attributes["src"] = urlIzq;
+                ifrPdfActualCompare.Attributes["src"] = urlDer;
         }
 
         protected void btnCompararDocumento_Click(object sender, EventArgs e)
@@ -522,6 +528,7 @@ namespace ZofraTacna.Presentacion
                                                               AND mt.Codigo = 'REV'";
                             string loginUsuario = Session["LoginUsuario"].ToString();
                             new RepositorioDocumentos().ArchivarObservacionesRevisorAntesDeLimpiar(cn, transaction, idDocumento, loginUsuario);
+                            new RepositorioDocumentos().EliminarMarcadoresObservacionDocumento(cn, transaction, idDocumento);
                             using (var cmd = new SqlCommand(sqlLimpiarRevisiones, cn, transaction))
                             {
                                 cmd.Parameters.AddWithValue("@id", idDocumento);

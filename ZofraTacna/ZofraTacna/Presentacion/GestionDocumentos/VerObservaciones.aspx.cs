@@ -24,6 +24,18 @@ namespace ZofraTacna.Presentacion
             set { ViewState["MensajePopupBloqueo"] = value; }
         }
 
+        protected bool UsarVisorMarcadoresPdf
+        {
+            get { return ViewState["UsarVisorMarcadoresPdf"] != null && (bool)ViewState["UsarVisorMarcadoresPdf"]; }
+            set { ViewState["UsarVisorMarcadoresPdf"] = value; }
+        }
+
+        protected string PdfUrlVisorJs
+        {
+            get { return (ViewState["PdfUrlVisorJs"] as string) ?? ""; }
+            set { ViewState["PdfUrlVisorJs"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["LoginUsuario"] == null) { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
@@ -51,7 +63,24 @@ namespace ZofraTacna.Presentacion
             if (repo.IntentarAdjuntoPrincipal(id, out idAdj, out nombre, out tam))
             {
                 litNombreArchivo.Text = HttpUtility.HtmlEncode(nombre);
-                ifrPdf.Attributes["src"] = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + id);
+                string pdfUrl = ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=" + id);
+                UsarVisorMarcadoresPdf = repo.ExisteTablaDocumentoObservacionMarcador();
+                PdfUrlVisorJs = UsarVisorMarcadoresPdf ? pdfUrl : "";
+                if (UsarVisorMarcadoresPdf)
+                {
+                    ifrPdf.Visible = false;
+                    ifrPdf.Attributes["src"] = "";
+                }
+                else
+                {
+                    ifrPdf.Visible = true;
+                    ifrPdf.Attributes["src"] = pdfUrl;
+                }
+            }
+            else
+            {
+                UsarVisorMarcadoresPdf = false;
+                PdfUrlVisorJs = "";
             }
 
             var pendientes = repo.ObtenerObservacionesPendientesEstructuradas(id);
@@ -118,11 +147,50 @@ namespace ZofraTacna.Presentacion
             }
 
             var repoBloqueo = new RepositorioBloqueoFlujo();
-            bool bloqueado = repoBloqueo.ExisteBloqueoActivo(id, "REV_EDIT", "");
-            if (bloqueado)
+
+            // Si el documento está en estado OBS, el registrador tiene prioridad.
+            // Liberar cualquier bloqueo REV_EDIT residual (sesiones abandonadas).
+            var repo = new RepositorioDocumentos();
+            Documento doc = repo.ObtenerDocumentoPorId(id);
+            bool esObservado = false;
+            if (doc != null)
+            {
+                string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    using (var cmd = new SqlCommand(
+                        "SELECT m.Codigo FROM Documento d INNER JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro WHERE d.IdDocumento=@id", cn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        object o = cmd.ExecuteScalar();
+                        esObservado = o != null && o != DBNull.Value && o.ToString() == "OBS";
+                    }
+                }
+            }
+
+            if (esObservado)
+            {
+                // En estado OBS, es el turno del registrador: liberar bloqueos de revisores
+                repoBloqueo.LiberarBloqueo(id, "REV_EDIT", "");
+            }
+            else
+            {
+                // En otros estados, respetar el bloqueo del revisor
+                bool bloqueado = repoBloqueo.ExisteBloqueoActivo(id, "REV_EDIT", "");
+                if (bloqueado)
+                {
+                    MostrarPopupBloqueo = true;
+                    MensajePopupBloqueo = "Un revisor se encuentra emitiendo su revision sobre este documento.";
+                    return;
+                }
+            }
+
+            // Verificar bloqueo de administrador (siempre debe respetarse)
+            if (repoBloqueo.ExisteBloqueoActivo(id, "ADM_EDIT", ""))
             {
                 MostrarPopupBloqueo = true;
-                MensajePopupBloqueo = "Un revisor se encuentra emitiendo su revision sobre este documento.";
+                MensajePopupBloqueo = "El administrador se encuentra modificando el documento.";
                 return;
             }
 

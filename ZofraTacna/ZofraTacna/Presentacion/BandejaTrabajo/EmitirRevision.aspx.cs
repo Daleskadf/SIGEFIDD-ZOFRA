@@ -35,6 +35,18 @@ namespace ZofraTacna.Presentacion
             set { ViewState["MensajeBloqueo"] = value; }
         }
 
+        protected bool UsarVisorMarcadoresPdf
+        {
+            get { return ViewState["UsarVisorMarcadoresPdf"] != null && (bool)ViewState["UsarVisorMarcadoresPdf"]; }
+            set { ViewState["UsarVisorMarcadoresPdf"] = value; }
+        }
+
+        protected string PdfUrlVisorJs
+        {
+            get { return (ViewState["PdfUrlVisorJs"] as string) ?? ""; }
+            set { ViewState["PdfUrlVisorJs"] = value; }
+        }
+
         /// <summary>Vista dividida con dos PDFs (solo tras pulsar Comparar documento).</summary>
         private bool ModoComparacionActivo
         {
@@ -162,12 +174,34 @@ namespace ZofraTacna.Presentacion
             string comentario = esObservacion
                 ? (txtObservaciones.Text ?? "").Trim()
                 : "Revisor emitio conformidad desde visor.";
-            if (esObservacion && string.IsNullOrWhiteSpace(comentario))
+            if (esObservacion)
             {
-                pnlMensajeOk.Visible = false;
-                litMensajeError.Text = "Debe ingresar una observacion para continuar.";
-                pnlMensajeError.Visible = true;
-                return;
+                if (repo.ExisteTablaDocumentoObservacionMarcador())
+                {
+                    int borradores = repo.ContarMarcadoresBorrador(idDoc, login);
+                    if (borradores == 0 && string.IsNullOrWhiteSpace(comentario))
+                    {
+                        pnlMensajeOk.Visible = false;
+                        litMensajeError.Text = "Debe colocar al menos un marcador en el PDF o escribir un comentario general.";
+                        pnlMensajeError.Visible = true;
+                        return;
+                    }
+                    repo.PublicarMarcadoresBorrador(idDoc, login);
+                    string resumenMarcadores = repo.ConstruirResumenMarcadoresPublicados(idDoc, login);
+                    if (!string.IsNullOrWhiteSpace(resumenMarcadores))
+                    {
+                        comentario = string.IsNullOrWhiteSpace(comentario)
+                            ? resumenMarcadores
+                            : resumenMarcadores + Environment.NewLine + Environment.NewLine + comentario.Trim();
+                    }
+                }
+                else if (string.IsNullOrWhiteSpace(comentario))
+                {
+                    pnlMensajeOk.Visible = false;
+                    litMensajeError.Text = "Debe ingresar una observacion para continuar.";
+                    pnlMensajeError.Visible = true;
+                    return;
+                }
             }
 
             bool ok = repo.RegistrarDecisionRevision(idDoc, login, comentario, esObservacion, out mensaje);
@@ -264,6 +298,8 @@ namespace ZofraTacna.Presentacion
 
             if (modoComparar)
             {
+                UsarVisorMarcadoresPdf = false;
+                PdfUrlVisorJs = "";
                 CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
                 LlenarComboVersiones(ddlPdfCompareIzq, archivados, nombrePdf, pe);
                 LlenarComboVersiones(ddlPdfCompareDer, archivados, nombrePdf, pe);
@@ -275,9 +311,9 @@ namespace ZofraTacna.Presentacion
                 lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
                 lnkPdfDerNuevaPestana.NavigateUrl = urlDer;
                 ifrPdfAnterior.Visible = true;
-                ifrPdfAnterior.Attributes["src"] = urlIzq;
+                    ifrPdfAnterior.Attributes["src"] = urlIzq;
                 ifrPdfActualCompare.Visible = true;
-                ifrPdfActualCompare.Attributes["src"] = urlDer;
+                    ifrPdfActualCompare.Attributes["src"] = urlDer;
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = false;
                 pnlVistaPdfComparar.CssClass = "pdf-compare-grid";
@@ -286,14 +322,26 @@ namespace ZofraTacna.Presentacion
             {
                 lnkPdfIzqNuevaPestana.NavigateUrl = "";
                 lnkPdfDerNuevaPestana.NavigateUrl = "";
-                ifrPdf.Visible = true;
-                ifrPdf.Attributes["src"] = basePdf;
+                UsarVisorMarcadoresPdf = repo.ExisteTablaDocumentoObservacionMarcador();
+                PdfUrlVisorJs = UsarVisorMarcadoresPdf ? basePdf : "";
+                if (UsarVisorMarcadoresPdf)
+                {
+                    ifrPdf.Visible = false;
+                    ifrPdf.Attributes["src"] = "";
+                }
+                else
+                {
+                    ifrPdf.Visible = true;
+                    ifrPdf.Attributes["src"] = basePdf;
+                }
                 pnlSinPdf.Visible = false;
             }
             else
             {
                 lnkPdfIzqNuevaPestana.NavigateUrl = "";
                 lnkPdfDerNuevaPestana.NavigateUrl = "";
+                UsarVisorMarcadoresPdf = false;
+                PdfUrlVisorJs = "";
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = true;
             }

@@ -649,3 +649,5 @@ C:\Users\acer\OneDrive\Escritorio\2026-I\Web\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacn
 C:\Users\acer\OneDrive\Escritorio\2026-I\Web\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Debug\ZofraTacna.pdb
 C:\Users\acer\OneDrive\Escritorio\2026-I\Web\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\BouncyCastle.Crypto.dll
 C:\Users\acer\OneDrive\Escritorio\2026-I\Web\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\itextsharp.dll
+C:\Users\dales\OneDrive\Desktop\zofraaa\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\BouncyCastle.Crypto.dll
+C:\Users\dales\OneDrive\Desktop\zofraaa\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\itextsharp.dll

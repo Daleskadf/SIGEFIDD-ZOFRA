@@ -87,6 +87,24 @@ namespace ZofraTacna.Models
         public DateTime FechaRevision  { get; set; }
     }
 
+    /// <summary>Marcador de observacion anclado a una pagina del PDF.</summary>
+    public class ObservacionMarcadorItem
+    {
+        public int     IdMarcador        { get; set; }
+        public int     IdDocumento       { get; set; }
+        public string  LoginUsuario      { get; set; }
+        public string  TipoMarcador      { get; set; }
+        public int     Pagina            { get; set; }
+        public double  PosX              { get; set; }
+        public double  PosY              { get; set; }
+        public double? Ancho             { get; set; }
+        public double? Alto              { get; set; }
+        public string  TextoSeleccionado { get; set; }
+        public string  Comentario        { get; set; }
+        public bool    EsBorrador        { get; set; }
+        public DateTime FechaCreacion    { get; set; }
+    }
+
     /// <summary>Observacion vigente o ya archivada al subsanar (VerObservaciones).</summary>
     public class ObservacionFlujoItem
     {
