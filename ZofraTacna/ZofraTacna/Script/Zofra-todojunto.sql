@@ -558,30 +558,39 @@ GO
 -- 2.7.2  DocumentoObservacionMarcador
 --   Marcadores de observacion anclados al PDF (pagina + coordenadas).
 -- ============================================================
-IF OBJECT_ID('dbo.DocumentoObservacionMarcador', 'U') IS NULL
+IF OBJECT_ID('dbo.DocumentoObservacionMarcador', 'U') IS NOT NULL AND OBJECT_ID('dbo.FIR_DocumentoObsMarcador', 'U') IS NULL
+    EXEC sp_rename 'dbo.DocumentoObservacionMarcador', 'FIR_DocumentoObsMarcador';
+GO
+
+IF OBJECT_ID('dbo.FIR_DocumentoObsMarcador', 'U') IS NULL
 BEGIN
-    CREATE TABLE dbo.DocumentoObservacionMarcador (
-        IdMarcador         INT            IDENTITY(1,1) NOT NULL,
-        IdDocumento        INT            NOT NULL,
-        LoginUsuario       VARCHAR(15)    NOT NULL,
-        TipoMarcador       VARCHAR(12)    NOT NULL CONSTRAINT df_DocObsMar_Tipo DEFAULT 'pin',
-        Pagina             INT            NOT NULL,
-        PosX               FLOAT          NOT NULL,
-        PosY               FLOAT          NOT NULL,
-        Ancho              FLOAT          NULL,
-        Alto               FLOAT          NULL,
-        TextoSeleccionado  NVARCHAR(500)  NULL,
-        Comentario         NVARCHAR(1000) NOT NULL,
-        EsBorrador         BIT            NOT NULL CONSTRAINT df_DocObsMar_Borrador DEFAULT 1,
-        FechaCreacion      DATETIME       NOT NULL CONSTRAINT df_DocObsMar_Fecha DEFAULT GETDATE(),
-        CONSTRAINT pk_DocumentoObservacionMarcador PRIMARY KEY CLUSTERED (IdMarcador)
+    CREATE TABLE dbo.FIR_DocumentoObsMarcador (
+        IdMarcador           INT            IDENTITY(1,1) NOT NULL,
+        IdDocumento          INT            NOT NULL,
+        LoginUsuario         VARCHAR(15)    NOT NULL,
+        TipoMarcador         VARCHAR(12)    NOT NULL CONSTRAINT df_DocObsMar_TipoMarcador DEFAULT 'pin',
+        Pagina               INT            NOT NULL,
+        PosX                 FLOAT          NOT NULL,
+        PosY                 FLOAT          NOT NULL,
+        Ancho                FLOAT          NULL,
+        Alto                 FLOAT          NULL,
+        TextoSeleccionado    NVARCHAR(500)  NULL,
+        Comentario           NVARCHAR(1000) NOT NULL,
+        EsBorrador           BIT            NOT NULL CONSTRAINT df_DocObsMar_EsBorrador DEFAULT 1,
+        IDUsuarioCreador     VARCHAR(15)    NOT NULL CONSTRAINT df_DocObsMar_IDUsuarioCreador DEFAULT '',
+        FechaCreacion        SMALLDATETIME  NOT NULL CONSTRAINT df_DocObsMar_FechaCreacion DEFAULT GETDATE(),
+        IDUsuarioModificador VARCHAR(15)    NULL,
+        FechaModificacion    SMALLDATETIME  NULL,
+        CONSTRAINT pk_FIR_DocumentoObsMarcador PRIMARY KEY CLUSTERED (IdMarcador)
     );
-    CREATE INDEX ix_DocObsMar_DocBorrador
-        ON dbo.DocumentoObservacionMarcador (IdDocumento, EsBorrador, LoginUsuario);
-    PRINT 'Tabla DocumentoObservacionMarcador creada.';
+
+    CREATE INDEX ID_DocObsMar_DocBorrador
+        ON dbo.FIR_DocumentoObsMarcador (IdDocumento, EsBorrador, LoginUsuario);
+
+    PRINT 'Tabla FIR_DocumentoObsMarcador creada.';
 END
 ELSE
-    PRINT 'Tabla DocumentoObservacionMarcador ya existe.';
+    PRINT 'Tabla FIR_DocumentoObsMarcador ya existe.';
 GO
 
 -- ============================================================
@@ -759,9 +768,11 @@ GO
 -- ============================================================
 IF OBJECT_ID('dbo.VW_EmpleadosActivos', 'V') IS NOT NULL
     DROP VIEW dbo.VW_EmpleadosActivos;
+IF OBJECT_ID('dbo.FIR_VW_EmpleadosActivos', 'V') IS NOT NULL
+    DROP VIEW dbo.FIR_VW_EmpleadosActivos;
 GO
 
-CREATE VIEW dbo.VW_EmpleadosActivos AS
+CREATE VIEW dbo.FIR_VW_EmpleadosActivos AS
     SELECT
         e.IDEmpleado,
         e.CodigoPersonal,
@@ -780,10 +791,14 @@ CREATE VIEW dbo.VW_EmpleadosActivos AS
 	LEFT JOIN administracion.dbo.UnidadOrganica uo ON e.IDUnidadOrganica = uo.IDUnidadOrganica
     WHERE e.ActivoAsist = 1;
 GO
-PRINT 'Vista VW_EmpleadosActivos creada/actualizada.';
+PRINT 'Vista FIR_VW_EmpleadosActivos creada/actualizada.';
 GO
 -- vista para listar unidades organicas 
-CREATE OR ALTER VIEW dbo.VW_UnidadesOrganicas AS
+IF OBJECT_ID('dbo.VW_UnidadesOrganicas', 'V') IS NOT NULL
+    DROP VIEW dbo.VW_UnidadesOrganicas;
+GO
+
+CREATE OR ALTER VIEW dbo.FIR_VW_UnidadesOrganicas AS
 SELECT 
     IDUnidadOrganica, 
     Descripcion, 
@@ -809,13 +824,13 @@ IF OBJECT_ID('dbo.sp_InsertarParticipante', 'P') IS NOT NULL
     DROP PROCEDURE dbo.sp_InsertarParticipante;
 GO
 
-CREATE PROCEDURE dbo.sp_InsertarParticipante
+CREATE PROCEDURE dbo.FIR_I_InsertarParticipante
     @IdDocumento        INT,
     @LoginUsuario       VARCHAR(50),
     @IdTipoParticipante INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @EstadoPen INT;
 
@@ -836,7 +851,7 @@ BEGIN
 END
 GO
 
-PRINT 'Procedimiento sp_InsertarParticipante creado/actualizado.';
+PRINT 'Procedimiento FIR_I_InsertarParticipante creado/actualizado.';
 GO
 
 -- ============================================================
@@ -932,7 +947,7 @@ CREATE PROCEDURE [dbo].[GEN_X_EnviarMail]
     @Adjunto nVarChar(MAX) = NULL -- Por si algún día quieres enviar un PDF
 AS 
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     EXEC msdb.dbo.sp_send_dbmail 
         @profile_name = 'Administrador SQL', -- El perfil que acabamos de crear
@@ -945,11 +960,11 @@ END
 GO
 
 -- CORREO PARA AVISAR SOBRE REVISION DE UN DOCUMENTO
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarAsignacionRevision
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifAsigRev
     @IdDocumento INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @TipoDoc VARCHAR(150), 
             @AreaDoc VARCHAR(150), @FechaReg VARCHAR(20);
@@ -973,7 +988,7 @@ BEGIN
     DECLARE curRevisores CURSOR FOR
     SELECT v.Email, v.NombreCompleto, dp.PlazoDias
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento
       AND m.Codigo = 'REV'; -- SOLO enviamos a revisores en esta etapa
@@ -1029,13 +1044,13 @@ END
 GO
 
 -- CORREO PARA AVISAR SOBRE DOCUMENTO OBSERVADO
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarObservacionDocumento
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifObsDoc
     @IdDocumento INT,
     @LoginRevisorQueObserva VARCHAR(50), -- Se requiere para saber quién observó
     @ComentarioObservacion VARCHAR(1000)
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150), @NombreObservador VARCHAR(250);
     DECLARE @Cuerpo NVARCHAR(MAX), @AsuntoFinal NVARCHAR(250), @EmailDestino VARCHAR(150);
@@ -1050,7 +1065,7 @@ BEGIN
     WHERE d.IdDocumento = @IdDocumento;
 
     SELECT @NombreObservador = NombreCompleto 
-    FROM dbo.VW_EmpleadosActivos 
+    FROM dbo.FIR_VW_EmpleadosActivos 
     WHERE LoginUsuario = @LoginRevisorQueObserva;
 
     -- 2. Cursor para enviar el correo al REGISTRADOR y a TODOS LOS REVISORES
@@ -1058,12 +1073,12 @@ BEGIN
     DECLARE curNotificar CURSOR FOR
     SELECT DISTINCT v.Email 
     FROM dbo.Documento d 
-    INNER JOIN dbo.VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario 
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario 
     WHERE d.IdDocumento = @IdDocumento
     UNION
     SELECT v.Email 
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento AND m.Codigo = 'REV'; -- Solo revisores
 
@@ -1116,11 +1131,11 @@ GO
 
 
 -- -- CORREO PARA AVISAR QUE SE LEVANTO LA OBSERVACION Y ESTA DE NUEVO EN REVISION
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarDocumentoCorregido
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifDocCorreg
     @IdDocumento INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @NombreRegistrador VARCHAR(250), 
             @FechaCorreccion VARCHAR(20), @RevisionActual INT;
@@ -1136,7 +1151,7 @@ BEGIN
         @NombreRegistrador = v.NombreCompleto,
         @FechaCorreccion = CONVERT(VARCHAR, GETDATE(), 103) 
     FROM dbo.Documento d
-    INNER JOIN dbo.VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario
     WHERE d.IdDocumento = @IdDocumento;
 
     -- 2. Construir el bloque de observaciones previas
@@ -1148,7 +1163,7 @@ BEGIN
         N'</div>'
     FROM dbo.RevisionDetalle rd
     INNER JOIN dbo.DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     WHERE dp.IdDocumento = @IdDocumento AND rd.EsObservacion = 1
     AND rd.NumeroRevision = (@RevisionActual - 1); 
 
@@ -1157,7 +1172,7 @@ BEGIN
     SELECT v.Email, v.NombreCompleto, 
            CONCAT('Hasta ', CONVERT(VARCHAR, DATEADD(DAY, dp.PlazoDias, GETDATE()), 103), ' (', dp.PlazoDias, ' días)')
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento AND m.Codigo = 'REV';
 
@@ -1210,11 +1225,11 @@ END
 GO
 
 -- CORREO PARA AVISAR SOBRE DOCUMENTO PENDIENTE DE FIRMA
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarAsignacionFirma
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifAsigFirma
     @IdDocumento INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150);
     DECLARE @EmailDestino VARCHAR(150), @NombreFirmante VARCHAR(250), @Orden INT;
@@ -1233,7 +1248,7 @@ BEGIN
     DECLARE curFirmantes CURSOR FOR
     SELECT v.Email, v.NombreCompleto, dp.OrdenSecuencial 
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento 
       AND m.Codigo = 'FIR' -- Solo a los que tienen rol de Firmante
@@ -1335,7 +1350,7 @@ BEGIN
         FechaEliminacion    DATETIME                    NULL,
         EsEliminado         BIT                         NOT NULL CONSTRAINT df_DocAdjunto_EsElim  DEFAULT 0,
         -- Version vigente vs archivada (reemplazo por correccion del registrador, auditoria)
-        EsSuperado          BIT                         NOT NULL CONSTRAINT df_DocAdjunto_EsSup   DEFAULT 0,
+        EsSuperado          BIT                         NOT NULL CONSTRAINT df_DocAdjunto_EsSuperado DEFAULT 0,
         FechaSuperacion     DATETIME                    NULL,
         LoginSuperacion     VARCHAR(50)                 NULL,
         MotivoSuperacion    VARCHAR(300)                NULL,
@@ -1351,32 +1366,35 @@ USE FirmaDigital_Files;
 GO
 
 
-IF OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U') IS NULL
+IF OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U') IS NOT NULL AND OBJECT_ID('dbo.FIR_DocumentoBloqueoEdicion', 'U') IS NULL
+    EXEC sp_rename 'dbo.DocumentoBloqueoEdicion', 'FIR_DocumentoBloqueoEdicion';
+GO
+
+IF OBJECT_ID('dbo.FIR_DocumentoBloqueoEdicion', 'U') IS NULL
 BEGIN
-    CREATE TABLE dbo.DocumentoBloqueoEdicion (
+    CREATE TABLE dbo.FIR_DocumentoBloqueoEdicion (
         IdBloqueo             INT IDENTITY(1,1)          NOT NULL,
         IdDocumento           INT                        NOT NULL,
         TipoBloqueo           VARCHAR(20)                NOT NULL, -- REG_EDIT / REV_EDIT
         LoginUsuario          VARCHAR(60)                NOT NULL,
         TokenSesion           VARCHAR(80)                NOT NULL,
-        FechaInicio           DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaInicio DEFAULT GETDATE(),
-        FechaUltimaActividad  DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaAct    DEFAULT GETDATE(),
+        FechaInicio           SMALLDATETIME              NOT NULL CONSTRAINT df_DocBloq_FechaInicio          DEFAULT GETDATE(),
+        FechaUltimaActividad  SMALLDATETIME              NOT NULL CONSTRAINT df_DocBloq_FechaUltimaActividad DEFAULT GETDATE(),
         Activo                BIT                        NOT NULL CONSTRAINT df_DocBloq_Activo      DEFAULT 1,
-        CONSTRAINT pk_DocumentoBloqueoEdicion PRIMARY KEY CLUSTERED (IdBloqueo),
-        CONSTRAINT fk_DocBloq_Documento FOREIGN KEY (IdDocumento) REFERENCES dbo.Documento(IdDocumento)
+        CONSTRAINT pk_FIR_DocumentoBloqueoEdicion PRIMARY KEY CLUSTERED (IdBloqueo)
     );
 
-    CREATE INDEX ix_DocBloq_DocTipoActivo
-        ON dbo.DocumentoBloqueoEdicion (IdDocumento, TipoBloqueo, Activo, FechaUltimaActividad);
+    CREATE INDEX ID_DocBloqEd_DocTipoAct
+        ON dbo.FIR_DocumentoBloqueoEdicion (IdDocumento, TipoBloqueo, Activo, FechaUltimaActividad);
 
-    CREATE INDEX ix_DocBloq_LoginTipoActivo
-        ON dbo.DocumentoBloqueoEdicion (LoginUsuario, TipoBloqueo, Activo);
+    CREATE INDEX ID_DocBloqEd_LogTipoAct
+        ON dbo.FIR_DocumentoBloqueoEdicion (LoginUsuario, TipoBloqueo, Activo);
 
-    PRINT 'Tabla DocumentoBloqueoEdicion creada.';
+    PRINT 'Tabla FIR_DocumentoBloqueoEdicion creada.';
 END
 ELSE
 BEGIN
-    PRINT 'Tabla DocumentoBloqueoEdicion ya existe.';
+    PRINT 'Tabla FIR_DocumentoBloqueoEdicion ya existe.';
 END
 GO
 
@@ -1961,7 +1979,7 @@ EXEC [dbo].[GEN_X_EnviarMail]
 -- ============================================================
 select * from empleado
 select * from usuariosistema
-EXEC dbo.USP_NotificarAsignacionRevision @IdDocumento = 1009;
+EXEC dbo.FIR_X_NotifAsigRev @IdDocumento = 1009;
 
 SELECT * FROM DocumentoParticipante
 SELECT * FROM Documentoadjunto
@@ -1984,7 +2002,7 @@ SELECT
     m.Descripcion AS RolEnDocumento
 FROM dbo.DocumentoParticipante p
 INNER JOIN dbo.Documento d ON p.IdDocumento = d.IdDocumento
-INNER JOIN dbo.VW_EmpleadosActivos v ON p.LoginUsuario = v.LoginUsuario
+INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON p.LoginUsuario = v.LoginUsuario
 INNER JOIN dbo.Maestro m ON p.IdTipoParticipante = m.IdMaestro
 WHERE d.IdDocumento = @IdDocumento
   AND m.Codigo IN ('REV', 'FIR')

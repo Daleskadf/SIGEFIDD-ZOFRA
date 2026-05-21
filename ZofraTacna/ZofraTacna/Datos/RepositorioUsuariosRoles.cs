@@ -44,7 +44,7 @@ namespace ZofraTacna.Datos
             using (var conn = new SqlConnection(_conn))
             {
                 conn.Open();
-                string sql = "SELECT LoginUsuario, NombreCompleto, Email FROM VW_EmpleadosActivos ORDER BY LoginUsuario";
+                string sql = "SELECT LoginUsuario, NombreCompleto, Email FROM dbo.FIR_VW_EmpleadosActivos ORDER BY LoginUsuario";
                 using (var cmd = new SqlCommand(sql, conn))
                 using (var dr = cmd.ExecuteReader())
                 {
@@ -73,7 +73,7 @@ namespace ZofraTacna.Datos
             using (var conn = new SqlConnection(_conn))
             {
                 conn.Open();
-                string sql = "SELECT COUNT(*) FROM VW_EmpleadosActivos WHERE LoginUsuario = @login";
+                string sql = "SELECT COUNT(*) FROM dbo.FIR_VW_EmpleadosActivos WHERE LoginUsuario = @login";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
@@ -103,11 +103,11 @@ namespace ZofraTacna.Datos
 
         #endregion
 
-        #region Obtener empleados con información completa
+        #region Obtener empleados con informaciï¿½n completa
 
         /// <summary>
         /// Obtiene todos los empleados activos de la vista VW_EmpleadosActivos
-        /// con información si ya están en UsuarioSistema.
+        /// con informaciï¿½n si ya estï¿½n en UsuarioSistema.
         /// </summary>
         public List<ZofraTacna.Models.EmpleadoDTO> ObtenerEmpleadosConEstado()
         {
@@ -121,7 +121,7 @@ namespace ZofraTacna.Datos
                         v.NombreCompleto,
                         ISNULL(v.Email, v.LoginUsuario + '@zofratacna.com.pe') AS Email,
                         CASE WHEN u.IdUsuario IS NOT NULL THEN 1 ELSE 0 END AS EnSistema
-                    FROM VW_EmpleadosActivos v
+                    FROM dbo.FIR_VW_EmpleadosActivos v
                     LEFT JOIN UsuarioSistema u ON v.LoginUsuario = u.LoginUsuario AND u.Activo = 1
                     ORDER BY v.NombreCompleto";
 
@@ -154,7 +154,7 @@ namespace ZofraTacna.Datos
 
         #endregion
 
-        #region Gestión de UsuarioSistema
+        #region Gestiï¿½n de UsuarioSistema
 
         /// <summary>
         /// Obtiene el IdMaestro del rol "Revisor" (ROL_SISTEMA.REV).
@@ -191,7 +191,7 @@ namespace ZofraTacna.Datos
         }
 
         /// <summary>
-        /// Agrega un usuario a UsuarioSistema si no existe, asignándole un rol específico.
+        /// Agrega un usuario a UsuarioSistema si no existe, asignï¿½ndole un rol especï¿½fico.
         /// Soporta: "REV" (Revisor) o "FIR" (Firmante)
         /// </summary>
         public bool AgregarUsuarioSistemaConRol(string loginUsuario, string codigoRol)
@@ -238,7 +238,7 @@ namespace ZofraTacna.Datos
         }
 
         /// <summary>
-        /// Agrega un usuario a UsuarioSistema si no existe, asignándole el rol de Revisor.
+        /// Agrega un usuario a UsuarioSistema si no existe, asignï¿½ndole el rol de Revisor.
         /// </summary>
         public bool AgregarUsuarioSistemaComoRevisor(string loginUsuario)
         {
@@ -247,7 +247,7 @@ namespace ZofraTacna.Datos
 
         #endregion
 
-        #region Actualización
+        #region Actualizaciï¿½n
 
         public bool CambiarEstado(int idUsuario, bool activo)
         {

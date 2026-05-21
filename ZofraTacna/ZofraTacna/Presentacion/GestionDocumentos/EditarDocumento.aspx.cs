@@ -618,7 +618,7 @@ namespace ZofraTacna.Presentacion
                 using (var cn = new SqlConnection(connStr))
                 {
                     cn.Open();
-                    using (var cmd = new SqlCommand("dbo.USP_NotificarDocumentoCorregido", cn))
+                    using (var cmd = new SqlCommand("dbo.FIR_X_NotifDocCorreg", cn))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@IdDocumento", idDocumento);

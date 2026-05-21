@@ -1002,7 +1002,7 @@ namespace ZofraTacna.Datos
                         {
                             try
                             {
-                                using (var cmdNotif = new SqlCommand("dbo.USP_NotificarObservacionDocumento", conn))
+                                using (var cmdNotif = new SqlCommand("dbo.FIR_X_NotifObsDoc", conn))
                                 {
                                     cmdNotif.CommandType = CommandType.StoredProcedure;
                                     cmdNotif.Parameters.AddWithValue("@IdDocumento", idDocumento);
@@ -1022,7 +1022,7 @@ namespace ZofraTacna.Datos
                         {
                             try
                             {
-                                using (var cmdNotif = new SqlCommand("dbo.USP_NotificarAsignacionFirma", conn))
+                                using (var cmdNotif = new SqlCommand("dbo.FIR_X_NotifAsigFirma", conn))
                                 {
                                     cmdNotif.CommandType = CommandType.StoredProcedure;
                                     cmdNotif.Parameters.AddWithValue("@IdDocumento", idDocumento);
@@ -1614,7 +1614,7 @@ namespace ZofraTacna.Datos
                 conn.Open();
                 using (var cmd = new SqlCommand(
                            @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
-                             WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionMarcador'", conn))
+                             WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'FIR_DocumentoObsMarcador'", conn))
                 {
                     object o = cmd.ExecuteScalar();
                     return o != null && o != DBNull.Value;
@@ -1639,7 +1639,7 @@ namespace ZofraTacna.Datos
                 string sql = @"SELECT m.IdMarcador, m.IdDocumento, m.LoginUsuario, m.TipoMarcador, m.Pagina,
                                       m.PosX, m.PosY, m.Ancho, m.Alto, m.TextoSeleccionado, m.Comentario,
                                       m.EsBorrador, m.FechaCreacion
-                               FROM dbo.DocumentoObservacionMarcador m
+                               FROM dbo.FIR_DocumentoObsMarcador m
                                WHERE m.IdDocumento = @id" + filtro + @"
                                ORDER BY m.Pagina, m.FechaCreacion, m.IdMarcador";
                 using (var cmd = new SqlCommand(sql, conn))
@@ -1690,9 +1690,10 @@ namespace ZofraTacna.Datos
                 conn.Open();
                 if (item.IdMarcador > 0)
                 {
-                    string sqlUpd = @"UPDATE dbo.DocumentoObservacionMarcador
+                    string sqlUpd = @"UPDATE dbo.FIR_DocumentoObsMarcador
                                       SET TipoMarcador=@tipo, Pagina=@pag, PosX=@x, PosY=@y,
-                                          Ancho=@an, Alto=@al, TextoSeleccionado=@txt, Comentario=@com
+                                          Ancho=@an, Alto=@al, TextoSeleccionado=@txt, Comentario=@com,
+                                          IDUsuarioModificador=@login, FechaModificacion=GETDATE()
                                       WHERE IdMarcador=@id AND IdDocumento=@idDoc AND LoginUsuario=@login AND EsBorrador=1";
                     using (var cmd = new SqlCommand(sqlUpd, conn))
                     {
@@ -1714,9 +1715,9 @@ namespace ZofraTacna.Datos
                     return 0;
                 }
 
-                string sqlIns = @"INSERT INTO dbo.DocumentoObservacionMarcador
-                    (IdDocumento, LoginUsuario, TipoMarcador, Pagina, PosX, PosY, Ancho, Alto, TextoSeleccionado, Comentario, EsBorrador)
-                    VALUES (@idDoc, @login, @tipo, @pag, @x, @y, @an, @al, @txt, @com, 1);
+                string sqlIns = @"INSERT INTO dbo.FIR_DocumentoObsMarcador
+                    (IdDocumento, LoginUsuario, TipoMarcador, Pagina, PosX, PosY, Ancho, Alto, TextoSeleccionado, Comentario, EsBorrador, IDUsuarioCreador)
+                    VALUES (@idDoc, @login, @tipo, @pag, @x, @y, @an, @al, @txt, @com, 1, @login);
                     SELECT CAST(SCOPE_IDENTITY() AS INT);";
                 using (var cmd = new SqlCommand(sqlIns, conn))
                 {
@@ -1750,7 +1751,7 @@ namespace ZofraTacna.Datos
             using (var conn = new SqlConnection(_connDoc))
             {
                 conn.Open();
-                string sql = @"DELETE FROM dbo.DocumentoObservacionMarcador
+                string sql = @"DELETE FROM dbo.FIR_DocumentoObsMarcador
                                WHERE IdMarcador=@id AND IdDocumento=@idDoc AND LoginUsuario=@login AND EsBorrador=1";
                 using (var cmd = new SqlCommand(sql, conn))
                 {
@@ -1773,7 +1774,7 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 using (var cmd = new SqlCommand(
-                           @"SELECT COUNT(*) FROM dbo.DocumentoObservacionMarcador
+                           @"SELECT COUNT(*) FROM dbo.FIR_DocumentoObsMarcador
                              WHERE IdDocumento=@id AND LoginUsuario=@login AND EsBorrador=1", conn))
                 {
                     cmd.Parameters.AddWithValue("@id", idDocumento);
@@ -1792,7 +1793,7 @@ namespace ZofraTacna.Datos
             {
                 conn.Open();
                 using (var cmd = new SqlCommand(
-                           @"UPDATE dbo.DocumentoObservacionMarcador SET EsBorrador=0
+                           @"UPDATE dbo.FIR_DocumentoObsMarcador SET EsBorrador=0
                              WHERE IdDocumento=@id AND LoginUsuario=@login AND EsBorrador=1", conn))
                 {
                     cmd.Parameters.AddWithValue("@id", idDocumento);
@@ -1811,14 +1812,14 @@ namespace ZofraTacna.Datos
             if (conn == null) throw new ArgumentNullException(nameof(conn));
             using (var cmdCheck = new SqlCommand(
                        @"SELECT 1 FROM INFORMATION_SCHEMA.TABLES
-                         WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'DocumentoObservacionMarcador'", conn, tx))
+                         WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'FIR_DocumentoObsMarcador'", conn, tx))
             {
                 object exists = cmdCheck.ExecuteScalar();
                 if (exists == null || exists == DBNull.Value)
                     return;
             }
 
-            string sql = @"DELETE FROM dbo.DocumentoObservacionMarcador
+            string sql = @"DELETE FROM dbo.FIR_DocumentoObsMarcador
                            WHERE IdDocumento = @id";
             using (var cmd = new SqlCommand(sql, conn, tx))
             {

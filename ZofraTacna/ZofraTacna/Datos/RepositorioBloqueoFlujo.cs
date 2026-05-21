@@ -17,7 +17,7 @@ namespace ZofraTacna.Datos
                 if (!ExisteTablaBloqueo(cn)) return false;
                 LimpiarExpirados(cn);
                 string sql = @"SELECT COUNT(1)
-                               FROM DocumentoBloqueoEdicion
+                               FROM FIR_DocumentoBloqueoEdicion
                                WHERE IdDocumento = @id
                                  AND TipoBloqueo = @tipo
                                  AND Activo = 1
@@ -42,18 +42,18 @@ namespace ZofraTacna.Datos
                 if (!ExisteTablaBloqueo(cn)) return;
                 LimpiarExpirados(cn);
                 string sql = @"IF EXISTS(
-                                   SELECT 1 FROM DocumentoBloqueoEdicion
+                                   SELECT 1 FROM FIR_DocumentoBloqueoEdicion
                                    WHERE IdDocumento = @id AND TipoBloqueo = @tipo AND TokenSesion = @token
                                )
                                BEGIN
-                                   UPDATE DocumentoBloqueoEdicion
+                                   UPDATE FIR_DocumentoBloqueoEdicion
                                    SET FechaUltimaActividad = GETDATE(),
                                        Activo = 1
                                    WHERE IdDocumento = @id AND TipoBloqueo = @tipo AND TokenSesion = @token;
                                END
                                ELSE
                                BEGIN
-                                   INSERT INTO DocumentoBloqueoEdicion
+                                   INSERT INTO FIR_DocumentoBloqueoEdicion
                                    (IdDocumento, TipoBloqueo, LoginUsuario, TokenSesion, FechaInicio, FechaUltimaActividad, Activo)
                                    VALUES
                                    (@id, @tipo, @login, @token, GETDATE(), GETDATE(), 1);
@@ -75,7 +75,7 @@ namespace ZofraTacna.Datos
             {
                 cn.Open();
                 if (!ExisteTablaBloqueo(cn)) return;
-                string sql = @"UPDATE DocumentoBloqueoEdicion
+                string sql = @"UPDATE FIR_DocumentoBloqueoEdicion
                                SET Activo = 0
                                WHERE IdDocumento = @id
                                  AND TipoBloqueo = @tipo
@@ -96,7 +96,7 @@ namespace ZofraTacna.Datos
             {
                 cn.Open();
                 if (!ExisteTablaBloqueo(cn)) return;
-                string sql = @"UPDATE DocumentoBloqueoEdicion
+                string sql = @"UPDATE FIR_DocumentoBloqueoEdicion
                                SET Activo = 0
                                WHERE LoginUsuario = @login
                                  AND TipoBloqueo = @tipo
@@ -112,7 +112,7 @@ namespace ZofraTacna.Datos
 
         private static void LimpiarExpirados(SqlConnection cn)
         {
-            string sql = @"UPDATE DocumentoBloqueoEdicion
+            string sql = @"UPDATE FIR_DocumentoBloqueoEdicion
                            SET Activo = 0
                            WHERE Activo = 1
                              AND FechaUltimaActividad < DATEADD(MINUTE, -" + MinutosExpiracion + @", GETDATE())";
@@ -122,7 +122,7 @@ namespace ZofraTacna.Datos
 
         private static bool ExisteTablaBloqueo(SqlConnection cn)
         {
-            using (var cmd = new SqlCommand("SELECT OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U')", cn))
+            using (var cmd = new SqlCommand("SELECT OBJECT_ID('dbo.FIR_DocumentoBloqueoEdicion', 'U')", cn))
             {
                 object result = cmd.ExecuteScalar();
                 return result != null && result != DBNull.Value;

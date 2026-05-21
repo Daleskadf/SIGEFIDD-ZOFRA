@@ -1,11 +1,13 @@
 -- ============================================================
--- SIGEFIDD-ZOFRA - AGREGAR COLUMNAS A DocumentoAdjunto
--- Fecha: 2026-05-11
--- Descripción: Agrega las columnas nuevas que faltaban en
---              la tabla DocumentoAdjunto de FirmaDigital_Files
+-- DESCRIPCION:
+--   Agrega columnas faltantes en dbo.DocumentoAdjunto (FirmaDigital_Files).
+-- USADO POR (MODULOS):
+--   FirmaDigital / GestionDocumental
+-- HISTORICO DE MANTENIMIENTOS:
+--   SM-000-2026 Sistema, 2026-05-11
 -- ============================================================
 
-SET NOCOUNT ON;
+SET NOCOUNT OFF;
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
@@ -27,7 +29,7 @@ GO
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.DocumentoAdjunto') AND name='EsSuperado')
 BEGIN
     ALTER TABLE dbo.DocumentoAdjunto 
-    ADD EsSuperado BIT NOT NULL CONSTRAINT df_DocAdjunto_EsSup DEFAULT 0;
+    ADD EsSuperado BIT NOT NULL CONSTRAINT df_DocAdjunto_EsSuperado DEFAULT 0;
     PRINT '✓ Columna EsSuperado agregada.';
 END
 ELSE

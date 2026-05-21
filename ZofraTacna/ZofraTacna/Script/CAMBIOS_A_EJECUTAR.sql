@@ -1,11 +1,13 @@
 -- ============================================================
--- SIGEFIDD-ZOFRA - CAMBIOS A EJECUTAR EN BD EXISTENTE
--- Fecha: 2026-05-11
--- Descripción: Script con todos los cambios nuevos del sistema
---              (vistas, procedimientos y tabla de bloqueo)
+-- DESCRIPCION:
+--   Cambios a ejecutar en BD existente (vistas, procedimientos y tabla de bloqueo).
+-- USADO POR (MODULOS):
+--   FirmaDigital / GestionDocumental / Notificaciones
+-- HISTORICO DE MANTENIMIENTOS:
+--   SM-000-2026 Sistema, 2026-05-11
 -- ============================================================
 
-SET NOCOUNT ON;
+SET NOCOUNT OFF;
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
@@ -23,10 +25,14 @@ USE FirmaDigital;
 GO
 
 PRINT '';
-PRINT '--- Creando VISTA: VW_UnidadesOrganicas ---';
+PRINT '--- Creando VISTA: FIR_VW_UnidadesOrganicas ---';
 GO
 
-CREATE OR ALTER VIEW dbo.VW_UnidadesOrganicas AS
+IF OBJECT_ID('dbo.VW_UnidadesOrganicas', 'V') IS NOT NULL
+    DROP VIEW dbo.VW_UnidadesOrganicas;
+GO
+
+CREATE OR ALTER VIEW dbo.FIR_VW_UnidadesOrganicas AS
 SELECT 
     IDUnidadOrganica, 
     Descripcion, 
@@ -34,7 +40,7 @@ SELECT
 FROM [administracion].[dbo].[UnidadOrganica];
 GO
 
-PRINT 'Vista VW_UnidadesOrganicas creada/actualizada exitosamente.';
+PRINT 'Vista FIR_VW_UnidadesOrganicas creada/actualizada exitosamente.';
 GO
 
 -- ============================================================
@@ -49,13 +55,17 @@ GO
 -- Notifica al registrador y a todos los revisores cuando
 -- un documento es observado por algún revisor.
 -- ============================================================
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarObservacionDocumento
+IF OBJECT_ID('dbo.USP_NotificarObservacionDocumento', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.USP_NotificarObservacionDocumento;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifObsDoc
     @IdDocumento INT,
     @LoginRevisorQueObserva VARCHAR(50),
     @ComentarioObservacion VARCHAR(1000)
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150), @NombreObservador VARCHAR(250);
     DECLARE @Cuerpo NVARCHAR(MAX), @AsuntoFinal NVARCHAR(250), @EmailDestino VARCHAR(150);
@@ -70,19 +80,19 @@ BEGIN
     WHERE d.IdDocumento = @IdDocumento;
 
     SELECT @NombreObservador = NombreCompleto 
-    FROM dbo.VW_EmpleadosActivos 
+    FROM dbo.FIR_VW_EmpleadosActivos 
     WHERE LoginUsuario = @LoginRevisorQueObserva;
 
     -- 2. Cursor para enviar el correo al REGISTRADOR y a TODOS LOS REVISORES
     DECLARE curNotificar CURSOR FOR
     SELECT DISTINCT v.Email 
     FROM dbo.Documento d 
-    INNER JOIN dbo.VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario 
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario 
     WHERE d.IdDocumento = @IdDocumento
     UNION
     SELECT v.Email 
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento AND m.Codigo = 'REV';
 
@@ -123,7 +133,7 @@ BEGIN
 END
 GO
 
-PRINT 'Procedimiento USP_NotificarObservacionDocumento creado/actualizado.';
+PRINT 'Procedimiento FIR_X_NotifObsDoc creado/actualizado.';
 GO
 
 -- ============================================================
@@ -131,11 +141,15 @@ GO
 -- Notifica a los revisores cuando un documento observado
 -- ha sido corregido y es reenviado a revisión.
 -- ============================================================
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarDocumentoCorregido
+IF OBJECT_ID('dbo.USP_NotificarDocumentoCorregido', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.USP_NotificarDocumentoCorregido;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifDocCorreg
     @IdDocumento INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @NombreRegistrador VARCHAR(250), 
             @FechaCorreccion VARCHAR(20), @RevisionActual INT;
@@ -151,7 +165,7 @@ BEGIN
         @NombreRegistrador = v.NombreCompleto,
         @FechaCorreccion = CONVERT(VARCHAR, GETDATE(), 103) 
     FROM dbo.Documento d
-    INNER JOIN dbo.VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON d.LoginUsuarioRegistrador = v.LoginUsuario
     WHERE d.IdDocumento = @IdDocumento;
 
     -- 2. Construir el bloque de observaciones previas
@@ -163,7 +177,7 @@ BEGIN
         N'</div>'
     FROM dbo.RevisionDetalle rd
     INNER JOIN dbo.DocumentoParticipante dp ON rd.IdParticipante = dp.IdParticipante
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     WHERE dp.IdDocumento = @IdDocumento AND rd.EsObservacion = 1
     AND rd.NumeroRevision = (@RevisionActual - 1);
 
@@ -172,7 +186,7 @@ BEGIN
     SELECT v.Email, v.NombreCompleto, 
            CONCAT('Hasta ', CONVERT(VARCHAR, DATEADD(DAY, dp.PlazoDias, GETDATE()), 103), ' (', dp.PlazoDias, ' días)')
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento AND m.Codigo = 'REV';
 
@@ -224,7 +238,7 @@ BEGIN
 END
 GO
 
-PRINT 'Procedimiento USP_NotificarDocumentoCorregido creado/actualizado.';
+PRINT 'Procedimiento FIR_X_NotifDocCorreg creado/actualizado.';
 GO
 
 -- ============================================================
@@ -232,11 +246,15 @@ GO
 -- Notifica a los firmantes cuando un documento está
 -- listo para ser firmado, indicando su orden de firma.
 -- ============================================================
-CREATE OR ALTER PROCEDURE dbo.USP_NotificarAsignacionFirma
+IF OBJECT_ID('dbo.USP_NotificarAsignacionFirma', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.USP_NotificarAsignacionFirma;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.FIR_X_NotifAsigFirma
     @IdDocumento INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DECLARE @AsuntoDoc VARCHAR(300), @CodigoDoc VARCHAR(50), @AreaDoc VARCHAR(150);
     DECLARE @EmailDestino VARCHAR(150), @NombreFirmante VARCHAR(250), @Orden INT;
@@ -255,7 +273,7 @@ BEGIN
     DECLARE curFirmantes CURSOR FOR
     SELECT v.Email, v.NombreCompleto, dp.OrdenSecuencial 
     FROM dbo.DocumentoParticipante dp
-    INNER JOIN dbo.VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
+    INNER JOIN dbo.FIR_VW_EmpleadosActivos v ON dp.LoginUsuario = v.LoginUsuario
     INNER JOIN dbo.Maestro m ON dp.IdTipoParticipante = m.IdMaestro
     WHERE dp.IdDocumento = @IdDocumento 
       AND m.Codigo = 'FIR'
@@ -297,7 +315,7 @@ BEGIN
 END
 GO
 
-PRINT 'Procedimiento USP_NotificarAsignacionFirma creado/actualizado.';
+PRINT 'Procedimiento FIR_X_NotifAsigFirma creado/actualizado.';
 GO
 
 -- ============================================================
@@ -308,33 +326,36 @@ USE FirmaDigital_Files;
 GO
 
 PRINT '';
-PRINT '--- Creando TABLA: DocumentoBloqueoEdicion ---';
+PRINT '--- Creando TABLA: FIR_DocumentoBloqueoEdicion ---';
 GO
 
-IF OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U') IS NULL
+IF OBJECT_ID('dbo.DocumentoBloqueoEdicion', 'U') IS NOT NULL AND OBJECT_ID('dbo.FIR_DocumentoBloqueoEdicion', 'U') IS NULL
+    EXEC sp_rename 'dbo.DocumentoBloqueoEdicion', 'FIR_DocumentoBloqueoEdicion';
+
+IF OBJECT_ID('dbo.FIR_DocumentoBloqueoEdicion', 'U') IS NULL
 BEGIN
-    CREATE TABLE dbo.DocumentoBloqueoEdicion (
+    CREATE TABLE dbo.FIR_DocumentoBloqueoEdicion (
         IdBloqueo             INT IDENTITY(1,1)          NOT NULL,
         IdDocumento           INT                        NOT NULL,
         TipoBloqueo           VARCHAR(20)                NOT NULL,
         LoginUsuario          VARCHAR(60)                NOT NULL,
         TokenSesion           VARCHAR(80)                NOT NULL,
-        FechaInicio           DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaInicio DEFAULT GETDATE(),
-        FechaUltimaActividad  DATETIME                   NOT NULL CONSTRAINT df_DocBloq_FechaAct    DEFAULT GETDATE(),
+        FechaInicio           SMALLDATETIME              NOT NULL CONSTRAINT df_DocBloq_FechaInicio          DEFAULT GETDATE(),
+        FechaUltimaActividad  SMALLDATETIME              NOT NULL CONSTRAINT df_DocBloq_FechaUltimaActividad DEFAULT GETDATE(),
         Activo                BIT                        NOT NULL CONSTRAINT df_DocBloq_Activo      DEFAULT 1,
-        CONSTRAINT pk_DocumentoBloqueoEdicion PRIMARY KEY CLUSTERED (IdBloqueo)
+        CONSTRAINT pk_FIR_DocumentoBloqueoEdicion PRIMARY KEY CLUSTERED (IdBloqueo)
     );
 
-    CREATE INDEX ix_DocBloq_DocTipoActivo
-        ON dbo.DocumentoBloqueoEdicion (IdDocumento, TipoBloqueo, Activo, FechaUltimaActividad);
+    CREATE INDEX ID_DocBloqEd_DocTipoAct
+        ON dbo.FIR_DocumentoBloqueoEdicion (IdDocumento, TipoBloqueo, Activo, FechaUltimaActividad);
 
-    CREATE INDEX ix_DocBloq_LoginTipoActivo
-        ON dbo.DocumentoBloqueoEdicion (LoginUsuario, TipoBloqueo, Activo);
+    CREATE INDEX ID_DocBloqEd_LogTipoAct
+        ON dbo.FIR_DocumentoBloqueoEdicion (LoginUsuario, TipoBloqueo, Activo);
 
-    PRINT 'Tabla DocumentoBloqueoEdicion creada exitosamente.';
+    PRINT 'Tabla FIR_DocumentoBloqueoEdicion creada exitosamente.';
 END
 ELSE
-    PRINT 'Tabla DocumentoBloqueoEdicion ya existe.';
+    PRINT 'Tabla FIR_DocumentoBloqueoEdicion ya existe.';
 GO
 
 -- ============================================================
@@ -352,7 +373,7 @@ GO
 PRINT '--- Vistas creadas en FirmaDigital ---';
 SELECT TABLE_NAME AS Vista
 FROM INFORMATION_SCHEMA.VIEWS
-WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME IN ('VW_EmpleadosActivos', 'VW_UnidadesOrganicas')
+WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME IN ('FIR_VW_EmpleadosActivos', 'FIR_VW_UnidadesOrganicas')
 ORDER BY TABLE_NAME;
 
 PRINT '';
@@ -361,7 +382,7 @@ SELECT ROUTINE_NAME AS Procedimiento
 FROM INFORMATION_SCHEMA.ROUTINES
 WHERE ROUTINE_SCHEMA = 'dbo' 
   AND ROUTINE_TYPE = 'PROCEDURE'
-  AND ROUTINE_NAME IN ('USP_NotificarObservacionDocumento', 'USP_NotificarDocumentoCorregido', 'USP_NotificarAsignacionFirma')
+  AND ROUTINE_NAME IN ('FIR_X_NotifObsDoc', 'FIR_X_NotifDocCorreg', 'FIR_X_NotifAsigFirma')
 ORDER BY ROUTINE_NAME;
 GO
 
@@ -382,10 +403,10 @@ PRINT '';
 PRINT '============================================================';
 PRINT ' CAMBIOS APLICADOS EXITOSAMENTE';
 PRINT ' Componentes nuevos:';
-PRINT '   ✓ Vista: VW_UnidadesOrganicas';
-PRINT '   ✓ Procedimiento: USP_NotificarObservacionDocumento';
-PRINT '   ✓ Procedimiento: USP_NotificarDocumentoCorregido';
-PRINT '   ✓ Procedimiento: USP_NotificarAsignacionFirma';
-PRINT '   ✓ Tabla: DocumentoBloqueoEdicion';
+PRINT '   ✓ Vista: FIR_VW_UnidadesOrganicas';
+PRINT '   ✓ Procedimiento: FIR_X_NotifObsDoc';
+PRINT '   ✓ Procedimiento: FIR_X_NotifDocCorreg';
+PRINT '   ✓ Procedimiento: FIR_X_NotifAsigFirma';
+PRINT '   ✓ Tabla: FIR_DocumentoBloqueoEdicion';
 PRINT '============================================================';
 GO

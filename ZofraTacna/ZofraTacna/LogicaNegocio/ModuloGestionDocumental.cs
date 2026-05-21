@@ -90,9 +90,7 @@ namespace ZofraTacna.LogicaNegocio
             {
                 cn.Open();
 
-                // CORRECCI�N 2: Consultar a la VISTA dbo.VW_UnidadesOrganicas
-                // No olvides el "dbo." para seguir el est�ndar de Zofra
-                string sql = "SELECT IDUnidadOrganica, Descripcion FROM dbo.VW_UnidadesOrganicas ORDER BY Descripcion";
+                string sql = "SELECT IDUnidadOrganica, Descripcion FROM dbo.FIR_VW_UnidadesOrganicas ORDER BY Descripcion";
 
                 using (var cmd = new SqlCommand(sql, cn))
                 using (var dr = cmd.ExecuteReader())
@@ -171,7 +169,7 @@ namespace ZofraTacna.LogicaNegocio
 
             using (SqlConnection cn = new SqlConnection(connString))
             {
-                using (SqlCommand cmd = new SqlCommand("dbo.USP_NotificarAsignacionRevision", cn))
+                using (SqlCommand cmd = new SqlCommand("dbo.FIR_X_NotifAsigRev", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@IdDocumento", idDocumento);
