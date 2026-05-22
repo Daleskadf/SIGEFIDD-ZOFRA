@@ -558,39 +558,45 @@ GO
 -- 2.7.2  DocumentoObservacionMarcador
 --   Marcadores de observacion anclados al PDF (pagina + coordenadas).
 -- ============================================================
-IF OBJECT_ID('dbo.DocumentoObservacionMarcador', 'U') IS NOT NULL AND OBJECT_ID('dbo.FIR_DocumentoObsMarcador', 'U') IS NULL
-    EXEC sp_rename 'dbo.DocumentoObservacionMarcador', 'FIR_DocumentoObsMarcador';
-GO
+-- ============================================================
+-- RECREAR TABLA FIR_DocumentoObsMarcador
+-- SOLO DESARROLLO
+-- ============================================================
 
-IF OBJECT_ID('dbo.FIR_DocumentoObsMarcador', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.FIR_DocumentoObsMarcador (
-        IdMarcador           INT            IDENTITY(1,1) NOT NULL,
-        IdDocumento          INT            NOT NULL,
-        LoginUsuario         VARCHAR(15)    NOT NULL,
-        TipoMarcador         VARCHAR(12)    NOT NULL CONSTRAINT df_DocObsMar_TipoMarcador DEFAULT 'pin',
-        Pagina               INT            NOT NULL,
-        PosX                 FLOAT          NOT NULL,
-        PosY                 FLOAT          NOT NULL,
-        Ancho                FLOAT          NULL,
-        Alto                 FLOAT          NULL,
-        TextoSeleccionado    NVARCHAR(500)  NULL,
-        Comentario           NVARCHAR(1000) NOT NULL,
-        EsBorrador           BIT            NOT NULL CONSTRAINT df_DocObsMar_EsBorrador DEFAULT 1,
-        IDUsuarioCreador     VARCHAR(15)    NOT NULL CONSTRAINT df_DocObsMar_IDUsuarioCreador DEFAULT '',
-        FechaCreacion        SMALLDATETIME  NOT NULL CONSTRAINT df_DocObsMar_FechaCreacion DEFAULT GETDATE(),
-        IDUsuarioModificador VARCHAR(15)    NULL,
-        FechaModificacion    SMALLDATETIME  NULL,
-        CONSTRAINT pk_FIR_DocumentoObsMarcador PRIMARY KEY CLUSTERED (IdMarcador)
-    );
+CREATE TABLE dbo.FIR_DocumentoObsMarcador (
+    IdMarcador           INT            IDENTITY(1,1) NOT NULL,
+    IdDocumento          INT            NOT NULL,
+    LoginUsuario         VARCHAR(15)    NOT NULL,
 
-    CREATE INDEX ID_DocObsMar_DocBorrador
-        ON dbo.FIR_DocumentoObsMarcador (IdDocumento, EsBorrador, LoginUsuario);
+    TipoMarcador         VARCHAR(12)    NOT NULL
+        CONSTRAINT df_DocObsMar_TipoMarcador DEFAULT 'pin',
 
-    PRINT 'Tabla FIR_DocumentoObsMarcador creada.';
-END
-ELSE
-    PRINT 'Tabla FIR_DocumentoObsMarcador ya existe.';
+    Pagina               INT            NOT NULL,
+    PosX                 FLOAT          NOT NULL,
+    PosY                 FLOAT          NOT NULL,
+
+    Ancho                FLOAT          NULL,
+    Alto                 FLOAT          NULL,
+
+    TextoSeleccionado    NVARCHAR(500)  NULL,
+    Comentario           NVARCHAR(1000) NOT NULL,
+
+    EsBorrador           BIT            NOT NULL
+        CONSTRAINT df_DocObsMar_EsBorrador DEFAULT 1,
+
+    IDUsuarioCreador     VARCHAR(15)    NOT NULL
+        CONSTRAINT df_DocObsMar_IDUsuarioCreador DEFAULT '',
+
+    FechaCreacion        SMALLDATETIME  NOT NULL
+        CONSTRAINT df_DocObsMar_FechaCreacion DEFAULT GETDATE(),
+
+    IDUsuarioModificador VARCHAR(15)    NULL,
+
+    FechaModificacion    SMALLDATETIME  NULL,
+
+    CONSTRAINT pk_FIR_DocumentoObsMarcador
+        PRIMARY KEY CLUSTERED (IdMarcador)
+);
 GO
 
 -- ============================================================
@@ -794,8 +800,8 @@ GO
 PRINT 'Vista FIR_VW_EmpleadosActivos creada/actualizada.';
 GO
 -- vista para listar unidades organicas 
-IF OBJECT_ID('dbo.VW_UnidadesOrganicas', 'V') IS NOT NULL
-    DROP VIEW dbo.VW_UnidadesOrganicas;
+IF OBJECT_ID('dbo.FIR_VW_UnidadesOrganicas', 'V') IS NOT NULL
+    DROP VIEW dbo.FIR_VW_UnidadesOrganicas;
 GO
 
 CREATE OR ALTER VIEW dbo.FIR_VW_UnidadesOrganicas AS
@@ -2015,4 +2021,4 @@ WHERE IdUsuario = 1008;
 SELECT * FROM dbo.UsuarioSistema WHERE IdUsuario = 1008;
 */
 
-select * from documentoadjunto
+select * from FIR_DocumentoObsMarcador

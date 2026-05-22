@@ -243,6 +243,14 @@
     <Compile Include="Presentacion\VisualizarFirmantes\VisualizarFirmantes.aspx.designer.cs">
       <DependentUpon>VisualizarFirmantes.aspx</DependentUpon>
     </Compile>
+    <!-- Presentacion - GestionAuditoria -->
+    <Compile Include="Presentacion\GestionAuditoria\GestionAuditoria.aspx.cs">
+      <DependentUpon>GestionAuditoria.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\GestionAuditoria\GestionAuditoria.aspx.designer.cs">
+      <DependentUpon>GestionAuditoria.aspx</DependentUpon>
+    </Compile>
     <!-- LogicaNegocio -->
     <Compile Include="LogicaNegocio\ModuloGestionDocumental.cs" />
     <Compile Include="LogicaNegocio\ModuloRevision.cs" />
@@ -337,6 +345,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\VisualizarFirmantes\VisualizarFirmantes.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\GestionAuditoria\GestionAuditoria.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
   </ItemGroup>

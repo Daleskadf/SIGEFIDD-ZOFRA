@@ -559,3 +559,24 @@
 2026-05-17 21:42:58 - [DOC] tamanioBytes: 4617372
 2026-05-17 21:42:58 - [DOC] Tamaño contenido leído: 4617372 bytes
 2026-05-17 21:42:58 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 15:03:46 - === Inicio de solicitud ===
+2026-05-22 15:03:46 - Método: POST
+2026-05-22 15:03:46 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=1021
+2026-05-22 15:03:46 - QueryString: idDoc=1021
+2026-05-22 15:03:46 - Form: param_token=doc_1021
+2026-05-22 15:03:46 - idDoc: 1021
+2026-05-22 15:03:46 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1021
+2026-05-22 15:03:46 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1021
+2026-05-22 15:03:46 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1021","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_1021"}
+2026-05-22 15:03:46 - Base64 generado (longitud): 728
+2026-05-22 15:03:46 - === Fin de solicitud (éxito) ===
+2026-05-22 15:03:46 - [DOC] === Inicio solicitud documento ===
+2026-05-22 15:03:46 - [DOC] Método: GET
+2026-05-22 15:03:46 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1021
+2026-05-22 15:03:46 - [DOC] QueryString: idDoc=1021
+2026-05-22 15:03:46 - [DOC] idDoc: 1021
+2026-05-22 15:03:46 - [DOC] idAdjunto: 1020
+2026-05-22 15:03:46 - [DOC] nombreArchivo: 20260517223844_Justificacion_Plan_Auditoria_ISO27001_SoftNova.pdf
+2026-05-22 15:03:46 - [DOC] tamanioBytes: 368967
+2026-05-22 15:03:46 - [DOC] Tamaño contenido leído: 368967 bytes
+2026-05-22 15:03:46 - [DOC] === Fin solicitud documento (éxito) ===

@@ -35,8 +35,26 @@
     function fetchJson(url, options) {
         return fetch(url, Object.assign({ credentials: 'same-origin' }, options || {}))
             .then(function (r) {
-                if (!r.ok) throw new Error('http_' + r.status);
-                return r.json();
+
+                return r.text().then(function (text) {
+
+                    console.log("=== RESPUESTA DEL SERVIDOR ===");
+                    console.log(text);
+
+                    if (!r.ok) {
+                        throw new Error(text);
+                    }
+
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        return {
+                            ok: false,
+                            raw: text
+                        };
+                    }
+                });
+
             });
     }
 
