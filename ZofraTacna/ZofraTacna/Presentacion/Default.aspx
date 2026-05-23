@@ -276,7 +276,6 @@
                     <h1>Bienvenido, <asp:Literal ID="litBienvenido" runat="server" /></h1>
                     <p>Panel de Administraci&oacute;n del Sistema</p>
                 </div>
-                <button class="btn-new" type="button" onclick="location.href='<%= ResolveUrl("~/Presentacion/GestionDocumentos/CargarDocumento.aspx") %>'">&#43; Nuevo Documento</button>
             </div>
 
             <!-- STATS -->

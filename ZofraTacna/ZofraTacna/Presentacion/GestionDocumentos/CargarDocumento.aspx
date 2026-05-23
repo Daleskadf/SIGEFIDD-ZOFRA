@@ -1242,7 +1242,7 @@
                                         d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z" />
                                 </svg>
                                 <div class="uz-title">Haga clic para seleccionar un archivo PDF</div>
-                                <div class="uz-sub">Solo archivos PDF (max 15MB)</div>
+                                <div class="uz-sub">Solo archivos PDF (max 50MB)</div>
                                 <asp:FileUpload ID="filePDF" runat="server" Style="display:none" Accept=".pdf"
                                     onchange="mostrarNombreArchivo()" />
                             </div>

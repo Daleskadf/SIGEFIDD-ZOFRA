@@ -144,10 +144,6 @@
                     <h1>Bienvenido, <asp:Literal ID="litBienvenido" runat="server" /></h1>
                     <p>Dashboard de Revisor</p>
                 </div>
-                <button class="btn-action" type="button">
-                    <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.96.5 13.34.5c-1.3 0-2.48.54-3.34 1.4L9 3l-1-.94C7.12 1.04 5.94.5 4.66.5 2.04.5 0 2.54 0 4.66 0 5.12.11 5.56.18 6H0v14h20V6z"/></svg>
-                    Ver Bandeja
-                </button>
             </div>
 
             <!-- STATS -->

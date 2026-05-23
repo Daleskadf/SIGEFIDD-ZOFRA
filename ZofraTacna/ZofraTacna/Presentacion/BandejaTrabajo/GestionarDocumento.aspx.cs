@@ -399,8 +399,8 @@ namespace ZofraTacna.Presentacion
             {
                 if (!string.Equals(Path.GetExtension(filePdfReemplazo.FileName), ".pdf", StringComparison.OrdinalIgnoreCase))
                 { MostrarMsg("Solo se permiten archivos PDF.", false); return; }
-                if (filePdfReemplazo.PostedFile.ContentLength > 15 * 1024 * 1024)
-                { MostrarMsg("El archivo supera los 15 MB.", false); return; }
+                if (filePdfReemplazo.PostedFile.ContentLength > 50 * 1024 * 1024)
+                { MostrarMsg("El archivo supera los 50 MB.", false); return; }
                 using (var br = new BinaryReader(filePdfReemplazo.PostedFile.InputStream))
                     pdfBytes = br.ReadBytes(filePdfReemplazo.PostedFile.ContentLength);
                 if (pdfBytes == null || pdfBytes.Length == 0)

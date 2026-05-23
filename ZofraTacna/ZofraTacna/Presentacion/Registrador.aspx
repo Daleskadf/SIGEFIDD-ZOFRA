@@ -150,7 +150,6 @@
                     <h1>Bienvenido, <asp:Literal ID="litBienvenido" runat="server" /></h1>
                     <p>Dashboard de Registrador de Documentos</p>
                 </div>
-                <button class="btn-action" type="button">&#43; Cargar Documento</button>
             </div>
 
             <!-- STATS -->

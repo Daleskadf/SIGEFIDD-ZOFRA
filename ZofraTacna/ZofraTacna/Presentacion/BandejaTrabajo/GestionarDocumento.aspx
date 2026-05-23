@@ -360,7 +360,7 @@
                     <div class="upload-zone" id="uploadZoneGp">
                         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
                         <div class="uz-title">Opcional: nueva versi&oacute;n PDF</div>
-                        <div class="uz-sub">Solo PDF, m&aacute;x. 15 MB. La versi&oacute;n vigente queda archivada.</div>
+                        <div class="uz-sub">Solo PDF, m&aacute;x. 50 MB. La versi&oacute;n vigente queda archivada.</div>
                         <asp:FileUpload ID="filePdfReemplazo" runat="server" style="display:none" accept=".pdf" onchange="gpMostrarNombrePdf(this)"/>
                     </div>
                     <asp:Label ID="lblNombrePdfSeleccionado" runat="server" style="font-size:13px;color:#2e7d32;display:none"/>

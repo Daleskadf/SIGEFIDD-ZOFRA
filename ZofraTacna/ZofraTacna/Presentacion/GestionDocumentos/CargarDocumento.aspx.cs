@@ -207,9 +207,9 @@ namespace ZofraTacna.Presentacion
                     return;
                 }
 
-                if (filePDF.PostedFile.ContentLength > 15 * 1024 * 1024)
+                if (filePDF.PostedFile.ContentLength > 50 * 1024 * 1024)
                 {
-                    MostrarMsg("El archivo supera los 15MB.", false);
+                    MostrarMsg("El archivo supera los 50MB.", false);
                     return;
                 }
 
