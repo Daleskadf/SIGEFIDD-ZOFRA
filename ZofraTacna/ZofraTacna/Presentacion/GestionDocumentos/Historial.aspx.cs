@@ -100,6 +100,7 @@ namespace ZofraTacna.Presentacion
                             }
                             lista.Add(new
                             {
+                                IdDocumento   = Convert.ToInt32(dr["IdDocumento"]),
                                 Asunto        = dr["Asunto"].ToString(),
                                 NombreArchivo = Path.GetFileName(ruta),
                                 AreaCategoria = dr["AreaCategoria"] == DBNull.Value ? "-" : dr["AreaCategoria"].ToString(),

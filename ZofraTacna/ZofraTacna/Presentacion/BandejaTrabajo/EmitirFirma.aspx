@@ -84,14 +84,13 @@
         <div class="form-group">
             <label>Seleccione el método de firma:</label>
             <select id="ddlMetodoFirma" class="form-select" onchange="cambiarMetodoFirma()">
-                <option value="dnie1">DNIe 1</option>
-                <option value="dnie2">DNIe 2</option>
-                <option value="usb">Token USB</option>
+                <option value="firmaperu">Firma Perú (DNIe / Token USB)</option>
+                <option value="usb">Certificado en Servidor (Solo pruebas locales)</option>
             </select>
         </div>
         
         <div id="panelDnie" class="panel-opcion active">
-            <p style="font-size:13px; color:#666; margin-bottom:15px;">Se abrirá el cliente de Firma Perú para proceder con la firma usando su DNI electrónico.</p>
+            <p style="font-size:13px; color:#666; margin-bottom:15px;">Se abrirá el cliente de Firma Perú. Podrá seleccionar su DNI electrónico o su Token USB conectado a esta PC.</p>
             <button type="button" class="btn-accion" onclick="ejecutarFirmaDnie()">Continuar con Firma Perú</button>
         </div>
         

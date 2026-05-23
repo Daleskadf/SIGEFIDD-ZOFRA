@@ -60,6 +60,8 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
@@ -187,6 +189,13 @@
     </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\EmitirFirma.aspx.designer.cs">
       <DependentUpon>EmitirFirma.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\DiagnosticoToken.aspx.cs">
+      <DependentUpon>DiagnosticoToken.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\DiagnosticoToken.aspx.designer.cs">
+      <DependentUpon>DiagnosticoToken.aspx</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\DevolverDocumento.aspx.cs">
       <DependentUpon>DevolverDocumento.aspx</DependentUpon>
@@ -348,6 +357,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Presentacion\GestionAuditoria\GestionAuditoria.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Presentacion\BandejaTrabajo\DiagnosticoToken.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
   </ItemGroup>

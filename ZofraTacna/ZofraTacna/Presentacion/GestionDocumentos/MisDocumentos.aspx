@@ -61,6 +61,19 @@
         .btn-editar-doc{border:none;border-radius:9px;padding:9px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a3f6f,#1a2a4a);box-shadow:0 6px 16px rgba(26,42,74,.22)}
         .btn-editar-doc:hover{background:linear-gradient(135deg,#355287,#243a62)}
         .btn-editar-doc:disabled{background:#c4cada;box-shadow:none;cursor:not-allowed;color:#f6f7fb}
+        .btn-icon { background: none; border: 1.5px solid #dde1f0; border-radius: 6px; width: 34px; height: 34px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #666; transition: all 0.2s; }
+        .btn-icon:hover { background: #f0f2f8; color: #1a2a4a; border-color: #c4cada; }
+        .btn-icon svg { width: 17px; height: 17px; fill: currentColor; }
+        .btn-icon.btn-ver-pdf:hover { color: #2a3f6f; background: #e8ecf5; border-color: #aebce0; }
+        .btn-icon.btn-descargar-pdf:hover { color: #8b1a1a; background: #f5e8e8; border-color: #e0aeae; }
+        .modal-visor { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-visor-content { background-color: #f8f9fa; border-radius: 12px; width: 85%; max-width: 1000px; height: 85vh; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+        .modal-visor-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e1e4ee; background: white; }
+        .modal-visor-header h3 { margin: 0; font-size: 16px; color: #1a2a4a; font-weight: 600; }
+        .btn-cerrar-modal { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; line-height: 1; padding: 0; margin-top: -4px; transition: color 0.2s; }
+        .btn-cerrar-modal:hover { color: #c0392b; }
+        .modal-visor-body { flex: 1; padding: 0; background: #525659; }
+        .modal-visor-body iframe { width: 100%; height: 100%; border: none; }
         .revisores-cell{min-width:230px}
         .revisores-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
         .rev-item{font-size:11px;padding:4px 6px;border-radius:6px;background:#f4f6fb;color:#4a546d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -155,13 +168,21 @@
                                         <td><%# Eval("PlazosHtml") %></td>
                                         <td><%# Eval("FechaStr") %></td>
                                         <td>
-                                            <button
-                                                type="button"
-                                                class="btn-editar-doc"
-                                                <%# Convert.ToBoolean(Eval("PuedeVerObservaciones")) ? "" : "disabled='disabled' title='Se habilita cuando un revisor registre una observación'" %>
-                                                onclick="window.location.href='VerObservaciones.aspx?id=<%# Eval("IdDocumento") %>'">
-                                                Ver Observaciones
-                                            </button>
+                                            <div style="display:flex; gap:6px;">
+                                                <button
+                                                    type="button"
+                                                    class="btn-editar-doc"
+                                                    <%# Convert.ToBoolean(Eval("PuedeVerObservaciones")) ? "" : "disabled='disabled' title='Se habilita cuando un revisor registre una observación'" %>
+                                                    onclick="window.location.href='VerObservaciones.aspx?id=<%# Eval("IdDocumento") %>'">
+                                                    Observaciones
+                                                </button>
+                                                <button type="button" class="btn-icon btn-ver-pdf" title="Ver documento PDF" onclick="abrirModalVisor(<%# Eval("IdDocumento") %>)">
+                                                    <svg viewBox='0 0 24 24'><path d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/></svg>
+                                                </button>
+                                                <button type="button" class="btn-icon btn-descargar-pdf" title="Descargar documento PDF" onclick="window.location.href='../BandejaTrabajo/ServirPdf.ashx?idDoc=<%# Eval("IdDocumento") %>&descargar=1'">
+                                                    <svg viewBox='0 0 24 24'><path d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/></svg>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </ItemTemplate>
@@ -181,7 +202,28 @@
         } catch (e) { }
     })();
 </script>
+<div id="modalVisorPdf" class="modal-visor">
+    <div class="modal-visor-content">
+        <div class="modal-visor-header">
+            <h3>Visor de Documento</h3>
+            <button type="button" class="btn-cerrar-modal" onclick="cerrarModalVisor()">&times;</button>
+        </div>
+        <div class="modal-visor-body">
+            <iframe id="iframeVisorPdf" src=""></iframe>
+        </div>
+    </div>
+</div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
+<script>
+    function abrirModalVisor(idDoc) {
+        document.getElementById('iframeVisorPdf').src = '../BandejaTrabajo/ServirPdf.ashx?idDoc=' + idDoc;
+        document.getElementById('modalVisorPdf').style.display = 'flex';
+    }
+    function cerrarModalVisor() {
+        document.getElementById('modalVisorPdf').style.display = 'none';
+        document.getElementById('iframeVisorPdf').src = '';
+    }
+</script>
 </body>
 </html>

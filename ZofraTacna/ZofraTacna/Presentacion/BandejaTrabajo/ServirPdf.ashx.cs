@@ -75,8 +75,9 @@ namespace ZofraTacna.Presentacion
             string safeName = Path.GetFileName(string.IsNullOrEmpty(nombre) ? "documento.pdf" : nombre);
             rsp.ContentType = "application/pdf";
             rsp.Cache.SetCacheability(HttpCacheability.Private);
+            string disp = req.QueryString["descargar"] == "1" ? "attachment" : "inline";
             rsp.AddHeader("Content-Disposition",
-                "inline; filename*=UTF-8''" + Uri.EscapeDataString(safeName));
+                disp + "; filename*=UTF-8''" + Uri.EscapeDataString(safeName));
             rsp.BinaryWrite(pdf);
         }
 

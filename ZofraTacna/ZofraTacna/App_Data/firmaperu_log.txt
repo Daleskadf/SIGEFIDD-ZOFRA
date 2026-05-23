@@ -580,3 +580,108 @@
 2026-05-22 15:03:46 - [DOC] tamanioBytes: 368967
 2026-05-22 15:03:46 - [DOC] Tamaño contenido leído: 368967 bytes
 2026-05-22 15:03:46 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 18:28:51 - === Inicio de solicitud ===
+2026-05-22 18:28:51 - Método: POST
+2026-05-22 18:28:51 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=17
+2026-05-22 18:28:51 - QueryString: idDoc=17
+2026-05-22 18:28:51 - Form: param_token=doc_17
+2026-05-22 18:28:51 - idDoc: 17
+2026-05-22 18:28:51 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=17
+2026-05-22 18:28:51 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_17
+2026-05-22 18:28:51 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=17","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_17"}
+2026-05-22 18:28:51 - Base64 generado (longitud): 720
+2026-05-22 18:28:51 - === Fin de solicitud (éxito) ===
+2026-05-22 18:28:51 - [DOC] === Inicio solicitud documento ===
+2026-05-22 18:28:51 - [DOC] Método: GET
+2026-05-22 18:28:51 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=17
+2026-05-22 18:28:51 - [DOC] QueryString: idDoc=17
+2026-05-22 18:28:51 - [DOC] idDoc: 17
+2026-05-22 18:28:51 - [DOC] idAdjunto: 6
+2026-05-22 18:28:51 - [DOC] nombreArchivo: 20260512223428_Guia_DNIe_version3 (1).pdf
+2026-05-22 18:28:51 - [DOC] tamanioBytes: 4617372
+2026-05-22 18:28:51 - [DOC] Tamaño contenido leído: 4617372 bytes
+2026-05-22 18:28:51 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 19:09:53 - === Inicio de solicitud ===
+2026-05-22 19:09:53 - Método: POST
+2026-05-22 19:09:53 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=15
+2026-05-22 19:09:53 - QueryString: idDoc=15
+2026-05-22 19:09:53 - Form: param_token=doc_15
+2026-05-22 19:09:53 - idDoc: 15
+2026-05-22 19:09:53 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:09:53 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15
+2026-05-22 19:09:53 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15"}
+2026-05-22 19:09:53 - Base64 generado (longitud): 720
+2026-05-22 19:09:53 - === Fin de solicitud (éxito) ===
+2026-05-22 19:09:54 - [DOC] === Inicio solicitud documento ===
+2026-05-22 19:09:54 - [DOC] Método: GET
+2026-05-22 19:09:54 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:09:54 - [DOC] QueryString: idDoc=15
+2026-05-22 19:09:54 - [DOC] idDoc: 15
+2026-05-22 19:09:54 - [DOC] idAdjunto: 3
+2026-05-22 19:09:54 - [DOC] nombreArchivo: 20260510215637_Ficha_Inscripcion_Desarrollo_Web_Challenge.pdf
+2026-05-22 19:09:54 - [DOC] tamanioBytes: 117020
+2026-05-22 19:09:54 - [DOC] Tamaño contenido leído: 117020 bytes
+2026-05-22 19:09:54 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 19:12:35 - === Inicio de solicitud ===
+2026-05-22 19:12:35 - Método: POST
+2026-05-22 19:12:35 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=15
+2026-05-22 19:12:35 - QueryString: idDoc=15
+2026-05-22 19:12:35 - Form: param_token=doc_15
+2026-05-22 19:12:35 - idDoc: 15
+2026-05-22 19:12:35 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:12:35 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15
+2026-05-22 19:12:35 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15"}
+2026-05-22 19:12:35 - Base64 generado (longitud): 720
+2026-05-22 19:12:35 - === Fin de solicitud (éxito) ===
+2026-05-22 19:12:35 - [DOC] === Inicio solicitud documento ===
+2026-05-22 19:12:35 - [DOC] Método: GET
+2026-05-22 19:12:35 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:12:35 - [DOC] QueryString: idDoc=15
+2026-05-22 19:12:35 - [DOC] idDoc: 15
+2026-05-22 19:12:35 - [DOC] idAdjunto: 3
+2026-05-22 19:12:35 - [DOC] nombreArchivo: 20260510215637_Ficha_Inscripcion_Desarrollo_Web_Challenge.pdf
+2026-05-22 19:12:35 - [DOC] tamanioBytes: 117020
+2026-05-22 19:12:35 - [DOC] Tamaño contenido leído: 117020 bytes
+2026-05-22 19:12:35 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 19:14:16 - === Inicio de solicitud ===
+2026-05-22 19:14:16 - Método: POST
+2026-05-22 19:14:16 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=15
+2026-05-22 19:14:16 - QueryString: idDoc=15
+2026-05-22 19:14:16 - Form: param_token=doc_15
+2026-05-22 19:14:16 - idDoc: 15
+2026-05-22 19:14:16 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:14:16 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15
+2026-05-22 19:14:16 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15"}
+2026-05-22 19:14:16 - Base64 generado (longitud): 720
+2026-05-22 19:14:16 - === Fin de solicitud (éxito) ===
+2026-05-22 19:14:16 - [DOC] === Inicio solicitud documento ===
+2026-05-22 19:14:16 - [DOC] Método: GET
+2026-05-22 19:14:16 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:14:16 - [DOC] QueryString: idDoc=15
+2026-05-22 19:14:16 - [DOC] idDoc: 15
+2026-05-22 19:14:16 - [DOC] idAdjunto: 3
+2026-05-22 19:14:16 - [DOC] nombreArchivo: 20260510215637_Ficha_Inscripcion_Desarrollo_Web_Challenge.pdf
+2026-05-22 19:14:16 - [DOC] tamanioBytes: 117020
+2026-05-22 19:14:16 - [DOC] Tamaño contenido leído: 117020 bytes
+2026-05-22 19:14:16 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-22 19:34:00 - === Inicio de solicitud ===
+2026-05-22 19:34:00 - Método: POST
+2026-05-22 19:34:00 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=15
+2026-05-22 19:34:00 - QueryString: idDoc=15
+2026-05-22 19:34:00 - Form: param_token=doc_15
+2026-05-22 19:34:00 - idDoc: 15
+2026-05-22 19:34:00 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:34:00 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15
+2026-05-22 19:34:00 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_15"}
+2026-05-22 19:34:00 - Base64 generado (longitud): 720
+2026-05-22 19:34:00 - === Fin de solicitud (éxito) ===
+2026-05-22 19:34:02 - [DOC] === Inicio solicitud documento ===
+2026-05-22 19:34:02 - [DOC] Método: GET
+2026-05-22 19:34:02 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=15
+2026-05-22 19:34:02 - [DOC] QueryString: idDoc=15
+2026-05-22 19:34:02 - [DOC] idDoc: 15
+2026-05-22 19:34:02 - [DOC] idAdjunto: 3
+2026-05-22 19:34:02 - [DOC] nombreArchivo: 20260510215637_Ficha_Inscripcion_Desarrollo_Web_Challenge.pdf
+2026-05-22 19:34:02 - [DOC] tamanioBytes: 117020
+2026-05-22 19:34:02 - [DOC] Tamaño contenido leído: 117020 bytes
+2026-05-22 19:34:02 - [DOC] === Fin solicitud documento (éxito) ===

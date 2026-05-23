@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\dales\\onedrive\\desktop\\zofraaa\\sigefidd-zofra\\zofratacna\\zofratacna\\presentacion\\gestiondocumentos\\historial.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\gestiondocumentos\\historial.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\dales\\onedrive\\desktop\\zofraaa\\sigefidd-zofra\\zofratacna\\zofratacna\\datos\\repositoriodocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\datos\\repositoriodocumentos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -119,7 +123,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -131,7 +135,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 0,
+              "Title": "Historial.aspx",
+              "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\Historial.aspx",
+              "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\Historial.aspx",
+              "ToolTip": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\Historial.aspx",
+              "RelativeToolTip": "ZofraTacna\\Presentacion\\GestionDocumentos\\Historial.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2026-05-23T00:34:29.494Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Web.config",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Web.config",
               "RelativeDocumentMoniker": "ZofraTacna\\Web.config",
@@ -144,7 +161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "EditarDocumento.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx",
@@ -156,7 +173,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ModuloGestionDocumental.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\LogicaNegocio\\ModuloGestionDocumental.cs",
@@ -168,7 +185,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Login.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
@@ -180,20 +197,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "RepositorioDocumentos.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "ToolTip": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioDocumentos.cs",
               "RelativeToolTip": "ZofraTacna\\Datos\\RepositorioDocumentos.cs",
-              "ViewState": "AgIAAOwGAAAAAAAAAAAwwPkGAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAANkGAAAAAAAAAAAmwPQGAABOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-22T08:29:20.662Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "pdf-observaciones-visor.js",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Scripts\\pdf-observaciones-visor.js",
               "RelativeDocumentMoniker": "ZofraTacna\\Scripts\\pdf-observaciones-visor.js",
@@ -205,7 +222,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "ObservacionMarcador.ashx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\ObservacionMarcador.ashx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\BandejaTrabajo\\ObservacionMarcador.ashx.cs",
@@ -217,7 +234,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "EditarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.cs",
@@ -229,7 +246,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "CargarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.cs",
@@ -241,7 +258,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "EmitirRevision.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\EmitirRevision.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\BandejaTrabajo\\EmitirRevision.aspx",
@@ -253,7 +270,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "CargarDocumento.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx",
@@ -264,7 +281,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Documento.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Models\\Documento.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Models\\Documento.cs",
@@ -276,7 +293,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "EditarDocumento.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\EditarDocumento.aspx",
@@ -287,7 +304,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "MisDocumentos.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\MisDocumentos.aspx",
@@ -299,7 +316,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "BandejaTrabajo.aspx",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\BandejaTrabajo\\BandejaTrabajo.aspx",
@@ -311,7 +328,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "EditarDocumento.aspx.designer.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\EditarDocumento.aspx.designer.cs",
@@ -323,7 +340,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "CargarDocumento.aspx.designer.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionDocumentos\\CargarDocumento.aspx.designer.cs",
@@ -335,7 +352,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "Login.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.cs",
@@ -347,7 +364,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "SOLUCION_LISTAS_ACUMULATIVAS.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_LISTAS_ACUMULATIVAS.md",
               "RelativeDocumentMoniker": "..\\..\\..\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_LISTAS_ACUMULATIVAS.md",
@@ -359,7 +376,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "SOLUCION_ERROR_BUSCADOR.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_ERROR_BUSCADOR.md",
               "RelativeDocumentMoniker": "..\\..\\..\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\SOLUCION_ERROR_BUSCADOR.md",
@@ -371,7 +388,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "BUSCADOR_SIMPLIFICADO.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\BUSCADOR_SIMPLIFICADO.md",
               "RelativeDocumentMoniker": "..\\..\\..\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\BUSCADOR_SIMPLIFICADO.md",
@@ -383,7 +400,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "CargarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-720217812\\CargarDocumento.aspx.cs",
@@ -395,7 +412,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
               "RelativeDocumentMoniker": "..\\..\\..\\zofra github\\SIGEFIDD-ZOFRA\\ZofraTacna\\IMPLEMENTACION_BUSCADOR_PARTICIPANTES.md",
@@ -407,7 +424,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "Login.aspx.designer.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx.designer.cs",
@@ -419,7 +436,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "ModuloAutenticacion.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\LogicaNegocio\\ModuloAutenticacion.cs",
@@ -431,7 +448,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "CargarDocumento.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1547784299\\CargarDocumento.aspx.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1547784299\\CargarDocumento.aspx.cs",
@@ -443,7 +460,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "GestionRoles.aspx.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\GestionRoles\\GestionRoles.aspx.cs",
@@ -455,7 +472,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "ConectorSAS.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\ServiciosExternos\\ConectorSAS.cs",
@@ -467,7 +484,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "RepositorioUsuariosRoles.cs",
               "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
               "RelativeDocumentMoniker": "ZofraTacna\\Datos\\RepositorioUsuariosRoles.cs",
