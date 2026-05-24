@@ -1,12 +1,45 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\acer\\OneDrive\\Escritorio\\2026-I\\Web\\SIGEFIDD-ZOFRA\\ZofraTacna\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|c:\\users\\dales\\onedrive\\desktop\\zofraaa\\sigefidd-zofra\\zofratacna\\zofratacna\\presentacion\\iniciosesion\\login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}",
+      "RelativeMoniker": "D:0:0:{234A9862-96D3-4E93-A615-74023E30D56C}|ZofraTacna\\ZofraTacna.csproj|solutionrelative:zofratacna\\presentacion\\iniciosesion\\login.aspx||{57312C73-6202-49E9-B1E1-40EA1A6DC1F6}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Login.aspx",
+              "DocumentMoniker": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "RelativeDocumentMoniker": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "ToolTip": "C:\\Users\\dales\\OneDrive\\Desktop\\zofraaa\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "RelativeToolTip": "ZofraTacna\\Presentacion\\InicioSesion\\Login.aspx",
+              "LogicalView": "7651a703-06e5-11d1-8ebd-00a0c90f26ea",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000195|",
+              "WhenOpened": "2026-05-24T22:48:36.811Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -155,7 +155,7 @@ namespace ZofraTacna.Presentacion
             if (ok)
             {
                 // Redirigir a bandeja después de firmar exitosamente
-                Response.Redirect("BandejaTrabajo.aspx");
+                ScriptManager.RegisterStartupScript(this, GetType(), "FirmaExito", "mostrarExitoYRedirigir();", true);
             }
             else
             {
@@ -394,7 +394,7 @@ namespace ZofraTacna.Presentacion
 
                 if (ok)
                 {
-                    Response.Redirect("BandejaTrabajo.aspx");
+                    ScriptManager.RegisterStartupScript(this, GetType(), "FirmaExito", "mostrarExitoYRedirigir();", true);
                 }
                 else
                 {

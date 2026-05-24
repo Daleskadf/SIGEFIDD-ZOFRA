@@ -44,6 +44,18 @@
         .btn-secundario { display:inline-block; background:#e8ecf7; color:#1a2a4a; border:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; margin-top:10px; }
         .btn-cerrar-modal { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#999; }
         .mensaje-error { color:#c0392b; font-size:12px; margin-top:10px; font-weight:600; }
+        
+        /* Modal Éxito */
+        .modal-exito-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center}
+        .modal-exito-box{background:#fff;border-radius:16px;width:min(400px,92vw);box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden;text-align:center}
+        .modal-exito-head{background:linear-gradient(135deg,#2e7d32,#43a047);padding:28px 24px 20px}
+        .modal-exito-icon{width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+        .modal-exito-icon svg{width:30px;height:30px;fill:#fff}
+        .modal-exito-title{color:#fff;font-size:17px;font-weight:700;margin:0}
+        .modal-exito-body{padding:20px 24px 24px}
+        .modal-exito-msg{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5}
+        .modal-exito-bar-wrap{background:#e8f5e9;border-radius:8px;height:6px;overflow:hidden}
+        .modal-exito-bar{height:100%;background:linear-gradient(90deg,#2e7d32,#43a047);width:100%;border-radius:8px;transition:width linear}
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -114,6 +126,23 @@
         <p id="firma-peru-mensaje">Iniciando Firma Perú...</p>
     </div>
 </div>
+<!-- Modal Éxito Firma -->
+<div id="modalExitoFirma" class="modal-exito-overlay" aria-hidden="true">
+    <div class="modal-exito-box">
+        <div class="modal-exito-head">
+            <div class="modal-exito-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p class="modal-exito-title">Documento firmado correctamente.</p>
+        </div>
+        <div class="modal-exito-body">
+            <p class="modal-exito-msg">Redirigiendo al Historial en unos segundos&hellip;</p>
+            <div class="modal-exito-bar-wrap">
+                <div id="barraExitoFirma" class="modal-exito-bar" style="width: 0%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="zfnToastHost" class="zfn-toast-host"></div>
 </form>
 <script>
@@ -129,8 +158,7 @@ function signatureInit() {
 
 function signatureOk() {
     console.log('signatureOk OK');
-    alert('¡Firma completada!');
-    window.location.href = 'BandejaTrabajo.aspx';
+    mostrarExitoYRedirigir();
 }
 
 function signatureCancel() {
@@ -164,6 +192,27 @@ function iniciarFirmaDigital() {
         alert('Error: ' + e.message);
     }
 }
+
+function mostrarExitoYRedirigir() {
+    var modal = document.getElementById('modalExitoFirma');
+    var barra = document.getElementById('barraExitoFirma');
+    if (modal && barra) {
+        modal.style.display = 'flex';
+        // Iniciar animación de la barra
+        setTimeout(function () {
+            barra.style.width = '100%';
+            barra.style.transition = 'width 2.5s linear';
+        }, 50);
+
+        // Redirigir después de 2.5 segundos
+        setTimeout(function () {
+            window.location.href = '../GestionDocumentos/Historial.aspx';
+        }, 2500);
+    } else {
+        window.location.href = '../GestionDocumentos/Historial.aspx';
+    }
+}
+
 function abrirModalOpcionesFirma() {
     document.getElementById('modalOpcionesFirma').style.display = 'flex';
     cambiarMetodoFirma();
