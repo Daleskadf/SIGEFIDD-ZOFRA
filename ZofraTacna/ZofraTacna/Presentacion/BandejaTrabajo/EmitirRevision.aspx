@@ -447,7 +447,13 @@
                 flex: 1 1 auto;
                 min-height: min(720px, 72vh);
                 height: min(720px, 72vh);
-                border: none
+                border: none;
+                zoom: 1;
+                transform: scale(1);
+                transform-origin: 0 0;
+                position: relative;
+                overflow: auto;
+                background: #52525b
             }
 
             .pdf-mode-prev .pdf-col:nth-child(2),
@@ -711,16 +717,24 @@
                 min-height: 0;
                 display: flex;
                 flex-direction: column;
-                position: relative
+                position: relative;
+                height: 100%;
+                overflow: hidden
             }
 
             .pdf-simple-host iframe {
                 display: block;
                 width: 100%;
-                flex: 1;
+                height: 100%;
+                flex: 1 1 auto;
                 min-height: 0;
                 border: none;
-                background: #52525b
+                background: #52525b;
+                zoom: 1;
+                transform: scale(1);
+                transform-origin: 0 0;
+                position: relative;
+                overflow: auto
             }
 
             .pdf-simple-host .pdf-empty {
@@ -855,11 +869,17 @@
             }
 
             .pdf-col iframe {
-                flex: 1;
+                flex: 1 1 auto;
                 min-height: 380px;
                 border: none;
                 width: 100%;
-                background: #52525b
+                height: 100%;
+                background: #52525b;
+                zoom: 1;
+                transform: scale(1);
+                transform-origin: 0 0;
+                position: relative;
+                overflow: auto
             }
 
             @media (max-width:1100px) {

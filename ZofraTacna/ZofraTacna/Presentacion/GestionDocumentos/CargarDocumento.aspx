@@ -1315,7 +1315,7 @@
                         <!-- ═══ ACCIONES ═══ -->
                         <div class="form-actions">
                             <button type="button" id="btnVisualizar" class="btn-accion btn-visualizar"
-                                onclick="abrirVisorPDF()" style="display:none;">📄 Visualizar Documento</button>
+                                onclick="abrirVisorPDF()" style="display:none;">👁 Ver Documento</button>
                             <asp:Button ID="btnCargar" runat="server" Text="📤  Cargar Documento"
                                 CssClass="btn-accion btn-submit" OnClick="btnCargar_Click"
                                 OnClientClick="return validarAntesDeEnviar();" />

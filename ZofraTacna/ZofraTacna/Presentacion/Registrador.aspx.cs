@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Web.UI;
 
 namespace ZofraTacna
@@ -42,14 +43,73 @@ namespace ZofraTacna
                     @"SELECT COUNT(*) FROM Documento d JOIN Maestro m ON d.IdEstadoDocumento=m.IdMaestro
                       WHERE d.LoginUsuarioRegistrador=@u AND m.Codigo='FCOM' AND d.Activo=1", login);
 
+                CargarObservaciones(conn, login);
                 CargarAlertas(conn, login);
             }
+        }
+
+        private void CargarObservaciones(SqlConnection conn, string login)
+        {
+            string sql = @"
+                SELECT TOP 50
+                       h.IdHistorial,
+                       h.IdDocumento,
+                       d.Asunto,
+                       d.CodigoDocumento,
+                       h.LoginUsuarioAccion,
+                       h.DetalleAccion,
+                       h.FechaCambio
+                FROM dbo.HistorialDocumento h
+                INNER JOIN dbo.Documento d ON d.IdDocumento = h.IdDocumento
+                WHERE d.LoginUsuarioRegistrador = @login
+                  AND d.Activo = 1
+                  AND (h.DetalleAccion LIKE '%observad%' OR h.DetalleAccion LIKE '%Observad%')
+                ORDER BY h.FechaCambio DESC";
+
+            var observaciones = new List<object>();
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@login", login);
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        DateTime fechaCambio = Convert.ToDateTime(dr["FechaCambio"]);
+                        observaciones.Add(new
+                        {
+                            IdHistorial = Convert.ToInt32(dr["IdHistorial"]),
+                            IdDocumento = Convert.ToInt32(dr["IdDocumento"]),
+                            Asunto = dr["Asunto"].ToString(),
+                            CodigoDocumento = dr["CodigoDocumento"].ToString(),
+                            UsuarioRevisor = dr["LoginUsuarioAccion"].ToString(),
+                            DetalleAccion = dr["DetalleAccion"].ToString(),
+                            FechaObservacion = fechaCambio.ToString("dd/MM/yyyy HH:mm")
+                        });
+                    }
+                }
+            }
+
+            litTotalObservaciones.Text = observaciones.Count.ToString();
+            pnlSinObservaciones.Visible = observaciones.Count == 0;
+            
+            // Dividir en primeros 4 y resto
+            var obs4 = observaciones.Take(4).ToList();
+            var obsResto = observaciones.Skip(4).ToList();
+            
+            rptObservaciones.DataSource = obs4;
+            rptObservaciones.DataBind();
+            
+            rptObservacionesExtra.DataSource = obsResto;
+            rptObservacionesExtra.DataBind();
+            
+            pnlObsExpandir.Visible = obsResto.Count > 0;
         }
 
         private void CargarAlertas(SqlConnection conn, string login)
         {
             string sql = @"
-                SELECT d.Asunto,
+                SELECT d.IdDocumento,
+                       d.Asunto,
                        me.Descripcion AS EstadoDesc,
                        DATEADD(day, dp.PlazoDias, d.FechaCreacion) AS FechaLimite,
                        DATEDIFF(hour, DATEADD(day, dp.PlazoDias, d.FechaCreacion), GETDATE()) AS HorasVencido
@@ -72,21 +132,32 @@ namespace ZofraTacna
                         int horas = Convert.ToInt32(dr["HorasVencido"]);
                         alertas.Add(new
                         {
-                            Asunto      = dr["Asunto"].ToString(),
-                            EstadoDesc  = dr["EstadoDesc"].ToString(),
+                            IdDocumento = Convert.ToInt32(dr["IdDocumento"]),
+                            Asunto = dr["Asunto"].ToString(),
+                            EstadoDesc = dr["EstadoDesc"].ToString(),
                             FechaLimite = Convert.ToDateTime(dr["FechaLimite"]).ToString("dd/MM/yyyy, HH:mm"),
                             HorasVencido = horas,
-                            NivelCss    = horas > 100 ? "critico" : "urgente",
-                            NivelLabel  = horas > 100 ? "Critico" : "Urgente"
+                            NivelCss = horas > 100 ? "critico" : "urgente",
+                            NivelLabel = horas > 100 ? "Critico" : "Urgente"
                         });
                     }
                 }
             }
 
-            litTotalAlertas.Text  = alertas.Count.ToString();
+            litTotalAlertas.Text = alertas.Count.ToString();
             pnlSinAlertas.Visible = alertas.Count == 0;
-            rptAlertas.DataSource = alertas;
+            
+            // Dividir en primeros 4 y resto
+            var alerta4 = alertas.Take(4).ToList();
+            var alertaResto = alertas.Skip(4).ToList();
+            
+            rptAlertas.DataSource = alerta4;
             rptAlertas.DataBind();
+            
+            rptAlertasExtra.DataSource = alertaResto;
+            rptAlertasExtra.DataBind();
+            
+            pnlPlazoExpandir.Visible = alertaResto.Count > 0;
         }
 
         private string Contar(SqlConnection conn, string sql, string login)

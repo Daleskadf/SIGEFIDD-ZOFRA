@@ -8,6 +8,28 @@
     <title>SIGEFIDD-ZOFRA | Registrador</title>
     <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
     <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
+    <script>
+        function toggleExpandir(btn, targetId) {
+            var target = document.getElementById(targetId);
+            var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+            
+            if (isExpanded) {
+                // Contraer
+                target.style.display = 'none';
+                btn.classList.remove('btn-expandir-expanded');
+                btn.setAttribute('aria-expanded', 'false');
+                var textMas = btn.getAttribute('data-text-mas');
+                btn.innerHTML = textMas + ' <span style="font-size:10px;margin-left:4px;">▼</span>';
+            } else {
+                // Expandir
+                target.style.display = 'contents';
+                btn.classList.add('btn-expandir-expanded');
+                btn.setAttribute('aria-expanded', 'true');
+                var textMenos = btn.getAttribute('data-text-menos');
+                btn.innerHTML = textMenos + ' <span style="font-size:10px;margin-left:4px;display:inline-block;transform:rotate(180deg);">▼</span>';
+            }
+        }
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -85,6 +107,14 @@
         .badge-nivel.urgente { color: #f59f00; border-color: #f59f00; background: #fffbf0; }
 
         .sin-alertas { background: white; border-radius: 10px; padding: 30px; text-align: center; color: #aaa; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+        /* BOTONES DESPLEGABLES STICKY */
+        .btn-expandir-wrap { position: sticky; bottom: 0; text-align: center; padding: 12px 0 16px; background: linear-gradient(to top, rgba(240, 242, 245, 0.98), rgba(240, 242, 245, 0.85), transparent); z-index: 10; margin-top: 8px; }
+        .btn-expandir { background: linear-gradient(90deg, #3b5bdb 0%, #2a4ab8 100%); border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(59, 91, 219, 0.25); display: inline-flex; align-items: center; gap: 8px; }
+        .btn-expandir:hover { background: linear-gradient(90deg, #2a4ab8 0%, #1a3a98 100%); box-shadow: 0 4px 12px rgba(59, 91, 219, 0.35); transform: translateY(-2px); }
+        .btn-expandir:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(59, 91, 219, 0.25); }
+        .btn-expandir::after { content: '▼'; font-size: 10px; transition: transform 0.3s ease; }
+        .btn-expandir-expanded::after { transform: rotate(180deg); }
     </style>
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
@@ -174,6 +204,63 @@
                 </div>
             </div>
 
+            <!-- ALERTAS DE OBSERVACIONES -->
+            <div class="section-header">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#3b5bdb;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Alertas de Observaciones
+                    <span class="alert-badge"><asp:Literal ID="litTotalObservaciones" runat="server" /></span>
+                </div>
+            </div>
+
+            <asp:Panel ID="pnlSinObservaciones" runat="server" Visible="false">
+                <div class="sin-alertas">No hay observaciones pendientes.</div>
+            </asp:Panel>
+
+            <div id="obsVisibles" style="display:contents;">
+                <asp:Repeater ID="rptObservaciones" runat="server">
+                    <ItemTemplate>
+                        <div class="alerta-item obs-item" style="border-color: #3b5bdb;">
+                            <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
+                                <div class="alerta-dot" style="background: #3b5bdb;"></div>
+                                <div>
+                                    <div style="font-size:13px;color:#3b5bdb;font-weight:600;"><%# Eval("FechaObservacion") %></div>
+                                    <div class="alerta-nombre"><%# Eval("Asunto") %></div>
+                                    <div class="alerta-meta">Observado por: <%# Eval("UsuarioRevisor") %></div>
+                                </div>
+                            </div>
+                            <asp:HyperLink ID="hlRevisarObs" runat="server" NavigateUrl='<%# "~/Presentacion/GestionDocumentos/VerObservaciones.aspx?id=" + Eval("IdDocumento") %>' style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#1a7cba,#3b5bdb);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;margin-left:12px;">
+                                Revisar
+                            </asp:HyperLink>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </div>
+            <div id="obsExpandidas" style="display:none;">
+                <asp:Repeater ID="rptObservacionesExtra" runat="server">
+                    <ItemTemplate>
+                        <div class="alerta-item" style="border-color: #3b5bdb;">
+                            <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
+                                <div class="alerta-dot" style="background: #3b5bdb;"></div>
+                                <div>
+                                    <div style="font-size:13px;color:#3b5bdb;font-weight:600;"><%# Eval("FechaObservacion") %></div>
+                                    <div class="alerta-nombre"><%# Eval("Asunto") %></div>
+                                    <div class="alerta-meta">Observado por: <%# Eval("UsuarioRevisor") %></div>
+                                </div>
+                            </div>
+                            <asp:HyperLink ID="hlRevisarExtra" runat="server" NavigateUrl='<%# "~/Presentacion/GestionDocumentos/VerObservaciones.aspx?id=" + Eval("IdDocumento") %>' style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#1a7cba,#3b5bdb);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;margin-left:12px;">
+                                Revisar
+                            </asp:HyperLink>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </div>
+            <asp:Panel ID="pnlObsExpandir" runat="server" CssClass="btn-expandir-wrap">
+                <button type="button" class="btn-expandir" onclick="toggleExpandir(this, 'obsExpandidas')" aria-expanded="false" data-text-mas="Ver más observaciones" data-text-menos="Ver menos observaciones">
+                    Ver más observaciones <span style="font-size:10px;margin-left:4px;">▼</span>
+                </button>
+            </asp:Panel>
+
             <!-- ALERTAS DE PLAZOS -->
             <div class="section-header">
                 <div class="section-title">
@@ -181,28 +268,51 @@
                     Alertas de Plazos
                     <span class="alert-badge"><asp:Literal ID="litTotalAlertas" runat="server" /></span>
                 </div>
-                <a href="#" class="ver-todas">Ver todas</a>
             </div>
 
             <asp:Panel ID="pnlSinAlertas" runat="server" Visible="false">
                 <div class="sin-alertas">No hay alertas de plazos pendientes.</div>
             </asp:Panel>
 
-            <asp:Repeater ID="rptAlertas" runat="server">
-                <ItemTemplate>
-                    <div class="alerta-item <%# Eval("NivelCss") %>">
-                        <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
-                            <div class="alerta-dot <%# Eval("NivelCss") %>"></div>
-                            <div>
-                                <div class="alerta-tiempo <%# Eval("NivelCss") %>">Plazo vencido hace <%# Eval("HorasVencido") %> horas</div>
-                                <div class="alerta-nombre"><%# Eval("Asunto") %></div>
-                                <div class="alerta-meta"><%# Eval("EstadoDesc") %> &bull; L&iacute;mite: <%# Eval("FechaLimite") %></div>
+            <div id="plazoVisibles" style="display:contents;">
+                <asp:Repeater ID="rptAlertas" runat="server">
+                    <ItemTemplate>
+                        <div class="alerta-item plazo-item <%# Eval("NivelCss") %>">
+                            <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
+                                <div class="alerta-dot <%# Eval("NivelCss") %>"></div>
+                                <div>
+                                    <div class="alerta-tiempo <%# Eval("NivelCss") %>">Plazo vencido hace <%# Eval("HorasVencido") %> horas</div>
+                                    <div class="alerta-nombre"><%# Eval("Asunto") %></div>
+                                    <div class="alerta-meta"><%# Eval("EstadoDesc") %> &bull; L&iacute;mite: <%# Eval("FechaLimite") %></div>
+                                </div>
                             </div>
+                            <span class="badge-nivel <%# Eval("NivelCss") %>"><%# Eval("NivelLabel") %></span>
                         </div>
-                        <span class="badge-nivel <%# Eval("NivelCss") %>"><%# Eval("NivelLabel") %></span>
-                    </div>
-                </ItemTemplate>
-            </asp:Repeater>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </div>
+            <div id="plazoExpandidas" style="display:none;">
+                <asp:Repeater ID="rptAlertasExtra" runat="server">
+                    <ItemTemplate>
+                        <div class="alerta-item <%# Eval("NivelCss") %>">
+                            <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
+                                <div class="alerta-dot <%# Eval("NivelCss") %>"></div>
+                                <div>
+                                    <div class="alerta-tiempo <%# Eval("NivelCss") %>">Plazo vencido hace <%# Eval("HorasVencido") %> horas</div>
+                                    <div class="alerta-nombre"><%# Eval("Asunto") %></div>
+                                    <div class="alerta-meta"><%# Eval("EstadoDesc") %> &bull; L&iacute;mite: <%# Eval("FechaLimite") %></div>
+                                </div>
+                            </div>
+                            <span class="badge-nivel <%# Eval("NivelCss") %>"><%# Eval("NivelLabel") %></span>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </div>
+            <asp:Panel ID="pnlPlazoExpandir" runat="server" CssClass="btn-expandir-wrap">
+                <button type="button" class="btn-expandir" onclick="toggleExpandir(this, 'plazoExpandidas')" aria-expanded="false" data-text-mas="Ver más plazos" data-text-menos="Ver menos plazos">
+                    Ver más plazos <span style="font-size:10px;margin-left:4px;">▼</span>
+                </button>
+            </asp:Panel>
         </div>
     </div>
 </div>

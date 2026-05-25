@@ -980,7 +980,7 @@
                         <!-- BOTONES ACCIÓN -->
                         <div class="actions">
                             <button type="button" id="btnVisualizarPdf" class="btn-visualizar" style="display:none;"
-                                onclick="editDocAbrirVisorPdf();">📄 Visualizar documento</button>
+                                onclick="editDocAbrirVisorPdf();">👁 Ver documento</button>
                             <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección"
                                 CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click"
                                 OnClientClick="return editDocValidarAntesEnviar();" />

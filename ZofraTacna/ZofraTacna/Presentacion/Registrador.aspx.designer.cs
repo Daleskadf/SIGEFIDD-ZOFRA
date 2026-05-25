@@ -13,9 +13,16 @@ namespace ZofraTacna
         protected global::System.Web.UI.WebControls.Literal litCargados;
         protected global::System.Web.UI.WebControls.Literal litEnProceso;
         protected global::System.Web.UI.WebControls.Literal litCompletados;
+        protected global::System.Web.UI.WebControls.Literal litTotalObservaciones;
+        protected global::System.Web.UI.WebControls.Panel pnlSinObservaciones;
+        protected global::System.Web.UI.WebControls.Repeater rptObservaciones;
+        protected global::System.Web.UI.WebControls.Panel pnlObsExpandir;
+        protected global::System.Web.UI.WebControls.Repeater rptObservacionesExtra;
         protected global::System.Web.UI.WebControls.Literal litTotalAlertas;
         protected global::System.Web.UI.WebControls.Panel pnlSinAlertas;
         protected global::System.Web.UI.WebControls.Repeater rptAlertas;
+        protected global::System.Web.UI.WebControls.Panel pnlPlazoExpandir;
+        protected global::System.Web.UI.WebControls.Repeater rptAlertasExtra;
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
     }
 }
