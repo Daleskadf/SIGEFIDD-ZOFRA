@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs"
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditarDocumento.aspx.cs"
     Inherits="ZofraTacna.Presentacion.EditarDocumento, ZofraTacna" ResponseEncoding="utf-8"
     ContentType="text/html; charset=utf-8" %>
     <!DOCTYPE html>
@@ -10,7 +10,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SIGEFIDD-ZOFRA | Editar Documento</title>
         <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+        <link rel="stylesheet" href="<%= ResolveUrl("~/Content/pdf-observaciones.css") %>" />
         <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
+        <script defer src="<%= ResolveUrl("~/Scripts/pdf-observaciones-visor.js") %>"></script>
         <style>
             * {
                 margin: 0;
@@ -358,7 +360,8 @@
             }
 
             .btn-visualizar {
-                padding: 12px 22px;
+                height: 42px;
+                padding: 0 20px;
                 border-radius: 9px;
                 font-size: 13px;
                 font-weight: 700;
@@ -367,6 +370,9 @@
                 border: 1.5px solid #1a2a4a;
                 background: linear-gradient(90deg, #1a2a4a, #2a3f6f);
                 box-shadow: 0 4px 12px rgba(26, 42, 74, .22);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .btn-visualizar:hover {
@@ -410,16 +416,25 @@
             }
 
             .btn-submit {
-                padding: 12px 24px;
-                border: none;
+                height: 42px;
+                padding: 0 20px;
+                border: 1.5px solid transparent;
                 border-radius: 9px;
                 color: #fff;
-                font-size: 13px;
+                font-size: 13px !important;
+                font-family: inherit !important;
                 font-weight: 700;
                 cursor: pointer;
                 background: linear-gradient(135deg, #2a3f6f, #1a2a4a);
                 transition: opacity .2s;
                 box-shadow: 0 6px 16px rgba(26, 42, 74, .22);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-submit-correccion {
+                margin-left: 20px;
             }
 
             .btn-submit:hover {
@@ -574,22 +589,16 @@
             }
 
             /* ── Comparación de versiones PDF ── */
-            .content.content--compare-pdf {
-                overflow-y: auto;
-                overflow-x: hidden;
-                padding-bottom: 24px;
-                min-height: 0;
-                -webkit-overflow-scrolling: touch
-            }
 
             .btn-comparar {
-                display: inline-flex;
+                display: none;
+                height: 42px;
                 align-items: center;
                 justify-content: center;
-                font-size: 12px;
+                font-size: 13px;
                 color: #fff;
-                padding: 10px 16px;
-                border-radius: 10px;
+                padding: 0 20px;
+                border-radius: 9px;
                 background: linear-gradient(135deg, #3d5faf, #2a4588);
                 border: 1.5px solid #1e3770;
                 box-shadow: 0 4px 14px rgba(42, 69, 136, .35);
@@ -613,34 +622,74 @@
                 color: #fff;
                 padding: 10px 16px;
                 border-radius: 10px;
-                background: linear-gradient(135deg, #2a3f6f, #1a2a4a);
-                border: 1px solid #17243f;
+                background: linear-gradient(135deg, #c0392b, #8b1a1a);
+                border: 1px solid #7d1717;
                 font-weight: 700;
                 cursor: pointer;
-                font-family: inherit
+                font-family: inherit;
+                border: none;
             }
 
             .btn-cerrar-cmp:hover {
-                filter: brightness(1.06)
+                filter: brightness(1.08)
             }
 
-            .cmp-section {
-                margin-top: 20px
+            /* ── Modal Comparación ── */
+            .modal-comparacion-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 5000;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
             }
 
-            .cmp-section-head {
+            /* Asegurar que el popover de observaciones se vea por encima del modal */
+            .pdf-marker-popover {
+                z-index: 6000 !important;
+            }
+
+            .modal-comparacion-box {
+                background: #fff;
+                border-radius: 14px;
+                width: 95vw;
+                max-width: 1400px;
+                height: 90vh;
+                max-height: 90vh;
+                box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .modal-comparacion-head {
+                background: linear-gradient(135deg, #1a2a4a, #2a3f6f);
+                color: #fff;
+                padding: 16px 24px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                gap: 12px;
-                margin-bottom: 12px
+                flex-shrink: 0;
             }
 
-            .cmp-section-head h2 {
+            .modal-comparacion-head h2 {
                 font-size: 16px;
                 font-weight: 700;
-                color: #1a2a4a;
-                margin: 0
+                margin: 0;
+                color: #fff;
+            }
+
+            .modal-comparacion-body {
+                flex: 1;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
             }
 
             .pdf-compare-bar {
@@ -649,7 +698,6 @@
                 padding: 10px 18px;
                 margin: 0;
                 flex-shrink: 0;
-                border-radius: 10px 10px 0 0
             }
 
             .pdf-compare-hint {
@@ -661,10 +709,10 @@
             .pdf-compare-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
-                min-height: min(720px, 72vh);
+                gap: 0;
+                flex: 1;
+                min-height: 0;
                 width: 100%;
-                border-radius: 0 0 10px 10px;
                 overflow: hidden;
                 background: #3a3a42
             }
@@ -690,45 +738,6 @@
                 flex-shrink: 0
             }
 
-            .pdf-col-toolbar {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                background: #fafbfd;
-                border-bottom: 1px solid #dde1f0;
-                flex-shrink: 0
-            }
-
-            .pdf-col-toolbar select {
-                flex: 1;
-                min-width: 140px;
-                max-width: 100%;
-                padding: 8px 10px;
-                border-radius: 8px;
-                border: 1.5px solid #cfd8ef;
-                font-size: 12px;
-                font-weight: 600;
-                color: #1a2a4a;
-                background: #fff
-            }
-
-            .cmp-tablink {
-                font-size: 11px;
-                font-weight: 600;
-                color: #2a3f6f;
-                text-decoration: none;
-                border-bottom: 2px solid transparent;
-                padding-bottom: 2px;
-                white-space: nowrap
-            }
-
-            .cmp-tablink:hover {
-                border-bottom-color: #2a3f6f;
-                color: #1a2a4a
-            }
-
             .pdf-col iframe {
                 flex: 1;
                 min-height: 380px;
@@ -737,72 +746,37 @@
                 background: #52525b
             }
 
-            .pdf-compare-toolbar {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: space-between;
-                gap: 12px;
-                margin-top: 12px;
-                padding-top: 12px;
-                border-top: 1px solid rgba(26, 42, 74, .12)
-            }
-
-            .pdf-compare-view-btns {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                align-items: center
-            }
-
-            .pdf-compare-toolbar-label {
-                font-size: 11px;
-                font-weight: 700;
-                color: #1a2a4a;
-                text-transform: uppercase;
-                letter-spacing: .4px;
-                margin-right: 4px
-            }
-
-            .cmp-chip {
-                border: 1.5px solid #cfd8ef;
-                background: #fff;
-                color: #1a2a4a;
-                border-radius: 999px;
-                padding: 8px 14px;
-                font-size: 12px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: background .15s, border-color .15s, box-shadow .15s
-            }
-
-            .cmp-chip:hover {
-                border-color: #1a2a4a;
-                background: #f5f7fc
-            }
-
-            .cmp-chip.cmp-chip-on {
-                background: linear-gradient(135deg, #1a2a4a, #2a3f6f);
-                color: #fff;
-                border-color: #1a2a4a;
-                box-shadow: 0 4px 12px rgba(26, 42, 74, .25)
-            }
-
-            .pdf-compare-open-links {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px 16px;
-                align-items: center
-            }
-
-            .pdf-mode-prev .pdf-col:nth-child(2),
-            .pdf-mode-next .pdf-col:nth-child(1) {
-                display: none
+            .pdf-col .pdf-viewer-host {
+                flex: 1;
+                min-height: 0;
             }
 
             .pdf-compare-grid.pdf-mode-prev,
             .pdf-compare-grid.pdf-mode-next {
                 grid-template-columns: 1fr !important
+            }
+
+            /* Actions row: all aligned to the right */
+            .actions-row {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .actions-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .actions-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
             }
 
             @media (max-width:1100px) {
@@ -882,13 +856,6 @@
                                 <h1>Editar Documento</h1>
                             </div>
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <asp:Button ID="btnCompararDocumento" runat="server" CssClass="btn-comparar"
-                                    Text="Comparar Documento"
-                                    ToolTip="Dividir la vista y elegir dos versiones del mismo tr&aacute;mite"
-                                    OnClick="btnCompararDocumento_Click" CausesValidation="false" Visible="false" />
-                                <asp:Button ID="btnCerrarComparacion" runat="server" CssClass="btn-cerrar-cmp"
-                                    Text="Cerrar comparaci&oacute;n" ToolTip="Volver a la vista &uacute;nica"
-                                    OnClick="btnCerrarComparacion_Click" CausesValidation="false" Visible="false" />
                                 <a class="btn-back"
                                     href='VerObservaciones.aspx?id=<%= Request.QueryString["id"] %>'><span
                                         class="btn-back-arrow" aria-hidden="true">&#8592;</span> Regresar</a>
@@ -978,46 +945,43 @@
                         </div>
 
                         <!-- BOTONES ACCIÓN -->
-                        <div class="actions">
+                        <div class="actions-row">
+                            <button type="button" id="btnCompararDocumento" class="btn-comparar"
+                                onclick="editDocAbrirComparacion();" title="Comparar con el documento observado">
+                                📄 Comparar Documento</button>
                             <button type="button" id="btnVisualizarPdf" class="btn-visualizar" style="display:none;"
                                 onclick="editDocAbrirVisorPdf();">👁 Ver documento</button>
-                            <asp:Button ID="btnEnviarCorreccion" runat="server" Text="Enviar Corrección"
+                            <asp:Button ID="btnEnviarCorreccion" runat="server" Text="✈️ Enviar Corrección"
                                 CssClass="btn-submit btn-submit-correccion" OnClick="btnEnviarCorreccion_Click"
                                 OnClientClick="return editDocValidarAntesEnviar();" />
                         </div>
 
-                        <!-- ══ SECCIÓN COMPARAR DOCUMENTO ══ -->
-                        <asp:Panel ID="pnlComparacion" runat="server" Visible="false" CssClass="cmp-section">
-                            <div class="cmp-section-head">
-                                <h2>Comparaci&oacute;n de versiones</h2>
-                            </div>
-                            <div class="pdf-compare-bar">
-                                <p class="pdf-compare-hint">Elija la versi&oacute;n en cada panel (vigente o archivada).
-                                    Los archivos provienen del historial del mismo registro.</p>
-                            </div>
-                            <asp:Panel ID="pnlVistaPdfComparar" runat="server" CssClass="pdf-compare-grid">
-                                <div class="pdf-col">
-                                    <div class="pdf-col-title">Panel izquierdo</div>
-                                    <div class="pdf-col-toolbar">
-                                        <asp:DropDownList ID="ddlPdfCompareIzq" runat="server" AutoPostBack="true"
-                                            OnSelectedIndexChanged="ddlPdfCompareIzq_SelectedIndexChanged" />
-                                        <asp:HyperLink ID="lnkPdfIzqNuevaPestana" runat="server" CssClass="cmp-tablink"
-                                            Target="_blank" Text="Nueva pesta&ntilde;a" />
-                                    </div>
-                                    <iframe runat="server" id="ifrPdfAnterior" title="PDF panel izquierdo"></iframe>
+                        <!-- ══ MODAL COMPARAR DOCUMENTO (100% cliente) ══ -->
+                        <div id="modalComparacionOverlay" class="modal-comparacion-overlay">
+                            <div class="modal-comparacion-box">
+                                <div class="modal-comparacion-head">
+                                    <h2>Comparaci&oacute;n: Observado vs. Nuevo</h2>
+                                    <button type="button" class="btn-cerrar-cmp" onclick="editDocCerrarComparacion();"
+                                        title="Cerrar comparaci&oacute;n">✕ Cerrar</button>
                                 </div>
-                                <div class="pdf-col">
-                                    <div class="pdf-col-title">Panel derecho</div>
-                                    <div class="pdf-col-toolbar">
-                                        <asp:DropDownList ID="ddlPdfCompareDer" runat="server" AutoPostBack="true"
-                                            OnSelectedIndexChanged="ddlPdfCompareDer_SelectedIndexChanged" />
-                                        <asp:HyperLink ID="lnkPdfDerNuevaPestana" runat="server" CssClass="cmp-tablink"
-                                            Target="_blank" Text="Nueva pesta&ntilde;a" />
+                                <div class="modal-comparacion-body">
+                                    <div class="pdf-compare-bar">
+                                        <p class="pdf-compare-hint">Panel izquierdo: PDF vigente con marcadores de observaci&oacute;n.
+                                            Panel derecho: el nuevo PDF que acaba de subir.</p>
                                     </div>
-                                    <iframe runat="server" id="ifrPdfActualCompare" title="PDF panel derecho"></iframe>
+                                    <div class="pdf-compare-grid">
+                                        <div class="pdf-col">
+                                            <div class="pdf-col-title">📌 Documento observado (con marcadores)</div>
+                                            <div id="cmpPdfViewerHost" class="pdf-viewer-host"></div>
+                                        </div>
+                                        <div class="pdf-col">
+                                            <div class="pdf-col-title">📄 Nuevo documento (subido)</div>
+                                            <iframe id="cmpPdfNuevoIframe" style="flex:1;width:100%;border:none;min-height:380px;background:#52525b;"></iframe>
+                                        </div>
+                                    </div>
                                 </div>
-                            </asp:Panel>
-                        </asp:Panel>
+                            </div>
+                        </div>
 
                         <!-- Modal visor PDF (mismo criterio que CargarDocumento) -->
                         <div id="modalVisorPDFEdit"
@@ -1086,10 +1050,15 @@
         <script type="text/javascript">
             window.editDocPdfArchivo = null;
             window.editDocPdfBlobUrl = null;
+            window.editDocCmpBlobUrl = null;
+            window.editDocCmpVisor = null;
             window.editDocLockTimer = null;
             window.editDocBloqueado = '<%= ModoBloqueado ? "1" : "0" %>' === '1';
             window.editDocId = parseInt('<%= Request.QueryString["id"] ?? "0" %>', 10) || 0;
             window.editDocLockToken = '<%= LockToken %>';
+            window.editDocPdfVigenteUrl = '<%= PdfVigenteUrl %>';
+            window.editDocMarcadorApiUrl = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/ObservacionMarcador.ashx") %>';
+            window.editDocUsarMarcadores = '<%= UsarVisorMarcadores ? "1" : "0" %>' === '1';
 
             function editDocGet(id) { return document.getElementById(id); }
 
@@ -1097,6 +1066,7 @@
                 var fileInput = editDocGet('<%= filePDF.ClientID %>');
                 var lblArchivo = editDocGet('editDocLblArchivo');
                 var btnVis = editDocGet('btnVisualizarPdf');
+                var btnCmp = editDocGet('btnCompararDocumento');
                 var msgCli = editDocGet('editDocMsgCliente');
                 if (msgCli) { msgCli.style.display = 'none'; msgCli.textContent = ''; }
                 if (!fileInput || !lblArchivo) return;
@@ -1106,13 +1076,72 @@
                     lblArchivo.innerHTML = '✓ <strong>Archivo listo:</strong> ' + archivo.name.replace(/</g, '&lt;') + ' (' + mb + ' MB). Puede enviar la corrección o cambiar el archivo.';
                     lblArchivo.style.display = 'block';
                     lblArchivo.style.color = '#1e7e34';
-                    if (btnVis) btnVis.style.display = 'inline-block';
+                    if (btnVis) btnVis.style.display = 'inline-flex';
+                    if (btnCmp && window.editDocPdfVigenteUrl) btnCmp.style.display = 'inline-flex';
                     window.editDocPdfArchivo = archivo;
                 } else {
                     lblArchivo.innerHTML = '';
                     lblArchivo.style.display = 'none';
                     if (btnVis) btnVis.style.display = 'none';
+                    if (btnCmp) btnCmp.style.display = 'none';
                     window.editDocPdfArchivo = null;
+                }
+            }
+
+            /* ── Comparación: abrir modal ── */
+            function editDocAbrirComparacion() {
+                if (!window.editDocPdfArchivo) {
+                    alert('Seleccione un archivo PDF primero.');
+                    return;
+                }
+                var modal = editDocGet('modalComparacionOverlay');
+                if (!modal) return;
+                modal.style.display = 'flex';
+
+                // Panel derecho: nuevo PDF (blob)
+                var ifrNuevo = editDocGet('cmpPdfNuevoIframe');
+                if (ifrNuevo) {
+                    if (window.editDocCmpBlobUrl) {
+                        try { URL.revokeObjectURL(window.editDocCmpBlobUrl); } catch (e) { }
+                    }
+                    window.editDocCmpBlobUrl = URL.createObjectURL(window.editDocPdfArchivo);
+                    ifrNuevo.src = window.editDocCmpBlobUrl;
+                }
+
+                // Panel izquierdo: PDF vigente con marcadores
+                var host = editDocGet('cmpPdfViewerHost');
+                if (host && window.editDocPdfVigenteUrl) {
+                    if (window.editDocCmpVisor) {
+                        // Ya fue inicializado, refrescar marcadores
+                        window.editDocCmpVisor.refrescar();
+                    } else if (window.editDocUsarMarcadores && window.PdfObservacionesVisor) {
+                        // Inicializar visor PDF.js con marcadores
+                        window.editDocCmpVisor = PdfObservacionesVisor.create({
+                            host: host,
+                            pdfUrl: window.editDocPdfVigenteUrl,
+                            apiUrl: window.editDocMarcadorApiUrl,
+                            idDocumento: window.editDocId,
+                            login: '',
+                            modo: 'ver',
+                            puedeAnotar: false
+                        });
+                        window.editDocCmpVisor.init();
+                    } else {
+                        // Fallback: usar iframe simple si no hay marcadores
+                        host.innerHTML = '<iframe src="' + window.editDocPdfVigenteUrl + '" style="width:100%;height:100%;border:none;"></iframe>';
+                    }
+                }
+            }
+
+            /* ── Comparación: cerrar modal ── */
+            function editDocCerrarComparacion() {
+                var modal = editDocGet('modalComparacionOverlay');
+                if (modal) modal.style.display = 'none';
+                var ifrNuevo = editDocGet('cmpPdfNuevoIframe');
+                if (ifrNuevo) ifrNuevo.src = '';
+                if (window.editDocCmpBlobUrl) {
+                    try { URL.revokeObjectURL(window.editDocCmpBlobUrl); } catch (e) { }
+                    window.editDocCmpBlobUrl = null;
                 }
             }
 
@@ -1168,6 +1197,13 @@
                 if (modal) {
                     modal.addEventListener('click', function (e) {
                         if (e.target === modal) editDocCerrarVisorPdf();
+                    });
+                }
+                // Cerrar modal comparación al hacer clic en el overlay
+                var modalCmp = editDocGet('modalComparacionOverlay');
+                if (modalCmp) {
+                    modalCmp.addEventListener('click', function (e) {
+                        if (e.target === modalCmp) editDocCerrarComparacion();
                     });
                 }
                 if (!window.editDocBloqueado && window.editDocId > 0 && window.editDocLockToken) {

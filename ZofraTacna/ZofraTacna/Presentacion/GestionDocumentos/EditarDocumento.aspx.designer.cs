@@ -77,23 +77,6 @@ namespace ZofraTacna.Presentacion
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divContentArea;
 
-        /// <summary>
-        /// Control btnCompararDocumento.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
-
-        /// <summary>
-        /// Control btnCerrarComparacion.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
 
         /// <summary>
         /// Control txtCodigoDocumentoCompleto.
@@ -195,75 +178,6 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Button btnEnviarCorreccion;
 
         /// <summary>
-        /// Control pnlComparacion.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlComparacion;
 
-        /// <summary>
-        /// Control pnlVistaPdfComparar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlVistaPdfComparar;
-
-        /// <summary>
-        /// Control ddlPdfCompareIzq.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareIzq;
-
-        /// <summary>
-        /// Control lnkPdfIzqNuevaPestana.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkPdfIzqNuevaPestana;
-
-        /// <summary>
-        /// Control ifrPdfAnterior.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfAnterior;
-
-        /// <summary>
-        /// Control ddlPdfCompareDer.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareDer;
-
-        /// <summary>
-        /// Control lnkPdfDerNuevaPestana.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkPdfDerNuevaPestana;
-
-        /// <summary>
-        /// Control ifrPdfActualCompare.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfActualCompare;
     }
 }
