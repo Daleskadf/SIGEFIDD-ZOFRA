@@ -35,13 +35,15 @@ namespace ZofraTacna.Presentacion
                 Log("QueryString: " + context.Request.QueryString);
                 Log("Form: " + context.Request.Form);
 
-                int idDoc = 1;
-                string idDocStr = context.Request.QueryString["idDoc"];
-                if (!string.IsNullOrEmpty(idDocStr))
+                string token = context.Request.QueryString["token"];
+                int idDoc = 0;
+                if (!string.IsNullOrEmpty(token))
                 {
-                    int.TryParse(idDocStr, out idDoc);
+                    string[] parts = token.Split('_');
+                    if (parts.Length > 0)
+                        int.TryParse(parts[0], out idDoc);
                 }
-                Log("idDoc: " + idDoc);
+                Log("token: " + token + ", idDoc: " + idDoc);
 
                 string baseUrl = context.Request.Url.Scheme + "://" + context.Request.Url.Host + 
                     (context.Request.Url.Port != 80 && context.Request.Url.Port != 443 ? ":" + context.Request.Url.Port : "");
@@ -50,7 +52,7 @@ namespace ZofraTacna.Presentacion
                     appPath = appPath.Substring(0, appPath.Length - 1);
 
                 string urlDocumento = baseUrl + appPath + "/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=" + idDoc;
-                string urlSubir = baseUrl + appPath + "/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=doc_" + idDoc;
+                string urlSubir = baseUrl + appPath + "/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=" + token;
 
                 Log("urlDocumento: " + urlDocumento);
                 Log("urlSubir: " + urlSubir);

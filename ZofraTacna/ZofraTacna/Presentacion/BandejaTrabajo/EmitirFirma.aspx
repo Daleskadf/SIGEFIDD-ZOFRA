@@ -96,8 +96,8 @@
         <div class="form-group">
             <label>Seleccione el método de firma:</label>
             <select id="ddlMetodoFirma" class="form-select" onchange="cambiarMetodoFirma()">
-                <option value="firmaperu">Firma Perú (DNIe / Token USB)</option>
-                <option value="usb">Certificado en Servidor (Solo pruebas locales)</option>
+                <option value="firmaperu">DNIe v3</option>
+                <option value="usb">Token USB</option>
             </select>
         </div>
         
@@ -149,8 +149,8 @@
 var idDocumentoActual = <%= IdDocumentoActual %>;
 var baseUrlNgrok = ''; // Pon aquí tu URL de ngrok, ej: 'https://abc123.ngrok.io' (sin barra al final)
 var urlParametros = baseUrlNgrok 
-    ? baseUrlNgrok + '/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=' + idDocumentoActual
-    : '<%= new Uri(Request.Url, ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?idDoc=" + IdDocumentoActual)).AbsoluteUri %>';
+    ? baseUrlNgrok + '/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=<%= TokenActual %>'
+    : '<%= new Uri(Request.Url, ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=")).AbsoluteUri %>' + '<%= TokenActual %>';
 
 function signatureInit() {
     console.log('signatureInit OK');
@@ -172,7 +172,7 @@ function iniciarFirmaDigital() {
     
     var paramObj = {
         param_url: urlParametros,
-        param_token: 'doc_' + idDocumentoActual,
+        param_token: '<%= TokenActual %>',
         document_extension: 'pdf'
     };
     

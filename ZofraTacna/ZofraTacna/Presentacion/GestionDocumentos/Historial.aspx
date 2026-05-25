@@ -7,8 +7,8 @@
         <meta charset="utf-8" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>SIGEFIDD-ZOFRA | Historial</title>
-        <link rel="stylesheet" href="<%= ResolveUrl(" ~/Content/sigefidd-notificaciones.css") %>" />
-        <script defer src="<%= ResolveUrl(" ~/Scripts/sigefidd-notificaciones.js") %>"></script>
+        <link rel="stylesheet" href="<%= ResolveUrl("~/Content/sigefidd-notificaciones.css") %>" />
+        <script defer src="<%= ResolveUrl("~/Scripts/sigefidd-notificaciones.js") %>"></script>
         <style>
             * {
                 margin: 0;
@@ -669,7 +669,7 @@
         </style>
     </head>
 
-    <body data-zfn-notify="<%= ResolveUrl(" ~/Presentacion/Notificaciones.ashx") %>">
+    <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
         <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
             <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
                 <div class="sidebar">
