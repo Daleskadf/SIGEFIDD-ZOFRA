@@ -37,6 +37,11 @@
         .tab-btn{padding:7px 18px;border-radius:20px;border:1.5px solid #dde1f0;background:white;color:#555;font-size:13px;cursor:pointer;text-decoration:none;font-family:'Segoe UI',sans-serif;font-weight:500;display:inline-block}
         .tab-btn:hover{background:#f0f2f8;color:#1a2a4a}
         .tab-btn.tab-active{background:linear-gradient(90deg,#1a2a4a,#2a4a8a);color:white;border-color:transparent}
+        /* SEARCH BOX */
+        .search-box{display:flex;align-items:center;background:white;border:1.5px solid #dde1f0;border-radius:20px;padding:5px 14px;min-width:260px;transition:all .2s;}
+        .search-box:focus-within{border-color:#1a2a4a;box-shadow:0 0 0 3px rgba(26,42,74,.1);}
+        .search-input{border:none;outline:none;font-family:'Segoe UI',sans-serif;font-size:13px;width:100%;color:#333;}
+        .search-input::placeholder{color:#aaa;}
         .tbl-wrap{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
         table{width:100%;border-collapse:collapse}
         thead tr{background:#f8f9fc}
@@ -109,12 +114,18 @@
         <div class="content">
             <h1>Historial de Documentos</h1>
             <p class="sub">Documentos revisados y en proceso</p>
-            <div class="filter-tabs">
-                <asp:LinkButton ID="lbTodos"      runat="server" OnClick="lbTodos_Click"      CssClass="tab-btn">Todos</asp:LinkButton>
-                <asp:LinkButton ID="lbPendiente"  runat="server" OnClick="lbPendiente_Click"  CssClass="tab-btn">Pendiente</asp:LinkButton>
-                <asp:LinkButton ID="lbRevision"   runat="server" OnClick="lbRevision_Click"   CssClass="tab-btn">Revisi&oacute;n</asp:LinkButton>
-                <asp:LinkButton ID="lbFirma"      runat="server" OnClick="lbFirma_Click"      CssClass="tab-btn">Firma</asp:LinkButton>
-                <asp:LinkButton ID="lbCompletado" runat="server" OnClick="lbCompletado_Click" CssClass="tab-btn">Completado</asp:LinkButton>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+                <div class="filter-tabs" style="margin-bottom:0;">
+                    <asp:LinkButton ID="lbTodos"      runat="server" OnClick="lbTodos_Click"      CssClass="tab-btn">Todos</asp:LinkButton>
+                    <asp:LinkButton ID="lbPendiente"  runat="server" OnClick="lbPendiente_Click"  CssClass="tab-btn">Pendiente</asp:LinkButton>
+                    <asp:LinkButton ID="lbRevision"   runat="server" OnClick="lbRevision_Click"   CssClass="tab-btn">Revisi&oacute;n</asp:LinkButton>
+                    <asp:LinkButton ID="lbFirma"      runat="server" OnClick="lbFirma_Click"      CssClass="tab-btn">Firma</asp:LinkButton>
+                    <asp:LinkButton ID="lbCompletado" runat="server" OnClick="lbCompletado_Click" CssClass="tab-btn">Completado</asp:LinkButton>
+                </div>
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#aaa;margin-right:8px;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="txtBuscarDoc" onkeyup="filtrarTablaDocs()" placeholder="Buscar por código o título..." class="search-input" autocomplete="off" />
+                </div>
             </div>
             <div class="tbl-wrap">
                 <asp:Panel ID="pnlEmpty" runat="server" Visible="false">
@@ -124,6 +135,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>C&Oacute;DIGO</th>
                                 <th>T&Iacute;TULO</th>
                                 <th>CATEGOR&Iacute;A</th>
                                 <th>ESTADO</th>
@@ -135,7 +147,8 @@
                         <tbody>
                             <asp:Repeater ID="rptDocs" runat="server">
                                 <ItemTemplate>
-                                    <tr>
+                                    <tr class="doc-row">
+                                        <td><div style="font-weight:700;color:#1a2a4a;font-size:13px"><%# System.Web.HttpUtility.HtmlEncode(Eval("CodigoDocumento").ToString()) %></div></td>
                                         <td>
                                             <div class="doc-asunto"><%# System.Web.HttpUtility.HtmlEncode(Eval("Asunto").ToString()) %></div>
                                             <div class="doc-archivo"><%# System.Web.HttpUtility.HtmlEncode(Eval("NombreArchivo").ToString()) %></div>
@@ -185,6 +198,27 @@
     function cerrarModalVisor() {
         document.getElementById('modalVisorPdf').style.display = 'none';
         document.getElementById('iframeVisorPdf').src = '';
+    }
+
+    function filtrarTablaDocs() {
+        var input = document.getElementById('txtBuscarDoc');
+        if (!input) return;
+        var filter = input.value.toLowerCase().trim();
+        filter = filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        var rows = document.querySelectorAll('.doc-row');
+        for (var i = 0; i < rows.length; i++) {
+            var tdCodigo = rows[i].getElementsByTagName('td')[0];
+            var tdTitulo = rows[i].getElementsByTagName('td')[1];
+            if (tdCodigo && tdTitulo) {
+                var textCodigo = (tdCodigo.textContent || tdCodigo.innerText).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                var textTitulo = (tdTitulo.textContent || tdTitulo.innerText).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (textCodigo.indexOf(filter) > -1 || textTitulo.indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
     }
 </script>
 </body>

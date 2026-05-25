@@ -72,7 +72,7 @@ namespace ZofraTacna.Presentacion
             string filtroRol = rol == "REG" ? " AND d.LoginUsuarioRegistrador = @login" : "";
             string filtroEst = FiltroActivo == "TODOS" ? "" : " AND me.Codigo = @filtro";
 
-            string sql = @"SELECT d.IdDocumento, d.Asunto, d.AreaCategoria, d.RutaArchivoPDF,
+            string sql = @"SELECT d.CodigoDocumento, d.IdDocumento, d.Asunto, mc.Descripcion AS AreaCategoria, d.RutaArchivoPDF,
                                   d.FechaCreacion, d.FechaLimiteRevision, d.FechaLimiteAprobacion,
                                   me.Descripcion AS EstadoDesc, me.Codigo AS EstadoCodigo,
                                   CASE WHEN EXISTS (
@@ -86,6 +86,7 @@ namespace ZofraTacna.Presentacion
                                   ) THEN 1 ELSE 0 END AS TieneObservacionRevisor
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
+                           LEFT JOIN Maestro mc ON d.IdTipoDocumento = mc.IdMaestro
                            WHERE d.Activo = 1" + filtroRol + filtroEst + @"
                            ORDER BY ISNULL(
                                (SELECT MAX(h.FechaCambio) FROM HistorialDocumento h
@@ -123,6 +124,7 @@ namespace ZofraTacna.Presentacion
 
                             lista.Add(new
                             {
+                                CodigoDocumento = dr["CodigoDocumento"] == DBNull.Value ? "-" : dr["CodigoDocumento"].ToString(),
                                 IdDocumento   = Convert.ToInt32(dr["IdDocumento"]),
                                 Asunto        = dr["Asunto"].ToString(),
                                 NombreArchivo = Path.GetFileName(ruta),

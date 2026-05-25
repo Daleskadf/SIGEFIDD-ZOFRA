@@ -64,11 +64,12 @@ namespace ZofraTacna.Presentacion
                         WHERE p.IdDocumento = d.IdDocumento AND p.LoginUsuario = @login
                     ))";
 
-            string sql = @"SELECT d.IdDocumento, d.Asunto, d.AreaCategoria, d.RutaArchivoPDF,
+            string sql = @"SELECT d.CodigoDocumento, d.IdDocumento, d.Asunto, mc.Descripcion AS AreaCategoria, d.RutaArchivoPDF,
                                   d.FechaCreacion, d.FechaLimiteRevision, d.FechaLimiteAprobacion,
                                   me.Descripcion AS EstadoDesc, me.Codigo AS EstadoCodigo
                            FROM Documento d
                            JOIN Maestro me ON d.IdEstadoDocumento = me.IdMaestro
+                           LEFT JOIN Maestro mc ON d.IdTipoDocumento = mc.IdMaestro
                            WHERE d.Activo = 1" + filtroEst + filtroVis + @"
                            ORDER BY d.FechaCreacion DESC";
 
@@ -100,6 +101,7 @@ namespace ZofraTacna.Presentacion
                             }
                             lista.Add(new
                             {
+                                CodigoDocumento = dr["CodigoDocumento"] == DBNull.Value ? "-" : dr["CodigoDocumento"].ToString(),
                                 IdDocumento   = Convert.ToInt32(dr["IdDocumento"]),
                                 Asunto        = dr["Asunto"].ToString(),
                                 NombreArchivo = Path.GetFileName(ruta),

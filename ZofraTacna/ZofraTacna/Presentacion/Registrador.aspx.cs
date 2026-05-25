@@ -61,8 +61,10 @@ namespace ZofraTacna
                        h.FechaCambio
                 FROM dbo.HistorialDocumento h
                 INNER JOIN dbo.Documento d ON d.IdDocumento = h.IdDocumento
+                INNER JOIN dbo.Maestro m ON d.IdEstadoDocumento = m.IdMaestro
                 WHERE d.LoginUsuarioRegistrador = @login
                   AND d.Activo = 1
+                  AND m.Codigo = 'OBS'
                   AND (h.DetalleAccion LIKE '%observad%' OR h.DetalleAccion LIKE '%Observad%')
                 ORDER BY h.FechaCambio DESC";
 
