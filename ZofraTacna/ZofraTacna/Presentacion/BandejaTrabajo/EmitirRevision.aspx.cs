@@ -507,6 +507,13 @@ namespace ZofraTacna.Presentacion
                     "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
                     "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
             }
+            if (rol == "REG")
+            {
+                return
+                    "<a href='../Registrador.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                    "<a href='../GestionDocumentos/CargarDocumento.aspx' class='nav-item'>" + svgCargar + "Cargar Documento</a>" +
+                    "<a href='../GestionDocumentos/MisDocumentos.aspx' class='nav-item'>" + svgMisDocs + "Mis Documentos</a>";
+            }
             return
                 "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
                 "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +

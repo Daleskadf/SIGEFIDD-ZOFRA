@@ -112,13 +112,13 @@
         <div class="form-group">
             <label>Seleccione el método de firma:</label>
             <select id="ddlMetodoFirma" class="form-select" onchange="cambiarMetodoFirma()">
-                <option value="dnie">DNI Electrónico</option>
-                <option value="usb">Token USB Clásico</option>
+                <option value="dnie">DNI electrónico (Firma Perú)</option>
+                <option value="agente">Token USB (Agente Local)</option>
             </select>
         </div>
         
         <div id="panelDnie" class="panel-opcion active">
-            <p style="font-size:13px; color:#666; margin-bottom:10px;">Seleccione su certificado DNIe (V1, V2 o V3):</p>
+            <p style="font-size:13px; color:#666; margin-bottom:10px;">Seleccione su certificado DNIe:</p>
             <div style="margin-bottom:10px;">
                 <asp:DropDownList ID="ddlCertificadosDnie" runat="server" CssClass="form-select" />
             </div>
@@ -128,15 +128,19 @@
             <asp:Label ID="lblErrorDnie" runat="server" CssClass="mensaje-error" />
         </div>
         
-        <div id="panelUsb" class="panel-opcion">
-            <p style="font-size:13px; color:#666; margin-bottom:10px;">Seleccione su certificado local (asegúrese de tener el token USB conectado):</p>
-            <div style="margin-bottom:10px;">
-                <asp:DropDownList ID="ddlCertificados" runat="server" CssClass="form-select" />
-            </div>
+        <div id="panelAgente" class="panel-opcion">
+            <p style="font-size:13px; color:#666; margin-bottom:10px;">Se abrirá <b>ZofraTacna Signer</b> en su computadora para firmar con su Token USB (Bit4ID, ePass, etc.).</p>
             <div style="margin-top:15px;">
-                <asp:Button ID="btnFirmarUsb" runat="server" Text="Firmar con Token USB" CssClass="btn-accion" OnClick="btnFirmarUsb_Click" OnClientClick="return mostrarCargaUsb();" />
+                <button type="button" class="btn-accion" style="background-color:#28a745;" onclick="lanzarAgente()">&#9998; Firmar con Agente Local</button>
             </div>
-            <asp:Label ID="lblErrorUsb" runat="server" CssClass="mensaje-error" />
+            <div id="msgAgente" style="margin-top:10px; font-size:13px; color:#d9534f; display:none;">
+                Asegúrese de tener ZofraTacna Signer instalado.
+            </div>
+            <div style="display:none;">
+                <asp:DropDownList ID="ddlCertificados" runat="server" />
+                <asp:Button ID="btnFirmarUsb" runat="server" OnClick="btnFirmarUsb_Click" />
+                <asp:Label ID="lblErrorUsb" runat="server" />
+            </div>
         </div>
     </div>
 </div>
@@ -260,13 +264,70 @@ function cambiarMetodoFirma() {
     var ddl = document.getElementById('ddlMetodoFirma');
     var val = ddl.value;
     document.getElementById('panelDnie').classList.remove('active');
-    document.getElementById('panelUsb').classList.remove('active');
     
-    if(val === 'usb') {
-        document.getElementById('panelUsb').classList.add('active');
+    var panelAgente = document.getElementById('panelAgente');
+    if(panelAgente) panelAgente.classList.remove('active');
+    
+    if(val === 'agente') {
+        if(panelAgente) panelAgente.classList.add('active');
     } else {
         document.getElementById('panelDnie').classList.add('active');
     }
+}
+
+function lanzarAgente() {
+    var idDoc = <%= IdDocumentoActual %>;
+    var tokenGlobal = '<%= TokenActual %>';
+    
+    if (!idDoc || idDoc <= 0) {
+        alert("No se encontró el ID del documento.");
+        return;
+    }
+    
+    var params = {
+        documentToSign: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Presentacion/BandejaTrabajo/DescargaDocumentoTemporal.ashx?token=") %>' + tokenGlobal,
+        uploadDocumentSigned: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx") %>',
+        token: tokenGlobal
+    };
+    
+    var base64Params = btoa(unescape(encodeURIComponent(JSON.stringify(params))));
+    
+    cerrarModalOpcionesFirma();
+    
+    var modalCarga = document.getElementById('modalCargaFirma');
+    if (modalCarga) {
+        modalCarga.style.display = 'flex';
+        var loaderTxt = modalCarga.querySelector('.loader-text');
+        if (loaderTxt) loaderTxt.innerText = 'Por favor, siga las instrucciones de ZofraTacna Signer...';
+    }
+    
+    window.location.href = "zofratacna://" + base64Params;
+    
+    var intentos = 0;
+    var maxIntentos = 45; // 45 * 2 = 90 segundos máximo de espera
+    var pollTimer = setInterval(function() {
+        var chk = new XMLHttpRequest();
+        chk.open("GET", "VerificarEstadoFirma.ashx?idDoc=" + idDoc, true);
+        chk.onload = function() {
+            if (chk.status === 200) {
+                try {
+                    var res = JSON.parse(chk.responseText);
+                    if (res.status === 'firmado') {
+                        clearInterval(pollTimer);
+                        window.location.href = '../GestionDocumentos/Historial.aspx';
+                    }
+                } catch(e) {}
+            }
+        };
+        chk.send();
+        
+        intentos++;
+        if (intentos >= maxIntentos) {
+            clearInterval(pollTimer);
+            if (modalCarga) modalCarga.style.display = 'none';
+            alert("Tiempo de espera agotado. Verifique si el documento fue firmado en el historial.");
+        }
+    }, 2000);
 }
 
 // Si hay error desde servidor y necesitamos mostrar el modal (opcional, para UX)

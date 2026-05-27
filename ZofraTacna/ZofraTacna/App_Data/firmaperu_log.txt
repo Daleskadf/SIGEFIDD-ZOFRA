@@ -685,3 +685,213 @@
 2026-05-22 19:34:02 - [DOC] tamanioBytes: 117020
 2026-05-22 19:34:02 - [DOC] Tamaño contenido leído: 117020 bytes
 2026-05-22 19:34:02 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:11:29 - === Inicio de solicitud ===
+2026-05-27 02:11:29 - Método: GET
+2026-05-27 02:11:29 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779865889143
+2026-05-27 02:11:29 - QueryString: token=1019_1779865889143
+2026-05-27 02:11:29 - Form: 
+2026-05-27 02:11:29 - token: 1019_1779865889143, idDoc: 1019
+2026-05-27 02:11:29 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:11:29 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779865889143
+2026-05-27 02:11:29 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779865889143"}
+2026-05-27 02:11:29 - Base64 generado (longitud): 740
+2026-05-27 02:11:29 - === Fin de solicitud (éxito) ===
+2026-05-27 02:11:47 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:11:47 - [DOC] Método: GET
+2026-05-27 02:11:47 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:11:47 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:11:47 - [DOC] idDoc: 1019
+2026-05-27 02:11:47 - [DOC] idAdjunto: 26
+2026-05-27 02:11:47 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:11:47 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:11:47 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:11:47 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:26:55 - === Inicio de solicitud ===
+2026-05-27 02:26:55 - Método: GET
+2026-05-27 02:26:55 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779866815118
+2026-05-27 02:26:55 - QueryString: token=1019_1779866815118
+2026-05-27 02:26:55 - Form: 
+2026-05-27 02:26:55 - token: 1019_1779866815118, idDoc: 1019
+2026-05-27 02:26:55 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:26:55 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779866815118
+2026-05-27 02:26:55 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779866815118"}
+2026-05-27 02:26:55 - Base64 generado (longitud): 740
+2026-05-27 02:26:55 - === Fin de solicitud (éxito) ===
+2026-05-27 02:27:15 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:27:15 - [DOC] Método: GET
+2026-05-27 02:27:15 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:27:15 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:27:15 - [DOC] idDoc: 1019
+2026-05-27 02:27:15 - [DOC] idAdjunto: 26
+2026-05-27 02:27:15 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:27:15 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:27:15 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:27:16 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:35:24 - === Inicio de solicitud ===
+2026-05-27 02:35:24 - Método: GET
+2026-05-27 02:35:24 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779867324274
+2026-05-27 02:35:24 - QueryString: token=1019_1779867324274
+2026-05-27 02:35:24 - Form: 
+2026-05-27 02:35:24 - token: 1019_1779867324274, idDoc: 1019
+2026-05-27 02:35:24 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:35:24 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779867324274
+2026-05-27 02:35:24 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779867324274"}
+2026-05-27 02:35:24 - Base64 generado (longitud): 740
+2026-05-27 02:35:24 - === Fin de solicitud (éxito) ===
+2026-05-27 02:35:33 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:35:33 - [DOC] Método: GET
+2026-05-27 02:35:33 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:35:33 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:35:33 - [DOC] idDoc: 1019
+2026-05-27 02:35:33 - [DOC] idAdjunto: 26
+2026-05-27 02:35:33 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:35:33 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:35:33 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:35:33 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:44:19 - === Inicio de solicitud ===
+2026-05-27 02:44:19 - Método: GET
+2026-05-27 02:44:19 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779867859755
+2026-05-27 02:44:19 - QueryString: token=1019_1779867859755
+2026-05-27 02:44:19 - Form: 
+2026-05-27 02:44:19 - token: 1019_1779867859755, idDoc: 1019
+2026-05-27 02:44:19 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:44:19 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779867859755
+2026-05-27 02:44:19 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779867859755"}
+2026-05-27 02:44:19 - Base64 generado (longitud): 740
+2026-05-27 02:44:19 - === Fin de solicitud (éxito) ===
+2026-05-27 02:44:29 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:44:29 - [DOC] Método: GET
+2026-05-27 02:44:29 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:44:29 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:44:29 - [DOC] idDoc: 1019
+2026-05-27 02:44:29 - [DOC] idAdjunto: 26
+2026-05-27 02:44:29 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:44:29 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:44:29 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:44:29 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:50:32 - === Inicio de solicitud ===
+2026-05-27 02:50:32 - Método: GET
+2026-05-27 02:50:32 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779868232465
+2026-05-27 02:50:32 - QueryString: token=1019_1779868232465
+2026-05-27 02:50:32 - Form: 
+2026-05-27 02:50:32 - token: 1019_1779868232465, idDoc: 1019
+2026-05-27 02:50:32 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:50:32 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779868232465
+2026-05-27 02:50:32 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779868232465"}
+2026-05-27 02:50:32 - Base64 generado (longitud): 740
+2026-05-27 02:50:32 - === Fin de solicitud (éxito) ===
+2026-05-27 02:50:43 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:50:43 - [DOC] Método: GET
+2026-05-27 02:50:43 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:50:43 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:50:43 - [DOC] idDoc: 1019
+2026-05-27 02:50:43 - [DOC] idAdjunto: 26
+2026-05-27 02:50:43 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:50:43 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:50:43 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:50:43 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 02:57:43 - === Inicio de solicitud ===
+2026-05-27 02:57:43 - Método: GET
+2026-05-27 02:57:43 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779868663308
+2026-05-27 02:57:43 - QueryString: token=1019_1779868663308
+2026-05-27 02:57:43 - Form: 
+2026-05-27 02:57:43 - token: 1019_1779868663308, idDoc: 1019
+2026-05-27 02:57:43 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:57:43 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779868663308
+2026-05-27 02:57:43 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779868663308"}
+2026-05-27 02:57:43 - Base64 generado (longitud): 740
+2026-05-27 02:57:43 - === Fin de solicitud (éxito) ===
+2026-05-27 02:57:53 - [DOC] === Inicio solicitud documento ===
+2026-05-27 02:57:53 - [DOC] Método: GET
+2026-05-27 02:57:53 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 02:57:53 - [DOC] QueryString: idDoc=1019
+2026-05-27 02:57:53 - [DOC] idDoc: 1019
+2026-05-27 02:57:53 - [DOC] idAdjunto: 26
+2026-05-27 02:57:53 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 02:57:53 - [DOC] tamanioBytes: 1243832
+2026-05-27 02:57:53 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 02:57:53 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 03:05:18 - === Inicio de solicitud ===
+2026-05-27 03:05:18 - Método: GET
+2026-05-27 03:05:18 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779869118812
+2026-05-27 03:05:18 - QueryString: token=1019_1779869118812
+2026-05-27 03:05:18 - Form: 
+2026-05-27 03:05:18 - token: 1019_1779869118812, idDoc: 1019
+2026-05-27 03:05:18 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:05:18 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869118812
+2026-05-27 03:05:18 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869118812"}
+2026-05-27 03:05:18 - Base64 generado (longitud): 740
+2026-05-27 03:05:18 - === Fin de solicitud (éxito) ===
+2026-05-27 03:05:24 - [DOC] === Inicio solicitud documento ===
+2026-05-27 03:05:24 - [DOC] Método: GET
+2026-05-27 03:05:24 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:05:24 - [DOC] QueryString: idDoc=1019
+2026-05-27 03:05:24 - [DOC] idDoc: 1019
+2026-05-27 03:05:24 - [DOC] idAdjunto: 26
+2026-05-27 03:05:24 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 03:05:24 - [DOC] tamanioBytes: 1243832
+2026-05-27 03:05:24 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 03:05:25 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 03:08:55 - === Inicio de solicitud ===
+2026-05-27 03:08:55 - Método: GET
+2026-05-27 03:08:55 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779869335859
+2026-05-27 03:08:55 - QueryString: token=1019_1779869335859
+2026-05-27 03:08:55 - Form: 
+2026-05-27 03:08:55 - token: 1019_1779869335859, idDoc: 1019
+2026-05-27 03:08:55 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:08:55 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869335859
+2026-05-27 03:08:55 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869335859"}
+2026-05-27 03:08:55 - Base64 generado (longitud): 740
+2026-05-27 03:08:55 - === Fin de solicitud (éxito) ===
+2026-05-27 03:09:00 - [DOC] === Inicio solicitud documento ===
+2026-05-27 03:09:00 - [DOC] Método: GET
+2026-05-27 03:09:00 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:09:00 - [DOC] QueryString: idDoc=1019
+2026-05-27 03:09:00 - [DOC] idDoc: 1019
+2026-05-27 03:09:00 - [DOC] idAdjunto: 26
+2026-05-27 03:09:00 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 03:09:00 - [DOC] tamanioBytes: 1243832
+2026-05-27 03:09:00 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 03:09:00 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 03:12:41 - === Inicio de solicitud ===
+2026-05-27 03:12:41 - Método: GET
+2026-05-27 03:12:41 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779869561169
+2026-05-27 03:12:41 - QueryString: token=1019_1779869561169
+2026-05-27 03:12:41 - Form: 
+2026-05-27 03:12:41 - token: 1019_1779869561169, idDoc: 1019
+2026-05-27 03:12:41 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:12:41 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869561169
+2026-05-27 03:12:41 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869561169"}
+2026-05-27 03:12:41 - Base64 generado (longitud): 740
+2026-05-27 03:12:41 - === Fin de solicitud (éxito) ===
+2026-05-27 03:12:45 - [DOC] === Inicio solicitud documento ===
+2026-05-27 03:12:45 - [DOC] Método: GET
+2026-05-27 03:12:45 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:12:45 - [DOC] QueryString: idDoc=1019
+2026-05-27 03:12:45 - [DOC] idDoc: 1019
+2026-05-27 03:12:45 - [DOC] idAdjunto: 26
+2026-05-27 03:12:45 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 03:12:45 - [DOC] tamanioBytes: 1243832
+2026-05-27 03:12:45 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 03:12:45 - [DOC] === Fin solicitud documento (éxito) ===
+2026-05-27 03:17:16 - === Inicio de solicitud ===
+2026-05-27 03:17:16 - Método: GET
+2026-05-27 03:17:16 - URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=1019_1779869836317
+2026-05-27 03:17:16 - QueryString: token=1019_1779869836317
+2026-05-27 03:17:16 - Form: 
+2026-05-27 03:17:16 - token: 1019_1779869836317, idDoc: 1019
+2026-05-27 03:17:16 - urlDocumento: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:17:16 - urlSubir: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869836317
+2026-05-27 03:17:16 - JSON generado: {"signatureFormat":"PAdES","signatureLevel":"B","signaturePackaging":"enveloped","documentToSign":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019","certificateFilter":".*","webTsa":"","userTsa":"","passwordTsa":"","theme":"claro","contactInfo":"Usuario","signatureReason":"Firma digital","visiblePosition":false,"signatureStyle":0,"stampPage":0,"stampTextSize":14,"positionx":20,"positiony":20,"uploadDocumentSigned":"http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=1019_1779869836317"}
+2026-05-27 03:17:16 - Base64 generado (longitud): 740
+2026-05-27 03:17:16 - === Fin de solicitud (éxito) ===
+2026-05-27 03:17:22 - [DOC] === Inicio solicitud documento ===
+2026-05-27 03:17:22 - [DOC] Método: GET
+2026-05-27 03:17:22 - [DOC] URL: http://localhost:56945/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx?idDoc=1019
+2026-05-27 03:17:22 - [DOC] QueryString: idDoc=1019
+2026-05-27 03:17:22 - [DOC] idDoc: 1019
+2026-05-27 03:17:22 - [DOC] idAdjunto: 26
+2026-05-27 03:17:22 - [DOC] nombreArchivo: 20260527004837_Lab06_U2_SALAS.pdf
+2026-05-27 03:17:22 - [DOC] tamanioBytes: 1243832
+2026-05-27 03:17:22 - [DOC] Tamaño contenido leído: 1243832 bytes
+2026-05-27 03:17:22 - [DOC] === Fin solicitud documento (éxito) ===

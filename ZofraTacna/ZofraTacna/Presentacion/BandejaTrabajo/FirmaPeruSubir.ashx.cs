@@ -29,19 +29,42 @@ namespace ZofraTacna.Presentacion
                     return;
                 }
 
-                string[] tokenParts = token.Split('_');
-                if (tokenParts.Length < 2 || !int.TryParse(tokenParts[0], out int idDoc))
+                string login = "";
+                int idDoc = 0;
+
+                try
+                {
+                    // Intentar decodificar el nuevo token stateless (URL-Safe Base64)
+                    string base64 = token.Replace("-", "+").Replace("_", "/");
+                    switch (base64.Length % 4)
+                    {
+                        case 2: base64 += "=="; break;
+                        case 3: base64 += "="; break;
+                    }
+                    string decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
+                    string[] parts = decoded.Split('|');
+                    idDoc = int.Parse(parts[0]);
+                    login = parts[1];
+                }
+                catch
+                {
+                    // Fallback a lógica antigua
+                    string[] tokenParts = token.Split('_');
+                    if (tokenParts.Length >= 2) int.TryParse(tokenParts[0], out idDoc);
+                    login = FirmaPeruTokenStore.GetLoginForToken(token);
+                }
+
+                if (idDoc == 0)
                 {
                     context.Response.StatusCode = 400;
                     context.Response.Write("ERROR: Token con formato incorrecto");
                     return;
                 }
 
-                string login = FirmaPeruTokenStore.GetLoginForToken(token);
                 if (string.IsNullOrEmpty(login))
                 {
                     context.Response.StatusCode = 400;
-                    context.Response.Write("ERROR: Login no encontrado para token");
+                    context.Response.Write("ERROR: Login no encontrado para token [" + token + "].");
                     return;
                 }
 

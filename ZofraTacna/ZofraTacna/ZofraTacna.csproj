@@ -150,6 +150,9 @@
     <Compile Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx.designer.cs">
       <DependentUpon>BandejaTrabajo.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\BandejaTrabajo\DescargaDocumentoTemporal.ashx.cs">
+      <DependentUpon>DescargaDocumentoTemporal.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\BandejaTrabajo\ServirPdf.ashx.cs">
       <DependentUpon>ServirPdf.ashx</DependentUpon>
     </Compile>
@@ -302,6 +305,7 @@
     <Content Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Presentacion\BandejaTrabajo\DescargaDocumentoTemporal.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\ServirPdf.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\ObservacionMarcador.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\LanzarFirmaPeru.ashx" />

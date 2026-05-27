@@ -35,5 +35,10 @@ namespace ZofraTacna.Presentacion
             _tokenMap.TryRemove(token, out _);
             _tokenExpiry.TryRemove(token, out _);
         }
+
+        public static int GetCount()
+        {
+            return _tokenMap.Count;
+        }
     }
 }

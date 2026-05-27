@@ -151,13 +151,25 @@ namespace ZofraTacna.Presentacion
             string svgHome = "<svg viewBox='0 0 24 24'><path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/></svg>";
             string svgBandeja = "<svg viewBox='0 0 24 24'><path d='M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.96.5 13.34.5c-1.3 0-2.48.54-3.34 1.4L9 3l-1-.94C7.12 1.04 5.94.5 4.66.5 2.04.5 0 2.54 0 4.66 0 5.12.11 5.56.18 6H0v14h20V6z'/></svg>";
             string svgHist = "<svg viewBox='0 0 24 24'><path d='M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z'/></svg>";
+            string svgCarga = "<svg viewBox='0 0 24 24'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z'/></svg>";
+            string svgDocs = "<svg viewBox='0 0 24 24'><path d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/></svg>";
             string badgeHtml = "<span class='nav-badge'>" + badge + "</span>";
+            
             if (rol == "FIR")
                 return "<a href='../Firmante.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
                        "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
                        "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
-            return "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                   "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>";
+            else if (rol == "REV")
+                return "<a href='../Revisor.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                       "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
+                       "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
+            else if (rol == "REG")
+                return "<a href='../Registrador.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                       "<a href='../GestionDocumentos/CargarDocumento.aspx' class='nav-item'>" + svgCarga + "Cargar Documento</a>" +
+                       "<a href='../GestionDocumentos/MisDocumentos.aspx' class='nav-item'>" + svgDocs + "Mis Documentos</a>";
+            else
+                return "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
+                       "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>";
         }
 
         protected void btnCerrarSesion_Click(object sender, EventArgs e)
