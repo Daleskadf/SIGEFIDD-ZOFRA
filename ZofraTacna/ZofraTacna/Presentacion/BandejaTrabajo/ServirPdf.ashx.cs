@@ -13,14 +13,37 @@ namespace ZofraTacna.Presentacion
             HttpResponse rsp = context.Response;
             HttpRequest req = context.Request;
 
-            if (context.Session == null || context.Session["LoginUsuario"] == null)
+            string loginUsuario = null;
+            string rol = "";
+
+            if (context.Session != null && context.Session["LoginUsuario"] != null)
+            {
+                loginUsuario = context.Session["LoginUsuario"].ToString();
+                rol = context.Session["RolCodigo"] != null ? context.Session["RolCodigo"].ToString() : "";
+            }
+            else
+            {
+                // Intentar autenticar mediante Token temporal (utilizado por el bot de AHK)
+                string token = req.QueryString["token"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    loginUsuario = FirmaPeruTokenStore.GetLoginForToken(token);
+                    // Si el token es válido, asignamos el rol "FIR" de forma temporal para permitir la descarga
+                    if (loginUsuario != null)
+                    {
+                        rol = "FIR";
+                    }
+                }
+            }
+
+            if (loginUsuario == null)
             {
                 rsp.StatusCode = 401;
                 return;
             }
 
-            string rol = context.Session["RolCodigo"] != null ? context.Session["RolCodigo"].ToString() : "";
-            if (rol != "REV" && rol != "ADM" && rol != "REG")
+            // Permitir el acceso si el rol es de revisión/administración, o si accedió mediante token de firma (FIR)
+            if (rol != "REV" && rol != "ADM" && rol != "REG" && rol != "FIR")
             {
                 rsp.StatusCode = 403;
                 return;

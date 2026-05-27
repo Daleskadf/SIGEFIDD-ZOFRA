@@ -287,25 +287,15 @@ function iniciarFirmaSemiautomatica(protocolo) {
         filename = 'documento_' + idDocumentoActual + '.pdf';
     }
     
-    // 1. Descargar el archivo PDF
-    var downloadUrl = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=") %>' + idDocumentoActual;
-    var link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // 2. Mostrar la sección de subida de archivo firmado
+    // 1. Mostrar la sección de subida de archivo firmado
     var seccion = document.getElementById('seccionSubirFirmado');
     if (seccion) {
         seccion.style.display = 'block';
     }
     
-    // 3. Ejecutar el protocolo para el script de AHK (esperar 1 segundo para iniciar la descarga antes de redirigir)
-    setTimeout(function() {
-        window.location.href = protocolo + '://' + encodeURIComponent(filename);
-    }, 1000);
+    // 2. Redirigir de forma inmediata al protocolo pasando host, idDoc, token y el nombre del archivo
+    var urlProtocolo = protocolo + '://' + window.location.host + '/' + idDocumentoActual + '/' + '<%= TokenActual %>/' + encodeURIComponent(filename);
+    window.location.href = urlProtocolo;
 }
 
 // Subir PDF Firmado Manualmente desde flujo AHK
