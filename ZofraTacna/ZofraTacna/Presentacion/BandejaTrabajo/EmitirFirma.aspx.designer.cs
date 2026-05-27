@@ -14,7 +14,9 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdf;
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
         protected global::System.Web.UI.WebControls.DropDownList ddlCertificados;
-        protected global::System.Web.UI.WebControls.Button btnRefrescar;
+        protected global::System.Web.UI.WebControls.DropDownList ddlCertificadosDnie;
+        protected global::System.Web.UI.WebControls.Button btnFirmarDnie;
+        protected global::System.Web.UI.WebControls.Label lblErrorDnie;
         protected global::System.Web.UI.WebControls.Button btnFirmarUsb;
         protected global::System.Web.UI.WebControls.Label lblErrorUsb;
     }

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
@@ -264,17 +265,10 @@ namespace ZofraTacna.Presentacion
             Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
         }
 
-        protected void btnRefrescar_Click(object sender, EventArgs e)
-        {
-            CargarCertificados();
-            lblErrorUsb.Text = "";
-            ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModal", "document.getElementById('modalOpcionesFirma').style.display='flex'; document.getElementById('panelDnie').classList.remove('active'); document.getElementById('panelUsb').classList.add('active'); document.getElementById('ddlMetodoFirma').value='usb';", true);
-        }
-
         private void CargarCertificados()
         {
             ddlCertificados.Items.Clear();
-            ddlCertificados.Items.Add(new ListItem("-- Seleccione un certificado --", ""));
+            ddlCertificados.Items.Add(new ListItem("-- Seleccione un certificado USB --", ""));
 
             try
             {
@@ -301,6 +295,64 @@ namespace ZofraTacna.Presentacion
             catch (Exception ex)
             {
                 lblErrorUsb.Text = "Error al cargar certificados: " + ex.Message;
+            }
+        }
+
+        protected void btnAbrirModal_Click(object sender, EventArgs e)
+        {
+            CargarCertificados();
+            CargarCertificadosDnie();
+            ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalDnie", "abrirModalOpcionesFirma();", true);
+        }
+
+        private void CargarCertificadosDnie()
+        {
+            ddlCertificadosDnie.Items.Clear();
+            ddlCertificadosDnie.Items.Add(new ListItem("-- Seleccione su certificado DNIe --", ""));
+
+            try
+            {
+                X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly);
+
+                int count = 0;
+                foreach (X509Certificate2 cert in store.Certificates)
+                {
+                    if (!cert.HasPrivateKey) continue;
+
+                    string emisor = cert.Issuer.ToLower();
+                    if (!emisor.Contains("reniec")) continue;
+
+                    bool isNonRepudiation = false;
+                    foreach (X509Extension ext in cert.Extensions)
+                    {
+                        if (ext.Oid.Value == "2.5.29.15") // Key Usage
+                        {
+                            X509KeyUsageExtension keyUsage = (X509KeyUsageExtension)ext;
+                            if ((keyUsage.KeyUsages & X509KeyUsageFlags.NonRepudiation) != 0)
+                            {
+                                isNonRepudiation = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isNonRepudiation) continue;
+
+                    string titular = cert.GetNameInfo(X509NameType.SimpleName, false);
+                    string vence = cert.NotAfter.ToString("dd/MM/yyyy");
+                    string label = $"{titular} — vence {vence} (Firma Digital)";
+
+                    ddlCertificadosDnie.Items.Add(new ListItem(label, cert.Thumbprint));
+                    count++;
+                }
+
+                store.Close();
+                lblErrorDnie.Text = count == 0 ? "No se encontró un DNI electrónico insertado o su certificado de firma no es válido." : "";
+            }
+            catch (Exception ex)
+            {
+                lblErrorDnie.Text = "Error al cargar certificados DNIe: " + ex.Message;
             }
         }
 
@@ -404,8 +456,8 @@ namespace ZofraTacna.Presentacion
             catch (Exception ex)
             {
                 lblErrorUsb.Text = ex.Message;
-                // Reabrir modal en caso de error usando JS inyectado
-                ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalError", "document.getElementById('modalOpcionesFirma').style.display='flex'; document.getElementById('panelDnie').classList.remove('active'); document.getElementById('panelUsb').classList.add('active'); document.getElementById('ddlMetodoFirma').value='usb';", true);
+                string jsErr = "document.getElementById('lblMensajeErrorModal').innerText = '" + ex.ToString().Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "") + "'; document.getElementById('modalErrorFirma').style.display='flex';";
+                ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalError", jsErr, true);
             }
         }
 
@@ -424,6 +476,235 @@ namespace ZofraTacna.Presentacion
             }
             store.Close();
             return null;
+        }
+
+        protected void btnFirmarDnie_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int idDoc = IdDocumentoActual;
+                if (idDoc <= 0) throw new Exception("ID de documento inválido.");
+
+                string login = Session["LoginUsuario"] != null ? Session["LoginUsuario"].ToString() : "";
+                if (string.IsNullOrWhiteSpace(login)) throw new Exception("Sesión expirada.");
+
+                if (string.IsNullOrWhiteSpace(ddlCertificadosDnie.SelectedValue))
+                    throw new Exception("Debe seleccionar un certificado DNIe de la lista.");
+
+                X509Certificate2 selectedCert = ObtenerCertificado(ddlCertificadosDnie.SelectedValue);
+                if (selectedCert == null)
+                    throw new Exception("No se pudo obtener el certificado seleccionado.");
+
+                // Validar participante firmante
+                string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+                int idParticipante = 0;
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    string sql = @"SELECT TOP(1) dp.IdParticipante 
+                                   FROM DocumentoParticipante dp
+                                   INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
+                                   WHERE dp.IdDocumento = @idDoc
+                                     AND dp.LoginUsuario = @login
+                                     AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
+                                   ORDER BY dp.OrdenSecuencial ASC";
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@idDoc", idDoc);
+                        cmd.Parameters.AddWithValue("@login", login);
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                            idParticipante = Convert.ToInt32(result);
+                    }
+                }
+
+                if (idParticipante <= 0)
+                    throw new Exception("No es un participante firmante válido.");
+
+                // Obtener PDF
+                var repo = new RepositorioDocumentos();
+                int idAdjunto; string nombreArchivo; int tamBytes;
+                if (!repo.IntentarAdjuntoPrincipal(idDoc, out idAdjunto, out nombreArchivo, out tamBytes))
+                    throw new Exception("El documento no tiene un archivo PDF adjunto válido.");
+
+                byte[] inputBytes = repo.ObtenerBytesAdjunto(idAdjunto);
+                if (inputBytes == null || inputBytes.Length == 0)
+                    throw new Exception("No se pudo leer el contenido del PDF.");
+
+                // Firmar PDF
+                string titular = selectedCert.GetNameInfo(X509NameType.SimpleName, false);
+                byte[] outputBytes = null;
+
+                using (PdfReader reader = new PdfReader(inputBytes))
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0');
+                    PdfSignatureAppearance appearance = stamper.SignatureAppearance;
+                    appearance.Reason = "Firma Oficial ZOFRATACNA (DNIe)";
+                    appearance.Location = "Tacna, Perú";
+                    appearance.SignatureCreator = titular;
+                    appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(36, 36, 270, 100), 1, "Firma_DNIe_" + DateTime.Now.Ticks);
+
+                    iTextSharp.text.pdf.security.IExternalSignature externalSignature;
+                    string oidValue = selectedCert.PublicKey.Oid.Value;
+
+                    // 1.2.840.10045.2.1 es el OID universal para Elliptic Curve (ECC)
+                    if (oidValue == "1.2.840.10045.2.1")
+                    {
+                        externalSignature = new ModernCngSignature(selectedCert, "SHA-256");
+                    }
+                    else
+                    {
+                        externalSignature = new LegacySmartCardSignature(selectedCert, "SHA-256");
+                    }
+
+                    MakeSignature.SignDetached(appearance, externalSignature,
+                        new Org.BouncyCastle.X509.X509Certificate[] { DotNetUtilities.FromX509Certificate(selectedCert) },
+                        null, null, null, 0, CryptoStandard.CMS);
+
+                    stamper.Close();
+                    outputBytes = outputStream.ToArray();
+                }
+
+                if (outputBytes == null || outputBytes.Length == 0)
+                    throw new Exception("Error al generar el documento firmado.");
+
+                // Guardar PDF actualizado
+                repo.ReemplazarPdfConHistorial(idDoc, outputBytes, nombreArchivo, login, "Documento firmado con DNIe Nativo por " + titular);
+
+                // Registrar Firma en el Flujo
+                var modulo = new ZofraTacna.LogicaNegocio.ModuloGestionDocumental();
+                string mensajeFirma;
+                string hashFirma = "DNIE_" + selectedCert.Thumbprint;
+                bool ok = modulo.RegistrarFirmaConEstado(idDoc, idParticipante, login, hashFirma, out mensajeFirma);
+
+                if (ok)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "FirmaExito", "mostrarExitoYRedirigir();", true);
+                }
+                else
+                {
+                    throw new Exception("El archivo se firmó, pero hubo un problema al actualizar el estado: " + mensajeFirma);
+                }
+            }
+            catch (Exception ex)
+            {
+                lblErrorDnie.Text = ex.Message;
+                string jsErr = "document.getElementById('lblMensajeErrorModal').innerText = '" + ex.ToString().Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "") + "'; document.getElementById('modalErrorFirma').style.display='flex';";
+                ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalErrorDnie", jsErr, true);
+            }
+        }
+    }
+    public class LegacySmartCardSignature : iTextSharp.text.pdf.security.IExternalSignature
+    {
+        private X509Certificate2 _cert;
+        private string _hashAlgorithm;
+
+        public LegacySmartCardSignature(X509Certificate2 cert, string hashAlgorithm)
+        {
+            _cert = cert;
+            _hashAlgorithm = hashAlgorithm;
+        }
+
+        public string GetEncryptionAlgorithm() { return "RSA"; }
+        public string GetHashAlgorithm() { return _hashAlgorithm; }
+
+        public byte[] Sign(byte[] message)
+        {
+            // 1. Intentar usar la vía moderna CNG (Cryptography Next Generation)
+            // Esto evita llamar a .PrivateKey que usa CAPI y lanza excepción si el driver es KSP.
+            // Además, CNG muestra el modal de PIN nativo de Windows que el usuario desea.
+            try
+            {
+                using (System.Security.Cryptography.RSA rsa = _cert.GetRSAPrivateKey())
+                {
+                    if (rsa != null)
+                    {
+                        string netHashName = _hashAlgorithm.Replace("-", "");
+                        return rsa.SignData(message, new System.Security.Cryptography.HashAlgorithmName(netHashName), System.Security.Cryptography.RSASignaturePadding.Pkcs1);
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback silencioso
+            }
+
+            // 2. Si CNG falla o no es compatible, intentar con CAPI (vía antigua)
+            RSACryptoServiceProvider rsaCsp = null;
+            try
+            {
+                rsaCsp = _cert.PrivateKey as RSACryptoServiceProvider;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Fallo al acceder a la llave privada: " + ex.Message);
+            }
+
+            if (rsaCsp == null) throw new Exception("No se pudo obtener la llave privada RSA.");
+
+            try
+            {
+                System.Security.Cryptography.CspParameters csp = new System.Security.Cryptography.CspParameters(1, "Microsoft Base Smart Card Crypto Provider");
+                csp.KeyContainerName = rsaCsp.CspKeyContainerInfo.KeyContainerName;
+                csp.Flags = System.Security.Cryptography.CspProviderFlags.UseExistingKey;
+
+                using (RSACryptoServiceProvider rsaNative = new RSACryptoServiceProvider(csp))
+                {
+                    string oid = System.Security.Cryptography.CryptoConfig.MapNameToOID(_hashAlgorithm.Replace("-", ""));
+                    return rsaNative.SignData(message, oid);
+                }
+            }
+            catch
+            {
+                string oid = System.Security.Cryptography.CryptoConfig.MapNameToOID(_hashAlgorithm.Replace("-", ""));
+                return rsaCsp.SignData(message, oid);
+            }
+        }
+    }
+
+    public class ModernCngSignature : iTextSharp.text.pdf.security.IExternalSignature
+    {
+        private X509Certificate2 _cert;
+        private string _hashAlgorithm;
+
+        public ModernCngSignature(X509Certificate2 cert, string hashAlgorithm)
+        {
+            _cert = cert;
+            _hashAlgorithm = hashAlgorithm;
+        }
+
+        public string GetEncryptionAlgorithm() { return "ECDSA"; }
+        public string GetHashAlgorithm() { return _hashAlgorithm; }
+
+        public byte[] Sign(byte[] message)
+        {
+            string netHashName = _hashAlgorithm.Replace("-", ""); 
+            using (System.Security.Cryptography.ECDsa ecdsa = _cert.GetECDsaPrivateKey())
+            {
+                if (ecdsa == null) throw new Exception("No se pudo obtener la llave privada ECDSA (CNG).");
+                System.Security.Cryptography.HashAlgorithmName hashName = new System.Security.Cryptography.HashAlgorithmName(netHashName);
+                byte[] signature = ecdsa.SignData(message, hashName);
+                return ConvertP1363ToDer(signature);
+            }
+        }
+
+        private byte[] ConvertP1363ToDer(byte[] p1363Signature)
+        {
+            int halfLength = p1363Signature.Length / 2;
+            byte[] r = new byte[halfLength];
+            byte[] s = new byte[halfLength];
+            Array.Copy(p1363Signature, 0, r, 0, halfLength);
+            Array.Copy(p1363Signature, halfLength, s, 0, halfLength);
+
+            Org.BouncyCastle.Math.BigInteger rBig = new Org.BouncyCastle.Math.BigInteger(1, r);
+            Org.BouncyCastle.Math.BigInteger sBig = new Org.BouncyCastle.Math.BigInteger(1, s);
+            
+            Org.BouncyCastle.Asn1.DerSequence seq = new Org.BouncyCastle.Asn1.DerSequence(
+                new Org.BouncyCastle.Asn1.DerInteger(rBig),
+                new Org.BouncyCastle.Asn1.DerInteger(sBig)
+            );
+            return seq.GetDerEncoded();
         }
     }
 }

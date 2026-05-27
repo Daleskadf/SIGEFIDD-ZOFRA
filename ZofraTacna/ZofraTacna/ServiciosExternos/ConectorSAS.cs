@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ZofraTacna.Datos;
 
 namespace ZofraTacna.ServiciosExternos
@@ -16,7 +15,7 @@ namespace ZofraTacna.ServiciosExternos
 
         /// <summary>
         /// Obtiene lista de empleados activos desde VW_EmpleadosActivos
-        /// para cargar din�micamente en DropDownList del Login.
+        /// para cargar dinámicamente en DropDownList del Login.
         /// </summary>
         public List<EmpleadoSASDto> ObtenerEmpleadosActivos()
         {
