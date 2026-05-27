@@ -111,10 +111,10 @@
             
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
                 <button type="button" class="btn-accion" style="background: linear-gradient(135deg, #1565C0, #1E88E5);" onclick="iniciarFirmaSemiautomatica('firmaperu')">
-                    &#128190; 1. Descargar y abrir en Firma Perú (AHK)
+                    &#128190; 1. Firmar con Firma Peru
                 </button>
                 <button type="button" class="btn-accion" style="background: linear-gradient(135deg, #2E7D32, #43A047);" onclick="iniciarFirmaSemiautomatica('refirma')">
-                    &#128190; 2. Descargar y abrir en ReFirma (AHK)
+                    &#128190; 2. Firmar con ReFirma
                 </button>
             </div>
             
