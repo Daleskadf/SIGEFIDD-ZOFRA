@@ -301,26 +301,28 @@ namespace ZofraTacna.Presentacion
                 UsarVisorMarcadoresPdf = false;
                 PdfUrlVisorJs = "";
                 CultureInfo pe = CultureInfo.GetCultureInfo("es-PE");
-                LlenarComboVersiones(ddlPdfCompareIzq, archivados, nombrePdf, pe);
                 LlenarComboVersiones(ddlPdfCompareDer, archivados, nombrePdf, pe);
-                SeleccionarValorCombo(ddlPdfCompareIzq, CmpAdjIzq);
                 SeleccionarValorCombo(ddlPdfCompareDer, CmpAdjDer);
+
+                LlenarComboVersiones(ddlPdfCompareIzq, archivados, nombrePdf, pe);
+                SeleccionarValorCombo(ddlPdfCompareIzq, CmpAdjIzq);
 
                 string urlIzq = CmpAdjIzq > 0 ? basePdf + "&idAdj=" + CmpAdjIzq : basePdf;
                 string urlDer = CmpAdjDer > 0 ? basePdf + "&idAdj=" + CmpAdjDer : basePdf;
-                lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
                 lnkPdfDerNuevaPestana.NavigateUrl = urlDer;
+                lnkPdfIzqNuevaPestana.NavigateUrl = urlIzq;
+                
                 ifrPdfAnterior.Visible = true;
-                    ifrPdfAnterior.Attributes["src"] = urlIzq;
+                ifrPdfAnterior.Attributes["src"] = urlIzq;
+
                 ifrPdfActualCompare.Visible = true;
-                    ifrPdfActualCompare.Attributes["src"] = urlDer;
+                ifrPdfActualCompare.Attributes["src"] = urlDer;
                 ifrPdf.Visible = false;
                 pnlSinPdf.Visible = false;
                 pnlVistaPdfComparar.CssClass = "pdf-compare-grid";
             }
             else if (hayPdf)
             {
-                lnkPdfIzqNuevaPestana.NavigateUrl = "";
                 lnkPdfDerNuevaPestana.NavigateUrl = "";
                 UsarVisorMarcadoresPdf = repo.ExisteTablaDocumentoObservacionMarcador();
                 PdfUrlVisorJs = UsarVisorMarcadoresPdf ? basePdf : "";
@@ -338,7 +340,6 @@ namespace ZofraTacna.Presentacion
             }
             else
             {
-                lnkPdfIzqNuevaPestana.NavigateUrl = "";
                 lnkPdfDerNuevaPestana.NavigateUrl = "";
                 UsarVisorMarcadoresPdf = false;
                 PdfUrlVisorJs = "";

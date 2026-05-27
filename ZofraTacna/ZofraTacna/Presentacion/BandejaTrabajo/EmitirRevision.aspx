@@ -881,6 +881,12 @@
                 position: relative;
                 overflow: auto
             }
+            .pdf-col .pdf-viewer-host {
+                flex: 1;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+            }
 
             @media (max-width:1100px) {
                 .emitir-wrap.emitir-wrap--compare .emitir-left {
@@ -1217,8 +1223,7 @@
                                                     CssClass="cmp-tablink" Target="_blank"
                                                     Text="Nueva pesta&ntilde;a" />
                                             </div>
-                                            <iframe runat="server" id="ifrPdfAnterior"
-                                                title="PDF panel izquierdo"></iframe>
+                                            <iframe runat="server" id="ifrPdfAnterior" title="PDF panel izquierdo"></iframe>
                                         </div>
                                         <div class="pdf-col">
                                             <div class="pdf-col-title">Panel derecho</div>
@@ -1424,6 +1429,8 @@
                     emRevEnviarBloqueo('touch');
                     emRevHeartbeat = setInterval(function () { emRevEnviarBloqueo('touch'); }, 15000);
                 }
+                
+                // Visor principal (cuando no se compara)
                 if (emRevUsarVisorPdf && emRevPdfUrl && window.PdfObservacionesVisor) {
                     var host = document.getElementById('pdfViewerHost');
                     if (host) {

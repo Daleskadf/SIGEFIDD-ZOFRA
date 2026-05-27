@@ -262,11 +262,12 @@ namespace ZofraTacna.Presentacion
         {
             var firmantes = new List<string>();
             string conn = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
-            // Obtener participantes tipo FIR (los que tienen orden de firma)
+            // Obtener participantes tipo FIR (los que tienen orden de firma) con su estado
             string sql = @"
-                SELECT fir.LoginUsuario, fir.OrdenSecuencial
+                SELECT fir.LoginUsuario, fir.OrdenSecuencial, ISNULL(me.Codigo,'PEN') AS EstadoCod
                 FROM DocumentoParticipante fir
                 INNER JOIN Maestro mFir ON fir.IdTipoParticipante = mFir.IdMaestro
+                LEFT JOIN Maestro me ON fir.EstadoParticipante = me.IdMaestro
                 WHERE fir.IdDocumento = @id
                   AND mFir.Codigo = 'FIR'
                 ORDER BY fir.OrdenSecuencial ASC, fir.IdParticipante ASC";
@@ -283,7 +284,10 @@ namespace ZofraTacna.Presentacion
                         {
                             int orden = dr["OrdenSecuencial"] == DBNull.Value ? 0 : Convert.ToInt32(dr["OrdenSecuencial"]);
                             string login = dr["LoginUsuario"].ToString();
+                            string est = dr["EstadoCod"].ToString().ToUpperInvariant();
                             string css = "firma-item";
+                            if (est == "OBS") css += " firma-obs";
+                            else if (est == "REG" || est == "FIR") css += " firma-ok";
                             string numero = orden > 0 ? orden.ToString() : "-";
                             string html = "<div class='" + css + "'>" +
                                           "<span class='firma-num'>" + numero + "</span>" +

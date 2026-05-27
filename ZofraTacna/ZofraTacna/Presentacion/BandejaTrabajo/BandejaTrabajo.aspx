@@ -88,7 +88,11 @@
         .section-firma{min-height:60px;display:flex;align-items:flex-start;justify-content:flex-start;color:#ccc;font-size:13px;flex:1}
         .firma-list{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:flex-start;flex:1}
         .firma-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#555;border-left:2px solid #1a2a4a;overflow:hidden}
+        .firma-item.firma-ok{background:#eaf2ff;border-left-color:#1a56db;color:#163b7a}
+        .firma-item.firma-obs{background:#ffebee;border-left-color:#c0392b;color:#7f1d1d}
         .firma-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;background:#1a2a4a;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+        .firma-item.firma-ok .firma-num{background:#1a56db;color:#fff}
+        .firma-item.firma-obs .firma-num{background:#c0392b;color:#fff}
         .firma-login{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .firma-empty{color:#bbb;font-size:12px}
         .empty{text-align:center;padding:60px;color:#aaa;font-size:14px;background:white;border-radius:12px}

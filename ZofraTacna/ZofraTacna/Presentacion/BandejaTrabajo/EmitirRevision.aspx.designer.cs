@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// <generado autom醫icamente>
-//     Este c骴igo fue generado por una herramienta.
+// <generado autom谩ticamente>
+//     Este c贸digo fue generado por una herramienta.
 //
-//     Los cambios en este archivo podr韆n causar un comportamiento incorrecto y se perder醤 si
-//     se vuelve a generar el c骴igo. 
-// </generado autom醫icamente>
+//     Los cambios en este archivo podr铆an causar un comportamiento incorrecto y se perder谩n si
+//     se vuelve a generar el c贸digo. 
+// </generado autom谩ticamente>
 //------------------------------------------------------------------------------
 
 namespace ZofraTacna.Presentacion
@@ -18,8 +18,8 @@ namespace ZofraTacna.Presentacion
         /// Control form1.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
@@ -27,8 +27,8 @@ namespace ZofraTacna.Presentacion
         /// Control litSidebarNav.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSidebarNav;
 
@@ -36,8 +36,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnCerrarSesion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCerrarSesion;
 
@@ -45,8 +45,8 @@ namespace ZofraTacna.Presentacion
         /// Control litAvatar.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litAvatar;
 
@@ -54,8 +54,8 @@ namespace ZofraTacna.Presentacion
         /// Control litNombre.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litNombre;
 
@@ -63,8 +63,8 @@ namespace ZofraTacna.Presentacion
         /// Control litRol.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litRol;
 
@@ -72,8 +72,8 @@ namespace ZofraTacna.Presentacion
         /// Control divContentArea.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divContentArea;
 
@@ -81,8 +81,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlMensajeOk.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlMensajeOk;
 
@@ -90,8 +90,8 @@ namespace ZofraTacna.Presentacion
         /// Control litMensajeOk.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litMensajeOk;
 
@@ -99,8 +99,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlMensajeError.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlMensajeError;
 
@@ -108,8 +108,8 @@ namespace ZofraTacna.Presentacion
         /// Control litMensajeError.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litMensajeError;
 
@@ -117,8 +117,8 @@ namespace ZofraTacna.Presentacion
         /// Control litSubtituloDoc.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSubtituloDoc;
 
@@ -126,8 +126,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnCompararDocumento.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCompararDocumento;
 
@@ -135,8 +135,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnCerrarComparacion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCerrarComparacion;
 
@@ -144,8 +144,8 @@ namespace ZofraTacna.Presentacion
         /// Control divEmitShell.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divEmitShell;
 
@@ -153,8 +153,8 @@ namespace ZofraTacna.Presentacion
         /// Control litDetallesDoc.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litDetallesDoc;
 
@@ -162,8 +162,8 @@ namespace ZofraTacna.Presentacion
         /// Control litLineaTiempo.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litLineaTiempo;
 
@@ -171,8 +171,8 @@ namespace ZofraTacna.Presentacion
         /// Control litNombreArchivoTitulo.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litNombreArchivoTitulo;
 
@@ -180,8 +180,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlBannerComparacion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlBannerComparacion;
 
@@ -189,8 +189,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlVistaPdfSimple.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlVistaPdfSimple;
 
@@ -198,8 +198,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlSinPdf.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlSinPdf;
 
@@ -207,8 +207,8 @@ namespace ZofraTacna.Presentacion
         /// Control ifrPdf.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdf;
 
@@ -216,8 +216,8 @@ namespace ZofraTacna.Presentacion
         /// Control pnlVistaPdfComparar.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlVistaPdfComparar;
 
@@ -225,8 +225,8 @@ namespace ZofraTacna.Presentacion
         /// Control ddlPdfCompareIzq.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareIzq;
 
@@ -234,8 +234,8 @@ namespace ZofraTacna.Presentacion
         /// Control lnkPdfIzqNuevaPestana.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink lnkPdfIzqNuevaPestana;
 
@@ -243,8 +243,8 @@ namespace ZofraTacna.Presentacion
         /// Control ifrPdfAnterior.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfAnterior;
 
@@ -252,8 +252,8 @@ namespace ZofraTacna.Presentacion
         /// Control ddlPdfCompareDer.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPdfCompareDer;
 
@@ -261,8 +261,8 @@ namespace ZofraTacna.Presentacion
         /// Control lnkPdfDerNuevaPestana.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink lnkPdfDerNuevaPestana;
 
@@ -270,8 +270,8 @@ namespace ZofraTacna.Presentacion
         /// Control ifrPdfActualCompare.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlIframe ifrPdfActualCompare;
 
@@ -279,8 +279,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnEmitirConformidad.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnEmitirConformidad;
 
@@ -288,8 +288,8 @@ namespace ZofraTacna.Presentacion
         /// Control btnEnviarObservacion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnEnviarObservacion;
 
@@ -297,8 +297,8 @@ namespace ZofraTacna.Presentacion
         /// Control txtObservaciones.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtObservaciones;
     }

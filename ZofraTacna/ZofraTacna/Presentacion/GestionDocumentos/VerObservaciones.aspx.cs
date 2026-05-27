@@ -95,41 +95,149 @@ namespace ZofraTacna.Presentacion
 
             if ((pendientes == null || pendientes.Count == 0) && (levantadas == null || levantadas.Count == 0))
             {
-                sb.Append("<div class='obs-item'>No hay observaciones registradas en este documento.</div>");
+                sb.Append("<div style='text-align:center;padding:40px 20px;color:#999'>");
+                sb.Append("<svg viewBox='0 0 24 24' style='width:48px;height:48px;fill:#ddd;margin-bottom:12px'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-2-13h4v6h-4z'/></svg>");
+                sb.Append("<p style='font-size:13px;margin:0'>No hay observaciones registradas en este documento.</p>");
+                sb.Append("</div>");
                 return sb.ToString();
             }
 
+            // SECCIÓN: PENDIENTES DE CORRECCIÓN
             sb.Append("<div class='obs-section'><h4>Pendientes de correcci&oacute;n</h4>");
             if (pendientes == null || pendientes.Count == 0)
-                sb.Append("<div class='obs-meta'>Ninguna observaci&oacute;n vigente. Si ya envi&oacute; correcci&oacute;n tras una observaci&oacute;n, consulte la secci&oacute;n siguiente.</div>");
+            {
+                sb.Append("<div style='padding:16px;background:#f0f7ff;border-radius:8px;border-left:3px solid #2196f3;font-size:12px;color:#1565c0;line-height:1.5'>");
+                sb.Append("✓ Ninguna observaci&oacute;n vigente. Si ya envi&oacute; correcci&oacute;n tras una observaci&oacute;n, consulte la secci&oacute;n siguiente.");
+                sb.Append("</div>");
+            }
             else
             {
                 foreach (ObservacionFlujoItem o in pendientes)
                 {
-                    sb.Append("<div class='obs-item'><span class='badge-estado badge-pend'>Pendiente</span>");
-                    sb.Append("<div style='margin-top:6px'>");
-                    sb.Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("g", pe)));
-                    sb.Append(" &mdash; Revisor: <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "")).Append("</strong></div>");
-                    sb.Append("<div style='margin-top:6px'>").Append(HttpUtility.HtmlEncode(o.Comentario ?? "")).Append("</div></div>");
+                    sb.Append("<div class='obs-item'>");
+                    sb.Append("<span class='badge-estado badge-pend'>Pendiente</span>");
+                    
+                    // Procesar comentario para separar marcadores y observación general
+                    string comentario = o.Comentario ?? "";
+                    string[] partes = comentario.Split(new[] { "\n\n" }, StringSplitOptions.None);
+                    string comentarioMarcadores = partes[0].Trim();
+                    string observacionGeneral = partes.Length > 1 ? partes[1].Trim() : "";
+                    
+                    var marcadores = System.Text.RegularExpressions.Regex.Matches(comentarioMarcadores, @"\[Marcador\s+\d+\s*-\s*Pag\.\s*\d+\]");
+                    
+                    if (marcadores.Count > 0)
+                    {
+                        // Mostrar marcadores separados
+                        sb.Append("<div style='margin-top:10px;font-weight:600;color:#333'>Marcadores:</div>");
+                        sb.Append("<div style='margin-top:8px;display:flex;flex-direction:column;gap:6px'>");
+                        
+                        foreach (System.Text.RegularExpressions.Match marcador in marcadores)
+                        {
+                            int marIdx = comentarioMarcadores.IndexOf(marcador.Value);
+                            int nextMarIdx = comentarioMarcadores.IndexOf("[Marcador", marIdx + 1);
+                            int endIdx = nextMarIdx > 0 ? nextMarIdx : comentarioMarcadores.Length;
+                            
+                            string marcadorText = comentarioMarcadores.Substring(marIdx, endIdx - marIdx).Trim();
+                            sb.Append("<div style='background:#fff8f0;padding:8px 10px;border-radius:6px;border-left:3px solid #ff9800;font-size:12px;line-height:1.5'>");
+                            sb.Append("<div style='font-weight:600;color:#e65100'>").Append(HttpUtility.HtmlEncode(marcador.Value)).Append("</div>");
+                            sb.Append("<div style='margin-top:4px;color:#444'>").Append(HttpUtility.HtmlEncode(marcadorText.Replace(marcador.Value, "").Trim())).Append("</div>");
+                            sb.Append("</div>");
+                        }
+                        sb.Append("</div>");
+                    }
+                    else if (!string.IsNullOrWhiteSpace(comentarioMarcadores))
+                    {
+                        sb.Append("<div style='margin-top:10px;font-weight:600;color:#333'>Observaci&oacute;n:</div>");
+                        sb.Append("<div style='margin-top:6px;font-size:13px;line-height:1.6;color:#444'>").Append(HttpUtility.HtmlEncode(comentarioMarcadores)).Append("</div>");
+                    }
+                    
+                    // Mostrar observación general si existe
+                    if (!string.IsNullOrWhiteSpace(observacionGeneral))
+                    {
+                        sb.Append("<div style='margin-top:12px;padding-top:12px;border-top:2px solid #ffe0b2'>");
+                        sb.Append("<div style='font-weight:600;color:#e65100;font-size:11px;text-transform:uppercase;letter-spacing:0.5px'>Observaci&oacute;n General:</div>");
+                        sb.Append("<div style='margin-top:6px;font-size:12px;line-height:1.5;color:#444;font-style:italic'>").Append(HttpUtility.HtmlEncode(observacionGeneral)).Append("</div>");
+                        sb.Append("</div>");
+                    }
+                    
+                    sb.Append("<div class='obs-meta'>");
+                    sb.Append("<svg style='width:12px;height:12px;fill:#999;margin-right:4px;vertical-align:middle' viewBox='0 0 24 24'><path d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z'/></svg>");
+                    sb.Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("dd/MM/yyyy HH:mm", pe)));
+                    sb.Append(" &mdash; Revisor: <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "Sin especificar")).Append("</strong>");
+                    sb.Append("</div></div>");
                 }
             }
             sb.Append("</div>");
 
+            // SECCIÓN: YA SUBSANADAS
             sb.Append("<div class='obs-section'><h4>Ya subsanadas</h4>");
             if (levantadas == null || levantadas.Count == 0)
-                sb.Append("<div class='obs-meta'>Las observaciones subsanadas aparecen aqu&iacute; despu&eacute;s de que el registrador env&iacute;e la correcci&oacute;n y se reinicie el flujo de revisi&oacute;n.</div>");
+            {
+                sb.Append("<div style='padding:16px;background:#f1f8f5;border-radius:8px;border-left:3px solid #4caf50;font-size:12px;color:#2e7d32;line-height:1.5'>");
+                sb.Append("Las observaciones subsanadas aparecer&aacute;n aqu&iacute; despu&eacute;s de que env&iacute;e la correcci&oacute;n y se reinicie el flujo de revisi&oacute;n.");
+                sb.Append("</div>");
+            }
             else
             {
                 foreach (ObservacionFlujoItem o in levantadas)
                 {
-                    sb.Append("<div class='obs-item obs-levantada'><span class='badge-estado badge-ok'>Subsanada</span>");
-                    sb.Append("<div class='obs-meta'>Observada el ").Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("g", pe)));
-                    sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "")).Append("</strong>");
+                    sb.Append("<div class='obs-item obs-levantada'>");
+                    sb.Append("<span class='badge-estado badge-ok'>Subsanada</span>");
+                    
+                    // Procesar comentario para separar marcadores y observación general
+                    string comentario = o.Comentario ?? "";
+                    string[] partes = comentario.Split(new[] { "\n\n" }, StringSplitOptions.None);
+                    string comentarioMarcadores = partes[0].Trim();
+                    string observacionGeneral = partes.Length > 1 ? partes[1].Trim() : "";
+                    
+                    var marcadores = System.Text.RegularExpressions.Regex.Matches(comentarioMarcadores, @"\[Marcador\s+\d+\s*-\s*Pag\.\s*\d+\]");
+                    
+                    if (marcadores.Count > 0)
+                    {
+                        // Mostrar marcadores separados
+                        sb.Append("<div style='margin-top:10px;font-weight:600;color:#1b5e20'>Marcadores:</div>");
+                        sb.Append("<div style='margin-top:8px;display:flex;flex-direction:column;gap:6px'>");
+                        
+                        foreach (System.Text.RegularExpressions.Match marcador in marcadores)
+                        {
+                            int marIdx = comentarioMarcadores.IndexOf(marcador.Value);
+                            int nextMarIdx = comentarioMarcadores.IndexOf("[Marcador", marIdx + 1);
+                            int endIdx = nextMarIdx > 0 ? nextMarIdx : comentarioMarcadores.Length;
+                            
+                            string marcadorText = comentarioMarcadores.Substring(marIdx, endIdx - marIdx).Trim();
+                            sb.Append("<div style='background:#e8f5e9;padding:8px 10px;border-radius:6px;border-left:3px solid #4caf50;font-size:12px;line-height:1.5'>");
+                            sb.Append("<div style='font-weight:600;color:#2e7d32'>").Append(HttpUtility.HtmlEncode(marcador.Value)).Append("</div>");
+                            sb.Append("<div style='margin-top:4px;color:#333'>").Append(HttpUtility.HtmlEncode(marcadorText.Replace(marcador.Value, "").Trim())).Append("</div>");
+                            sb.Append("</div>");
+                        }
+                        sb.Append("</div>");
+                    }
+                    else if (!string.IsNullOrWhiteSpace(comentarioMarcadores))
+                    {
+                        sb.Append("<div style='margin-top:10px;font-weight:600;color:#1b5e20'>Observaci&oacute;n Original:</div>");
+                        sb.Append("<div style='margin-top:6px;font-size:13px;line-height:1.6;color:#333'>").Append(HttpUtility.HtmlEncode(comentarioMarcadores)).Append("</div>");
+                    }
+                    
+                    // Mostrar observación general si existe
+                    if (!string.IsNullOrWhiteSpace(observacionGeneral))
+                    {
+                        sb.Append("<div style='margin-top:12px;padding-top:12px;border-top:2px solid #c8e6c9'>");
+                        sb.Append("<div style='font-weight:600;color:#2e7d32;font-size:11px;text-transform:uppercase;letter-spacing:0.5px'>Observaci&oacute;n General:</div>");
+                        sb.Append("<div style='margin-top:6px;font-size:12px;line-height:1.5;color:#333;font-style:italic'>").Append(HttpUtility.HtmlEncode(observacionGeneral)).Append("</div>");
+                        sb.Append("</div>");
+                    }
+                    
+                    sb.Append("<div class='obs-meta' style='border-top:1px solid rgba(46,125,50,.15);margin-top:12px;padding-top:10px'>");
+                    sb.Append("<svg style='width:12px;height:12px;fill:#2e7d32;margin-right:4px;vertical-align:middle' viewBox='0 0 24 24'><path d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-13c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z'/></svg>");
+                    sb.Append("Observada el <strong>").Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
+                    sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "Sin especificar")).Append("</strong>");
                     if (o.FechaLevantamiento.HasValue)
-                        sb.Append(" &mdash; Levantada el ").Append(HttpUtility.HtmlEncode(o.FechaLevantamiento.Value.ToString("g", pe)));
-                    sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginLevantamiento ?? "")).Append("</strong></div>");
-                    sb.Append("<div style='margin-top:6px;font-weight:600'>Texto de la observaci&oacute;n:</div>");
-                    sb.Append("<div style='margin-top:4px'>").Append(HttpUtility.HtmlEncode(o.Comentario ?? "")).Append("</div></div>");
+                    {
+                        sb.Append("<br/><svg style='width:12px;height:12px;fill:#2e7d32;margin-right:4px;margin-top:6px;vertical-align:middle' viewBox='0 0 24 24'><path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/></svg>");
+                        sb.Append(" Levantada el <strong>").Append(HttpUtility.HtmlEncode(o.FechaLevantamiento.Value.ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
+                        sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginLevantamiento ?? "Sin especificar")).Append("</strong>");
+                    }
+                    sb.Append("</div></div>");
                 }
             }
             sb.Append("</div>");
