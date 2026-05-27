@@ -32,7 +32,7 @@
         .spinner{width:40px;height:40px;border:4px solid #e8eaf0;border-top:4px solid #8b1a1a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px auto;}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         .modal-opciones-firma { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9000; display:flex; align-items:center; justify-content:center; display:none; }
-        .modal-opciones-content { background:white; padding:25px; border-radius:12px; width:400px; max-width:90%; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
+        .modal-opciones-content { background:white; padding:25px; border-radius:12px; width:460px; max-width:90%; box-shadow:0 15px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
         .modal-opciones-content h3 { margin-top:0; color:#1a2a4a; font-size:18px; border-bottom:1px solid #eef0f8; padding-bottom:10px; margin-bottom:15px; }
         .form-group { margin-bottom:15px; }
         .form-group label { display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:6px; }
@@ -75,7 +75,7 @@
                     <div class="card-panel" style="flex:1;min-height:200px;display:flex;flex-direction:column"><div class="panel-title">Flujo del documento</div><div class="tl-wrap" style="flex:1;overflow-y:auto;max-height:480px"><div class="tl-line" aria-hidden="true"></div><asp:Literal ID="litLineaTiempo" runat="server"/></div></div>
                 </div>
                 <div class="emitir-right">
-                    <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
+                    <div class="pdf-head">Vista del Documento: <span id="nombreArchivoPdf"><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
                     <div class="pdf-frame-wrap">
                         <div class="pdf-float-actions">
                             <button type="button" id="btnLanzarFirma" class="btn-firma" onclick="abrirModalOpcionesFirma()">&#9998; Firmar con Firma Per&uacute;</button>
@@ -102,8 +102,38 @@
         </div>
         
         <div id="panelDnie" class="panel-opcion active">
-            <p style="font-size:13px; color:#666; margin-bottom:15px;">Se abrirá el cliente de Firma Perú. Podrá seleccionar su DNI electrónico o su Token USB conectado a esta PC.</p>
-            <button type="button" class="btn-accion" onclick="ejecutarFirmaDnie()">Continuar con Firma Perú</button>
+            <h4 style="font-size:13px; color:#1a2a4a; margin-bottom:8px; border-bottom:1px solid #eef0f8; padding-bottom:4px; font-weight:700;">Opción A: Firma Oficial PCM (Automática)</h4>
+            <p style="font-size:12px; color:#666; margin-bottom:10px;">Requiere tener el Agente Web de Firma Perú ejecutándose en esta PC.</p>
+            <button type="button" class="btn-accion" style="margin-bottom:18px;" onclick="ejecutarFirmaDnie()">Iniciar Firma Perú (Agente Web)</button>
+            
+            <h4 style="font-size:13px; color:#1a2a4a; margin-bottom:8px; border-bottom:1px solid #eef0f8; padding-bottom:4px; font-weight:700;">Opción B: Aplicación Local (Semiautomática - AHK)</h4>
+            <p style="font-size:12px; color:#666; margin-bottom:12px;">Se descargará el PDF en tu carpeta de Descargas y se ejecutará el script de AutoHotkey para cargarlo automáticamente.</p>
+            
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                <button type="button" class="btn-accion" style="background: linear-gradient(135deg, #1565C0, #1E88E5);" onclick="iniciarFirmaSemiautomatica('firmaperu')">
+                    &#128190; 1. Descargar y abrir en Firma Perú (AHK)
+                </button>
+                <button type="button" class="btn-accion" style="background: linear-gradient(135deg, #2E7D32, #43A047);" onclick="iniciarFirmaSemiautomatica('refirma')">
+                    &#128190; 2. Descargar y abrir en ReFirma (AHK)
+                </button>
+            </div>
+            
+            <!-- Zona de Subida Manual para AHK -->
+            <div id="seccionSubirFirmado" style="border: 2px dashed #cfd8ef; border-radius: 8px; padding: 12px; background: #fafafb; display: none; margin-top: 15px;">
+                <h4 style="font-size: 12px; color: #1a2a4a; margin-top:0; margin-bottom: 6px; font-weight:700;">&#8593; Subir PDF Firmado</h4>
+                <p style="font-size: 11px; color: #555; margin-bottom: 8px; line-height:1.3;">
+                    Una vez firmado el PDF en la aplicación de escritorio y guardado en tu carpeta de descargas, selecciónalo aquí para completar el trámite:
+                </p>
+                <input type="file" id="fileFirmado" accept=".pdf" class="form-select" style="font-size: 12px; padding: 4px; margin-bottom: 8px; background: #fff;" onchange="actualizarBotonVisualizar()" />
+                <button type="button" id="btnVisualizarFirmado" class="btn-accion" style="background: linear-gradient(135deg, #1565c0, #0d47a1); font-size:12px; padding:8px 12px; margin-bottom: 8px; display: none;" onclick="visualizarPdfFirmadoLocal()">
+                    &#128065; Visualizar PDF Seleccionado
+                </button>
+                <button type="button" class="btn-accion" style="background: linear-gradient(135deg,#c0392b,#8b1a1a); font-size:12px; padding:8px 12px;" onclick="subirPdfFirmadoManual()">
+                    Completar Firma y Guardar
+                </button>
+                <div id="msgUploadError" class="mensaje-error" style="display: none; margin-top: 6px; font-size:11px;"></div>
+                <div id="msgUploadSuccess" style="display: none; margin-top: 6px; font-size:11px; color: #2e7d32; font-weight:bold;">Subiendo archivo...</div>
+            </div>
         </div>
         
         <div id="panelUsb" class="panel-opcion">
@@ -248,6 +278,149 @@ function mostrarModalPorError() {
         abrirModalOpcionesFirma();
     }
 }
+
+// Flujo Semiautomático con AHK (Firma Perú / ReFirma)
+function iniciarFirmaSemiautomatica(protocolo) {
+    var spanEl = document.getElementById('nombreArchivoPdf');
+    var filename = (spanEl ? spanEl.innerText : '').trim();
+    if (!filename || filename === '(sin archivo)') {
+        filename = 'documento_' + idDocumentoActual + '.pdf';
+    }
+    
+    // 1. Descargar el archivo PDF
+    var downloadUrl = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/ServirPdf.ashx?idDoc=") %>' + idDocumentoActual;
+    var link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // 2. Mostrar la sección de subida de archivo firmado
+    var seccion = document.getElementById('seccionSubirFirmado');
+    if (seccion) {
+        seccion.style.display = 'block';
+    }
+    
+    // 3. Ejecutar el protocolo para el script de AHK (esperar 1 segundo para iniciar la descarga antes de redirigir)
+    setTimeout(function() {
+        window.location.href = protocolo + '://' + encodeURIComponent(filename);
+    }, 1000);
+}
+
+// Subir PDF Firmado Manualmente desde flujo AHK
+function subirPdfFirmadoManual() {
+    var fileInput = document.getElementById('fileFirmado');
+    var msgError = document.getElementById('msgUploadError');
+    var msgSuccess = document.getElementById('msgUploadSuccess');
+    
+    if (msgError) msgError.style.display = 'none';
+    if (msgSuccess) msgSuccess.style.display = 'none';
+    
+    if (!fileInput || fileInput.files.length === 0) {
+        if (msgError) {
+            msgError.innerText = 'Por favor, seleccione el archivo PDF firmado localmente.';
+            msgError.style.display = 'block';
+        }
+        return;
+    }
+    
+    var file = fileInput.files[0];
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        if (msgError) {
+            msgError.innerText = 'El archivo debe ser un documento PDF.';
+            msgError.style.display = 'block';
+        }
+        return;
+    }
+    
+    if (msgSuccess) {
+        msgSuccess.innerText = 'Subiendo y procesando firma, por favor espere...';
+        msgSuccess.style.display = 'block';
+    }
+    
+    var formData = new FormData();
+    formData.append('file', file);
+    
+    var uploadUrl = '<%= ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=") %>' + '<%= TokenActual %>';
+    
+    fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return response.text().then(function(text) {
+                throw new Error(text || 'Error en la subida del servidor.');
+            });
+        }
+    })
+    .then(function(text) {
+        if (text.trim() === 'OK') {
+            if (msgSuccess) msgSuccess.style.display = 'none';
+            cerrarModalOpcionesFirma();
+            mostrarExitoYRedirigir();
+        } else {
+            throw new Error(text);
+        }
+    })
+    .catch(function(err) {
+        if (msgSuccess) msgSuccess.style.display = 'none';
+        if (msgError) {
+            msgError.innerText = 'Error: ' + err.message;
+            msgError.style.display = 'block';
+        }
+    });
+}
+
+function actualizarBotonVisualizar() {
+    var fileInput = document.getElementById('fileFirmado');
+    var btnVisualizar = document.getElementById('btnVisualizarFirmado');
+    if (fileInput && btnVisualizar) {
+        if (fileInput.files.length > 0) {
+            btnVisualizar.style.display = 'inline-block';
+        } else {
+            btnVisualizar.style.display = 'none';
+        }
+    }
+}
+
+function visualizarPdfFirmadoLocal() {
+    var fileInput = document.getElementById('fileFirmado');
+    var msgError = document.getElementById('msgUploadError');
+    if (msgError) msgError.style.display = 'none';
+    
+    if (!fileInput || fileInput.files.length === 0) {
+        if (msgError) {
+            msgError.innerText = 'Por favor, seleccione primero el archivo PDF firmado.';
+            msgError.style.display = 'block';
+        }
+        return;
+    }
+    
+    var file = fileInput.files[0];
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        if (msgError) {
+            msgError.innerText = 'El archivo debe ser un documento PDF.';
+            msgError.style.display = 'block';
+        }
+        return;
+    }
+    
+    try {
+        var fileURL = URL.createObjectURL(file);
+        window.open(fileURL, '_blank');
+    } catch (e) {
+        console.error(e);
+        if (msgError) {
+            msgError.innerText = 'No se pudo visualizar el PDF: ' + e.message;
+            msgError.style.display = 'block';
+        }
+    }
+}
+
 window.onload = function() {
     mostrarModalPorError();
 };
