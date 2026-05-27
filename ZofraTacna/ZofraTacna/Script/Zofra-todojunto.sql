@@ -366,6 +366,12 @@ BEGIN
         ALTER TABLE dbo.Documento ADD NumeroRevisionActual INT NOT NULL CONSTRAINT df_Documento_NroRev DEFAULT 1;
     IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='TieneArchivo')
         ALTER TABLE dbo.Documento ADD TieneArchivo BIT NOT NULL CONSTRAINT df_Documento_TieneArchivo DEFAULT 0;
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='IDUsuarioCreador')
+        ALTER TABLE dbo.Documento ADD IDUsuarioCreador VARCHAR(15) NULL;
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='IDUsuarioModificador')
+        ALTER TABLE dbo.Documento ADD IDUsuarioModificador VARCHAR(15) NULL;
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.Documento') AND name='FechaModificacion')
+        ALTER TABLE dbo.Documento ADD FechaModificacion SMALLDATETIME NULL;
     PRINT 'Tabla Documento ya existe - columnas nuevas verificadas/agregadas.';
 END
 GO
