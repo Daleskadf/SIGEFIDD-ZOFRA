@@ -12,6 +12,8 @@
         var jqFirmaPeru = jQuery.noConflict(true);
     </script>
     <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}
         body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:100vh}
@@ -76,6 +78,12 @@
 </head>
 <body data-zfn-notify="<%= ResolveUrl("~/Presentacion/Notificaciones.ashx") %>">
 <form id="form1" runat="server" style="display:flex;width:100%;height:100vh;overflow:hidden;">
+<asp:HiddenField ID="hfFirmaPage" runat="server" Value="1" />
+<asp:HiddenField ID="hfFirmaX" runat="server" Value="-1" />
+<asp:HiddenField ID="hfFirmaY" runat="server" Value="-1" />
+<asp:HiddenField ID="hfFirmaW" runat="server" Value="-1" />
+<asp:HiddenField ID="hfFirmaH" runat="server" Value="-1" />
+<asp:HiddenField ID="hfFirmaRot" runat="server" Value="0" />
 <div style="display:flex;width:100%;height:100vh;overflow:hidden;">
     <div class="sidebar">
         <div class="sidebar-logo"><div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div><div class="logo-text"><div class="top">SIGEFIDD<span>-ZOFRA</span></div><div class="bot">ZONA FRANCA DE TACNA</div></div></div>
@@ -91,13 +99,38 @@
                     <div class="card-panel" style="flex:1;min-height:200px;display:flex;flex-direction:column"><div class="panel-title">Flujo del documento</div><div class="tl-wrap" style="flex:1;overflow-y:auto;max-height:480px"><div class="tl-line" aria-hidden="true"></div><asp:Literal ID="litLineaTiempo" runat="server"/></div></div>
                 </div>
                 <div class="emitir-right">
-                    <div class="pdf-head">Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
-                    <div class="pdf-frame-wrap">
-        <div class="pdf-float-actions">
-                            <asp:LinkButton ID="btnAbrirModal" runat="server" CssClass="btn-firma" OnClick="btnAbrirModal_Click">&#9998; Firmar Documento</asp:LinkButton>
+                    <div class="pdf-head" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>Vista del Documento: <span><asp:Literal ID="litNombreArchivoTitulo" runat="server"/></span></div>
+                        <div>
+                            <button type="button" id="btnPosicionar" class="btn-secundario" style="margin-top:0;" onclick="activarModoPosicion()">&#10021; Posicionar Firma</button>
+                        </div>
+                    </div>
+                    <div class="pdf-frame-wrap" id="pdfViewerWrapper">
+                        <div class="pdf-float-actions" id="floatActionsFirma">
+                            <asp:LinkButton ID="btnAbrirModal" runat="server" CssClass="btn-firma" OnClick="btnAbrirModal_Click" OnClientClick="return prepararFirma();">&#9998; Firmar Documento</asp:LinkButton>
                         </div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
+                        
+                        <!-- Contenedor PDF.js (Oculto inicialmente) -->
+                        <div id="pdfCanvasContainer" style="display:none; width:100%; height:100%; overflow:auto; position:absolute; top:0; left:0; background:#e8eaf0; text-align:center;">
+                            <div id="pdfToolbar" style="position:sticky; top:0; left:0; width:100%; background:#1a2a4a; padding:10px; z-index:10; display:flex; gap:10px; justify-content:center; align-items:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">
+                                <button type="button" class="btn-secundario" style="margin-top:0;" onclick="cambiarPagina(-1)">&#9664; Ant.</button>
+                                <span style="color:white; font-size:13px;">Pág <span id="pdfPageNum">1</span> de <span id="pdfPageCount">-</span></span>
+                                <button type="button" class="btn-secundario" style="margin-top:0;" onclick="cambiarPagina(1)">Sig. &#9654;</button>
+                                <span style="border-left:1px solid rgba(255,255,255,0.2); margin:0 5px; height:20px;"></span>
+                                <button type="button" class="btn-secundario" style="margin-top:0;" onclick="rotarFirma()">&#10227; Rotar Firma</button>
+                                <button type="button" class="btn-secundario" style="margin-top:0;" onclick="cancelarModoPosicion()">Cerrar Vista</button>
+                            </div>
+                            <div id="pdfPageWrapper" style="position:relative; display:inline-block; margin:20px auto; box-shadow:0 4px 12px rgba(0,0,0,0.2); background:white;">
+                                <canvas id="pdfCanvas" style="display:block;"></canvas>
+                                <!-- La caja interactiva de la firma -->
+                                <div id="firmaBox" style="position:absolute; display:none; border:2px dashed #c0392b; background:rgba(192,57,43,0.1); cursor:move; user-select:none; z-index:5;">
+                                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#c0392b; font-weight:bold; font-size:12px; white-space:nowrap; pointer-events:none;">Firma Digital</div>
+                                    <div class="resize-handle" id="resizeHandle" style="position:absolute; right:-6px; bottom:-6px; width:12px; height:12px; background:#c0392b; cursor:se-resize; border-radius:50%;"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,6 +285,7 @@ function mostrarExitoYRedirigir() {
 }
 
 function abrirModalOpcionesFirma() {
+    prepararFirma();
     document.getElementById('modalOpcionesFirma').style.display = 'flex';
     cambiarMetodoFirma();
 }
@@ -330,11 +364,228 @@ function lanzarAgente() {
     }, 2000);
 }
 
+// --- LOGICA DE POSICIONAMIENTO PDF ---
+var pdfDoc = null,
+    pageNum = 1,
+    pageRendering = false,
+    pageNumPending = null,
+    scale = 1.25,
+    canvas = document.getElementById('pdfCanvas'),
+    ctx = canvas ? canvas.getContext('2d') : null,
+    pdfLoaded = false;
+
+var firmaBox = document.getElementById('firmaBox');
+var isPosicionando = false;
+var urlPdfVisual = '../BandejaTrabajo/ServirPdf.ashx?idDoc=' + idDocumentoActual;
+
+function activarModoPosicion() {
+    isPosicionando = true;
+    document.getElementById('<%= ifrPdf.ClientID %>').style.display = 'none';
+    document.getElementById('pdfCanvasContainer').style.display = 'block';
+    
+    // Configurar caja de firma inicial si no ha sido posicionada
+    var hfX = document.getElementById('<%= hfFirmaX.ClientID %>');
+    if (hfX && hfX.value == "-1") {
+        // Dimensiones iniciales (aprox)
+        firmaBox.style.width = '220px';
+        firmaBox.style.height = '80px';
+        firmaBox.style.left = '20px';
+        firmaBox.style.top = '20px';
+    }
+    firmaBox.style.display = 'block';
+    
+    if (!pdfLoaded) {
+        cargarDocumentoPDF();
+    }
+}
+
+function cancelarModoPosicion() {
+    isPosicionando = false;
+    document.getElementById('pdfCanvasContainer').style.display = 'none';
+    document.getElementById('<%= ifrPdf.ClientID %>').style.display = 'block';
+}
+
+function cargarDocumentoPDF() {
+    pdfjsLib.getDocument(urlPdfVisual).promise.then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('pdfPageCount').textContent = pdfDoc.numPages;
+        pdfLoaded = true;
+        
+        // Cargar página inicial guardada o 1
+        var guardadaPage = document.getElementById('<%= hfFirmaPage.ClientID %>').value;
+        if(guardadaPage && guardadaPage != "-1") {
+            pageNum = parseInt(guardadaPage);
+            if(pageNum > pdfDoc.numPages) pageNum = pdfDoc.numPages;
+        }
+        renderPage(pageNum);
+    });
+}
+
+function renderPage(num) {
+    pageRendering = true;
+    pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        var renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function() {
+            pageRendering = false;
+            if (pageNumPending !== null) {
+                renderPage(pageNumPending);
+                pageNumPending = null;
+            }
+            // Restaurar posición si está en la misma página, si no ocultar o mover
+            restaurarPosicionBox();
+        });
+    });
+    document.getElementById('pdfPageNum').textContent = num;
+}
+
+function queueRenderPage(num) {
+    if (pageRendering) {
+        pageNumPending = num;
+    } else {
+        renderPage(num);
+    }
+}
+
+function cambiarPagina(offset) {
+    if (pageNum + offset <= 0 || pageNum + offset > pdfDoc.numPages) return;
+    
+    // Guardar página actual en hidden si la firma está visible
+    document.getElementById('<%= hfFirmaPage.ClientID %>').value = pageNum + offset;
+    
+    pageNum += offset;
+    queueRenderPage(pageNum);
+}
+
+function rotarFirma() {
+    // Intercambiar Ancho y Alto
+    var w = firmaBox.offsetWidth;
+    var h = firmaBox.offsetHeight;
+    firmaBox.style.width = h + 'px';
+    firmaBox.style.height = w + 'px';
+    
+    var hfRot = document.getElementById('<%= hfFirmaRot.ClientID %>');
+    hfRot.value = hfRot.value == "0" ? "90" : "0";
+}
+
+function restaurarPosicionBox() {
+    var hfX = document.getElementById('<%= hfFirmaX.ClientID %>');
+    var hfY = document.getElementById('<%= hfFirmaY.ClientID %>');
+    var hfW = document.getElementById('<%= hfFirmaW.ClientID %>');
+    var hfH = document.getElementById('<%= hfFirmaH.ClientID %>');
+    var hfPage = document.getElementById('<%= hfFirmaPage.ClientID %>');
+
+    if(hfX.value !== "-1" && parseInt(hfPage.value) === pageNum) {
+        var cW = canvas.width;
+        var cH = canvas.height;
+        firmaBox.style.left = (parseFloat(hfX.value) * cW) + 'px';
+        firmaBox.style.top = (parseFloat(hfY.value) * cH) + 'px';
+        firmaBox.style.width = (parseFloat(hfW.value) * cW) + 'px';
+        firmaBox.style.height = (parseFloat(hfH.value) * cH) + 'px';
+        firmaBox.style.display = 'block';
+    } else if (hfX.value === "-1") {
+        firmaBox.style.display = 'block'; // por defecto
+    }
+}
+
+function prepararFirma() {
+    // Capturar dimensiones antes de enviar el form
+    if(isPosicionando && firmaBox.style.display !== 'none') {
+        var wrapper = document.getElementById('pdfPageWrapper');
+        var cW = canvas.width;
+        var cH = canvas.height;
+        
+        var boxRect = firmaBox.getBoundingClientRect();
+        var canvasRect = canvas.getBoundingClientRect();
+        
+        // Coordenadas relativas al canvas (0.0 a 1.0)
+        var relX = (boxRect.left - canvasRect.left) / canvasRect.width;
+        var relY = (boxRect.top - canvasRect.top) / canvasRect.height;
+        var relW = boxRect.width / canvasRect.width;
+        var relH = boxRect.height / canvasRect.height;
+        
+        document.getElementById('<%= hfFirmaX.ClientID %>').value = relX;
+        document.getElementById('<%= hfFirmaY.ClientID %>').value = relY;
+        document.getElementById('<%= hfFirmaW.ClientID %>').value = relW;
+        document.getElementById('<%= hfFirmaH.ClientID %>').value = relH;
+        document.getElementById('<%= hfFirmaPage.ClientID %>').value = pageNum;
+    }
+    return true;
+}
+
+// Drag & Drop
+var isDragging = false, isResizing = false;
+var startX, startY, startLeft, startTop, startWidth, startHeight;
+
+if(firmaBox) {
+    var resizeHandle = document.getElementById('resizeHandle');
+    
+    firmaBox.addEventListener('mousedown', function(e) {
+        if(e.target === resizeHandle) {
+            isResizing = true;
+        } else {
+            isDragging = true;
+        }
+        startX = e.clientX;
+        startY = e.clientY;
+        startLeft = parseInt(window.getComputedStyle(firmaBox).left, 10);
+        startTop = parseInt(window.getComputedStyle(firmaBox).top, 10);
+        startWidth = parseInt(window.getComputedStyle(firmaBox).width, 10);
+        startHeight = parseInt(window.getComputedStyle(firmaBox).height, 10);
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging && !isResizing) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        
+        if (isDragging) {
+            var newL = startLeft + dx;
+            var newT = startTop + dy;
+            // Boundaries
+            if(newL < 0) newL = 0;
+            if(newT < 0) newT = 0;
+            if(newL + startWidth > canvas.offsetWidth) newL = canvas.offsetWidth - startWidth;
+            if(newT + startHeight > canvas.offsetHeight) newT = canvas.offsetHeight - startHeight;
+            
+            firmaBox.style.left = newL + 'px';
+            firmaBox.style.top = newT + 'px';
+        } else if (isResizing) {
+            var newW = startWidth + dx;
+            var newH = startHeight + dy;
+            if (newW < 50) newW = 50;
+            if (newH < 30) newH = 30;
+            if(startLeft + newW > canvas.offsetWidth) newW = canvas.offsetWidth - startLeft;
+            if(startTop + newH > canvas.offsetHeight) newH = canvas.offsetHeight - startTop;
+            
+            firmaBox.style.width = newW + 'px';
+            firmaBox.style.height = newH + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        if(isDragging || isResizing) {
+            isDragging = false;
+            isResizing = false;
+            prepararFirma(); // auto update hidden fields
+        }
+    });
+}
+
 // Si hay error desde servidor y necesitamos mostrar el modal (opcional, para UX)
 function mostrarModalPorError() {
     var errorLabel = document.getElementById('<%= lblErrorUsb.ClientID %>');
     if(errorLabel && errorLabel.innerText.trim() !== "") {
-        document.getElementById('ddlMetodoFirma').value = 'usb';
+        document.getElementById('ddlMetodoFirma').value = 'agente';
         abrirModalOpcionesFirma();
     }
 }

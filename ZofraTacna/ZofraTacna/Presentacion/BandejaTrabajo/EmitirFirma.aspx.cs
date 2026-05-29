@@ -432,12 +432,11 @@ namespace ZofraTacna.Presentacion
                 using (PdfReader reader = new PdfReader(inputBytes))
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0');
+                    // IMPORTANTE: El quinto parámetro (true) habilita el modo "Append" (Anexar).
+                    // Esto es obligatorio para no romper/invalidar las firmas previas del documento.
+                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0', null, true);
                     PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                    appearance.Reason = "Firma Oficial ZOFRATACNA";
-                    appearance.Location = "Tacna, Perú";
-                    appearance.SignatureCreator = titular;
-                    appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(36, 36, 270, 100), 1, "Firma_Digital_" + DateTime.Now.Ticks);
+                    ConfigurarAparienciaFirma(reader, appearance, titular, "Firma_Digital_");
 
                     IExternalSignature externalSignature = new X509Certificate2Signature(selectedCert, "SHA-256");
                     MakeSignature.SignDetached(appearance, externalSignature,
@@ -554,12 +553,10 @@ namespace ZofraTacna.Presentacion
                 using (PdfReader reader = new PdfReader(inputBytes))
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0');
+                    // IMPORTANTE: El quinto parámetro (true) habilita el modo "Append" (Anexar).
+                    PdfStamper stamper = PdfStamper.CreateSignature(reader, outputStream, '\0', null, true);
                     PdfSignatureAppearance appearance = stamper.SignatureAppearance;
-                    appearance.Reason = "Firma Oficial ZOFRATACNA (DNIe)";
-                    appearance.Location = "Tacna, Perú";
-                    appearance.SignatureCreator = titular;
-                    appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(36, 36, 270, 100), 1, "Firma_DNIe_" + DateTime.Now.Ticks);
+                    ConfigurarAparienciaFirma(reader, appearance, titular, "Firma_DNIe_");
 
                     iTextSharp.text.pdf.security.IExternalSignature externalSignature;
                     string oidValue = selectedCert.PublicKey.Oid.Value;
@@ -609,6 +606,66 @@ namespace ZofraTacna.Presentacion
                 string jsErr = "document.getElementById('lblMensajeErrorModal').innerText = '" + ex.ToString().Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "") + "'; document.getElementById('modalErrorFirma').style.display='flex';";
                 ScriptManager.RegisterStartupScript(this, GetType(), "AbrirModalErrorDnie", jsErr, true);
             }
+        }
+
+        private void ConfigurarAparienciaFirma(PdfReader reader, PdfSignatureAppearance appearance, string titular, string prefijoFirma)
+        {
+            appearance.Reason = "Firma Oficial ZOFRATACNA" + (prefijoFirma == "Firma_DNIe_" ? " (DNIe)" : "");
+            appearance.Location = "Tacna, Perú";
+            appearance.SignatureCreator = titular;
+
+            string strPage = hfFirmaPage.Value;
+            string strX = hfFirmaX.Value;
+            string strY = hfFirmaY.Value;
+            string strW = hfFirmaW.Value;
+            string strH = hfFirmaH.Value;
+            
+            int pageNum = 1;
+            float llx = 36f, lly = 36f, urx = 270f, ury = 100f; // Default
+            
+            if (int.TryParse(strPage, out int p) && p > 0 && p <= reader.NumberOfPages)
+                pageNum = p;
+
+            if (float.TryParse(strX, NumberStyles.Float, CultureInfo.InvariantCulture, out float relX) && relX >= 0)
+            {
+                float relY = float.Parse(strY, CultureInfo.InvariantCulture);
+                float relW = float.Parse(strW, CultureInfo.InvariantCulture);
+                float relH = float.Parse(strH, CultureInfo.InvariantCulture);
+
+                iTextSharp.text.Rectangle pageSize = reader.GetPageSize(pageNum);
+                
+                int rotation = reader.GetPageRotation(pageNum);
+                if (rotation == 90 || rotation == 270)
+                {
+                    pageSize = new iTextSharp.text.Rectangle(pageSize.Height, pageSize.Width);
+                }
+
+                float pdfX = relX * pageSize.Width;
+                float pdfY = (1 - relY - relH) * pageSize.Height;
+                float pdfW = relW * pageSize.Width;
+                float pdfH = relH * pageSize.Height;
+
+                llx = pdfX;
+                lly = pdfY;
+                urx = pdfX + pdfW;
+                ury = pdfY + pdfH;
+            }
+
+            // Configurar texto personalizado similar a Firma Perú
+            string fechaFirma = DateTime.Now.ToString("dd/MM/yyyy HH:mm:sszzz");
+            string textoFirma = $"Firmado digitalmente por:\n{titular} FIR\nMotivo: Soy el autor del documento\nFecha: {fechaFirma}";
+            appearance.Layer2Text = textoFirma;
+
+            // Cargar e incrustar la imagen del logo
+            string imagePath = HttpContext.Current?.Server.MapPath("~/images/logo.jpg");
+            if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
+            {
+                iTextSharp.text.Image sigImage = iTextSharp.text.Image.GetInstance(imagePath);
+                appearance.SignatureGraphic = sigImage;
+                appearance.SignatureRenderingMode = PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION;
+            }
+
+            appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(llx, lly, urx, ury), pageNum, prefijoFirma + DateTime.Now.Ticks);
         }
     }
     public class LegacySmartCardSignature : iTextSharp.text.pdf.security.IExternalSignature
