@@ -376,6 +376,7 @@
     <Content Include="Presentacion\BandejaTrabajo\DiagnosticoToken.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Presentacion\GestionDocumentos\ObtenerFlujoDocumento.ashx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
