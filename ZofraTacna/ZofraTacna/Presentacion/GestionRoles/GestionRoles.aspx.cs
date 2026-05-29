@@ -49,7 +49,7 @@ namespace ZofraTacna.Presentacion
                                           u.IdRolSistema
                                    FROM UsuarioSistema u
                                    JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
-                                   LEFT JOIN administracion.dbo.Empleado e ON e.LoginUsuario = u.LoginUsuario
+                                   LEFT JOIN dbo.Empleado e ON e.LoginUsuario = u.LoginUsuario
                                    WHERE u.Activo = 1
                                    ORDER BY m.Codigo, u.LoginUsuario";
 

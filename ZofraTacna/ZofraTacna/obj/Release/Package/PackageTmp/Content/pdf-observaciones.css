@@ -1,0 +1,30 @@
+.pdf-viewer-host{flex:1;min-height:0;display:flex;flex-direction:column;background:#52525b;overflow:hidden;position:relative}
+.pdf-viewer-scroll{flex:1;overflow:auto;padding:16px 12px 24px;-webkit-overflow-scrolling:touch}
+.pdf-viewer-pages{display:flex;flex-direction:column;align-items:center;gap:14px}
+.pdf-page-wrap{position:relative;box-shadow:0 4px 18px rgba(0,0,0,.35);background:#fff;line-height:0}
+.pdf-page-wrap canvas{display:block;max-width:100%;height:auto}
+.pdf-page-wrap .textLayer{position:absolute;inset:0;overflow:hidden;line-height:1;opacity:.25}
+.pdf-page-wrap .textLayer span{color:transparent;position:absolute;white-space:pre;transform-origin:0 0;cursor:text}
+.pdf-annot-layer{position:absolute;inset:0;pointer-events:none}
+.pdf-annot-layer.modo-activo{pointer-events:auto;cursor:crosshair}
+.pdf-annot-layer.modo-activo .pdf-marker-pin{pointer-events:auto;cursor:pointer}
+.pdf-marker-pin{position:absolute;width:26px;height:26px;margin-left:-13px;margin-top:-26px;border:none;padding:0;background:transparent;cursor:pointer;pointer-events:auto;z-index:4}
+.pdf-marker-pin::before{content:'';display:block;width:22px;height:22px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#c0392b,#8b1a1a);transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,.35);border:2px solid #fff}
+.pdf-marker-pin.borrador::before{opacity:.85;border-style:dashed}
+.pdf-marker-pin.activo::before{box-shadow:0 0 0 3px rgba(192,57,43,.45)}
+.pdf-marker-highlight{position:absolute;background:rgba(255,193,7,.42);border:2px solid rgba(230,126,34,.85);border-radius:2px;pointer-events:auto;cursor:pointer;z-index:3}
+.pdf-marker-highlight.borrador{border-style:dashed}
+.pdf-annot-banner{position:absolute;top:0;left:0;right:0;z-index:12;background:linear-gradient(135deg,#8b1a1a,#c0392b);color:#fff;font-size:12px;font-weight:600;padding:10px 14px;display:none;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.pdf-annot-banner.visible{display:flex}
+.pdf-annot-banner button{border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.2);color:#fff}
+.pdf-annot-banner button:hover{background:rgba(255,255,255,.32)}
+.pdf-marker-popover{position:fixed;z-index:1001;max-width:min(340px,90vw);background:#fff;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);padding:14px 16px;font-size:13px;color:#333;display:none}
+.pdf-marker-popover.visible{display:block}
+.pdf-marker-popover .pop-meta{font-size:11px;color:#888;margin-bottom:8px}
+.pdf-marker-popover .pop-text{line-height:1.45;white-space:pre-wrap}
+.pdf-marker-popover .pop-actions{margin-top:12px;display:flex;gap:8px;justify-content:flex-end}
+.pdf-marker-popover .pop-actions button{border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.pop-btn-close{background:#eceff6;color:#3f4a64}
+.pop-btn-del{background:#ffebee;color:#8b1a1a}
+.pdf-viewer-loading{color:#ddd;text-align:center;padding:40px;font-size:14px}
+.pdf-viewer-error{color:#ffcdd2;text-align:center;padding:40px;font-size:14px}

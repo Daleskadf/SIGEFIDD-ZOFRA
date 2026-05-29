@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="FirmaDigital-Web.config Connection String" description="FirmaDigital Cadena de conexión que usa la aplicación en web.config para obtener acceso a la base de datos." defaultValue="Data Source=(localdb)\sovargas;Initial Catalog=FirmaDigital;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\Angel\\Desktop\\SPRINT3\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='FirmaDigital']/@connectionString" />
+  </parameter>
+  <parameter name="FirmaDigital_Files-Web.config Connection String" description="FirmaDigital_Files Cadena de conexión que usa la aplicación en web.config para obtener acceso a la base de datos." defaultValue="Data Source=(localdb)\sovargas;Initial Catalog=FirmaDigital_Files;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\Angel\\Desktop\\SPRINT3\\SIGEFIDD-ZOFRA\\ZofraTacna\\ZofraTacna\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='FirmaDigital_Files']/@connectionString" />
+  </parameter>
+</parameters>

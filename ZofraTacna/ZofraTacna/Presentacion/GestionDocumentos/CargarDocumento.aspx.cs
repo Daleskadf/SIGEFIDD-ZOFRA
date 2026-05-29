@@ -17,6 +17,9 @@ namespace ZofraTacna.Presentacion
 
     public partial class CargarDocumento : Page
     {
+        public bool ModoBloqueado { get; set; }
+        public string MensajeBloqueo { get; set; }
+
         private readonly ModuloGestionDocumental _modulo = new ModuloGestionDocumental();
 
         private List<FirmanteItem> Firmantes
@@ -237,7 +240,32 @@ namespace ZofraTacna.Presentacion
 
                 if (pdfBytes.Length == 0)
                 {
-                    MostrarMsg("El PDF est� vac�o.", false);
+                    MostrarMsg("El PDF est vaco.", false);
+                    return;
+                }
+
+                // Validar que el PDF no tenga firmas previas
+                bool tieneFirmaDigital = false;
+                try
+                {
+                    using (iTextSharp.text.pdf.PdfReader reader = new iTextSharp.text.pdf.PdfReader(pdfBytes))
+                    {
+                        if (reader.AcroFields != null && reader.AcroFields.GetSignatureNames().Count > 0)
+                        {
+                            tieneFirmaDigital = true;
+                        }
+                    }
+                }
+                catch
+                {
+                    MostrarMsg("El archivo PDF es inválido o está dañado.", false);
+                    return;
+                }
+
+                if (tieneFirmaDigital)
+                {
+                    ModoBloqueado = true;
+                    MensajeBloqueo = "El documento contiene firmas digitales, adjuntar otro documento.";
                     return;
                 }
 
