@@ -98,7 +98,7 @@ namespace ZofraTacna.Presentacion
 
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text = login;
-            litRol.Text = Session["RolNombre"].ToString();
+            litRol.Text = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
             litSidebarNav.Text = BuildNav(rol);
         }
 
@@ -209,7 +209,7 @@ namespace ZofraTacna.Presentacion
                         {
                             string login = dr["LoginUsuario"].ToString();
                             string comentario = dr["Comentario"] == DBNull.Value ? "" : dr["Comentario"].ToString();
-                            DateTime fecha = (DateTime)dr["FechaRevision"];
+                            DateTime fecha = ConvertirAPeruTime((DateTime)dr["FechaRevision"]);
 
                             observaciones.Add($"<div class='obs-item'><strong>{fecha:d/M/yyyy HH:mm} - {login}</strong><br/>{comentario}</div>");
                         }
@@ -562,6 +562,23 @@ namespace ZofraTacna.Presentacion
             if (!int.TryParse(Request.QueryString["id"], out idDocumento) || idDocumento <= 0) return;
             if (string.IsNullOrWhiteSpace(LockToken)) return;
             _repoBloqueo.LiberarBloqueo(idDocumento, "REG_EDIT", LockToken);
+        }
+
+        private static DateTime ConvertirAPeruTime(DateTime utcDateTime)
+        {
+            if (utcDateTime == DateTime.MinValue || utcDateTime == DateTime.MaxValue)
+                return utcDateTime;
+            try
+            {
+                TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                DateTime utc = DateTime.SpecifyKind(utcDateTime, DateTimeKind.Utc);
+                return TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
+            }
+            catch
+            {
+                // Fallback: Peru is UTC - 5
+                return utcDateTime.AddHours(-5);
+            }
         }
     }
 }

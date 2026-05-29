@@ -69,16 +69,27 @@ namespace ZofraTacna.Datos
         /// </summary>
         public bool ExisteEnEmpleadosActivos(string loginUsuario)
         {
-            using (var conn = new SqlConnection(_conn))
+            if (string.IsNullOrWhiteSpace(loginUsuario))
+                return false;
+
+            try
             {
-                conn.Open();
-                string sql = "SELECT COUNT(*) FROM dbo.FIR_VW_EmpleadosActivos WHERE LoginUsuario = @login";
-                using (var cmd = new SqlCommand(sql, conn))
+                using (var conn = new SqlConnection(_conn))
                 {
-                    cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
-                    int count = (int)cmd.ExecuteScalar();
-                    return count > 0;
+                    conn.Open();
+                    string sqlCheck = "SELECT COUNT(*) FROM dbo.FIR_VW_EmpleadosActivos WHERE LoginUsuario = @login";
+                    using (var cmdCheck = new SqlCommand(sqlCheck, conn))
+                    {
+                        cmdCheck.Parameters.AddWithValue("@login", loginUsuario);
+                        int count = (int)cmdCheck.ExecuteScalar();
+                        return count > 0;
+                    }
                 }
+            }
+            catch
+            {
+                // If there's a DB connection error, strictly enforce validation and return false
+                return false;
             }
         }
 
@@ -244,9 +255,48 @@ namespace ZofraTacna.Datos
             return AgregarUsuarioSistemaConRol(loginUsuario, "REV");
         }
 
+        public List<RolDto> ObtenerRolesDisponibles(string loginUsuario)
+        {
+            var roles = new List<RolDto>();
+            using (var conn = new SqlConnection(_conn))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT DISTINCT m.Codigo, m.Descripcion
+                    FROM UsuarioSistema u
+                    JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
+                    WHERE u.LoginUsuario = @login AND u.Activo = 1
+
+                    UNION
+
+                    SELECT DISTINCT m.Codigo, m.Descripcion
+                    FROM DocumentoParticipante dp
+                    JOIN Documento d ON dp.IdDocumento = d.IdDocumento
+                    JOIN Maestro m ON dp.IdTipoParticipante = m.IdMaestro
+                    WHERE dp.LoginUsuario = @login AND d.Activo = 1 AND ISNULL(dp.Activo, 1) = 1";
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@login", loginUsuario ?? "");
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            roles.Add(new RolDto
+                            {
+                                Codigo = dr["Codigo"].ToString(),
+                                Descripcion = dr["Descripcion"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            return roles;
+        }
+
         #endregion
 
-        #region Actualizaci�n
+        #region Actualización
 
         public bool CambiarEstado(int idUsuario, bool activo)
         {
@@ -272,6 +322,12 @@ namespace ZofraTacna.Datos
         public string LoginUsuario { get; set; }
         public string Rol          { get; set; }
         public bool   Activo       { get; set; }
+    }
+
+    public class RolDto
+    {
+        public string Codigo { get; set; }
+        public string Descripcion { get; set; }
     }
 
     public class EmpleadoSASDto

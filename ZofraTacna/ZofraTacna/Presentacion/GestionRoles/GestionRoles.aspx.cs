@@ -23,8 +23,10 @@ namespace ZofraTacna.Presentacion
                 return;
             }
             if (!IsPostBack)
+            {
                 CargarRoles();
-            CargarDatos();
+                CargarDatos();
+            }
         }
 
         // ============================================================
@@ -35,7 +37,7 @@ namespace ZofraTacna.Presentacion
             string login = Session["LoginUsuario"].ToString();
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text = login;
-            litRol.Text    = Session["RolNombre"] != null ? Session["RolNombre"].ToString() : "";
+            litRol.Text    = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
 
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
             var lista = new List<object>();
@@ -49,7 +51,7 @@ namespace ZofraTacna.Presentacion
                                           u.IdRolSistema
                                    FROM UsuarioSistema u
                                    JOIN Maestro m ON u.IdRolSistema = m.IdMaestro
-                                   LEFT JOIN dbo.Empleado e ON e.LoginUsuario = u.LoginUsuario
+                                   LEFT JOIN dbo.FIR_VW_EmpleadosActivos e ON e.LoginUsuario = u.LoginUsuario
                                    WHERE u.Activo = 1
                                    ORDER BY m.Codigo, u.LoginUsuario";
 
@@ -86,6 +88,7 @@ namespace ZofraTacna.Presentacion
                 litCntRev.Text = cntRev.ToString();
                 litCntFir.Text = cntFir.ToString();
                 litCntAdm.Text = cntAdm.ToString();
+                litCntReg.Text = cntReg.ToString();
 
                 using (var cmd = new SqlCommand(sqlUsuarios, cn))
                 using (var dr = cmd.ExecuteReader())
@@ -166,7 +169,16 @@ namespace ZofraTacna.Presentacion
             // Alta: empleado en administracion y aún sin fila en UsuarioSistema.
             // Edición: mismo empleado; se cambia solo IdRolSistema (no bloquear por "ya tiene rol").
             bool esAltaNueva = idUsuario == 0;
-            string validationError = _moduloAuth.ValidarRegistroUsuario(loginNuevo, esAltaNueva);
+            string validationError = null;
+            try
+            {
+                validationError = _moduloAuth.ValidarRegistroUsuario(loginNuevo, esAltaNueva);
+            }
+            catch (Exception ex)
+            {
+                validationError = "Error en validación de registro: " + ex.Message;
+            }
+
             if (validationError != null)
             {
                 MostrarMsgForm(validationError, false);
@@ -174,53 +186,65 @@ namespace ZofraTacna.Presentacion
             }
 
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
+            bool success = false;
+            string successMsg = "";
+            string errorMsg = "";
+
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Open();
-
-                if (idUsuario == 0) // AGREGAR
+                try
                 {
-                    try
+                    cn.Open();
+                    if (idUsuario == 0) // AGREGAR
                     {
+                        // Use the exact columns present in the schema: LoginUsuario, Password, IdRolSistema, Activo
                         using (var cmd = new SqlCommand(
-                            "INSERT INTO UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo, IDUsuarioCreador, FechaCreacion) VALUES (@login, NULL, @rol, 1, @admin, GETDATE())", cn))
+                            "INSERT INTO UsuarioSistema (LoginUsuario, Password, IdRolSistema, Activo) VALUES (@login, '', @rol, 1)", cn))
                         {
                             cmd.Parameters.AddWithValue("@login", loginNuevo);
                             cmd.Parameters.AddWithValue("@rol",   int.Parse(rolVal));
-                            cmd.Parameters.AddWithValue("@admin", Session["LoginUsuario"].ToString());
                             cmd.ExecuteNonQuery();
                         }
-                        MostrarMsgForm("✓ Usuario agregado correctamente. Ahora aparecerá en el Login.", true);
+                        success = true;
+                        successMsg = "✓ Usuario agregado correctamente. Ahora aparecerá en el Login.";
                     }
-                    catch (Exception ex)
+                    else // EDITAR
                     {
-                        MostrarMsgForm("Error al agregar usuario: " + ex.Message, false);
-                    }
-                }
-                else // EDITAR
-                {
-                    try
-                    {
+                        // Use only the IdRolSistema column for update to match the schema
                         using (var cmd = new SqlCommand(
-                            "UPDATE UsuarioSistema SET IdRolSistema=@rol, IDUsuarioModificador=@admin, FechaModificacion=GETDATE() WHERE IdUsuario=@id", cn))
+                            "UPDATE UsuarioSistema SET IdRolSistema=@rol WHERE IdUsuario=@id", cn))
                         {
                             cmd.Parameters.AddWithValue("@rol", int.Parse(rolVal));
-                            cmd.Parameters.AddWithValue("@admin", Session["LoginUsuario"].ToString());
                             cmd.Parameters.AddWithValue("@id",  idUsuario);
                             cmd.ExecuteNonQuery();
                         }
-                        MostrarMsgForm("✓ Rol actualizado correctamente.", true);
+                        success = true;
+                        successMsg = "✓ Rol actualizado correctamente.";
                     }
-                    catch (Exception ex)
-                    {
-                        MostrarMsgForm("Error al actualizar: " + ex.Message, false);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    success = false;
+                    errorMsg = "Error en base de datos: " + ex.Message;
                 }
             }
 
-            pnlFormulario.Visible  = false;
-            lblMensajeForm.Visible = false;
-            CargarDatos();
+            if (success)
+            {
+                pnlFormulario.Visible  = false;
+                lblMensajeForm.Visible = false;
+                CargarDatos();
+
+                // Triggers a beautiful client-side success toast
+                string jsToast = string.Format("window.zfnNotify && window.zfnNotify.showToast('{0}', 'success');", successMsg.Replace("'", "\\'"));
+                ClientScript.RegisterStartupScript(this.GetType(), "saveSuccessToast", jsToast, true);
+            }
+            else
+            {
+                // Keep the panel open and display the SQL error clearly in the form
+                pnlFormulario.Visible  = true;
+                MostrarMsgForm(errorMsg, false);
+            }
         }
 
         protected void rptUsuarios_ItemCommand(object source, RepeaterCommandEventArgs e)

@@ -28,7 +28,7 @@ namespace ZofraTacna
 
             litAvatar.Text     = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text     = login;
-            litRol.Text        = rol;
+            litRol.Text        = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
             litBienvenido.Text = login;
 
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
@@ -76,7 +76,7 @@ namespace ZofraTacna
                 {
                     while (dr.Read())
                     {
-                        DateTime fechaCambio = Convert.ToDateTime(dr["FechaCambio"]);
+                        DateTime fechaCambio = ConvertirAPeruTime(Convert.ToDateTime(dr["FechaCambio"]));
                         observaciones.Add(new
                         {
                             IdHistorial = Convert.ToInt32(dr["IdHistorial"]),
@@ -178,6 +178,23 @@ namespace ZofraTacna
             Session.Clear();
             Session.Abandon();
             Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
+        }
+
+        private static DateTime ConvertirAPeruTime(DateTime utcDateTime)
+        {
+            if (utcDateTime == DateTime.MinValue || utcDateTime == DateTime.MaxValue)
+                return utcDateTime;
+            try
+            {
+                TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                DateTime utc = DateTime.SpecifyKind(utcDateTime, DateTimeKind.Utc);
+                return TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
+            }
+            catch
+            {
+                // Fallback: Peru is UTC - 5
+                return utcDateTime.AddHours(-5);
+            }
         }
     }
 }

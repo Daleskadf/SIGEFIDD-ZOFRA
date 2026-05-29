@@ -313,7 +313,7 @@ function lanzarAgente() {
     var maxIntentos = 45; // 45 * 2 = 90 segundos máximo de espera
     var pollTimer = setInterval(function() {
         var chk = new XMLHttpRequest();
-        chk.open("GET", "VerificarEstadoFirma.ashx?idDoc=" + idDoc, true);
+        chk.open("GET", "VerificarEstadoFirma.ashx?idDoc=" + idDoc + "&token=" + encodeURIComponent(tokenGlobal), true);
         chk.onload = function() {
             if (chk.status === 200) {
                 try {

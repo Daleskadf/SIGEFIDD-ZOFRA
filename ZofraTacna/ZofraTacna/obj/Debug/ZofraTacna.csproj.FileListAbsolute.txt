@@ -714,3 +714,4 @@ C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Debug\Zo
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Debug\ZofraTacna.csproj.Up2Date
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Debug\ZofraTacna.dll
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Debug\ZofraTacna.pdb
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\images\logo.jpg

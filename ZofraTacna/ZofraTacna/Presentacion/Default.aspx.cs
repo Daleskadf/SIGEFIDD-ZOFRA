@@ -40,7 +40,7 @@ namespace ZofraTacna
 
             litAvatar.Text = iniciales;
             litNombre.Text = login;
-            litRol.Text = rol;
+            litRol.Text = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
             litBienvenido.Text = login;
 
             pnlHerramientas.Visible = (rolCod == "ADM");

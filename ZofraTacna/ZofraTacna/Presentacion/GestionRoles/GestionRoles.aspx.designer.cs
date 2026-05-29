@@ -9,6 +9,7 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Literal litCntRev;
         protected global::System.Web.UI.WebControls.Literal litCntFir;
         protected global::System.Web.UI.WebControls.Literal litCntAdm;
+        protected global::System.Web.UI.WebControls.Literal litCntReg;
         protected global::System.Web.UI.WebControls.Panel pnlEmpty;
         protected global::System.Web.UI.WebControls.Panel pnlTable;
         protected global::System.Web.UI.WebControls.Repeater rptUsuarios;

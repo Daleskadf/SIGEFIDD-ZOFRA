@@ -80,6 +80,7 @@ namespace ZofraTacna.Presentacion
             var list = new List<object>();
             foreach (var n in items)
             {
+                System.DateTime localFecha = ConvertirAPeruTime(n.FechaCambio);
                 list.Add(new
                 {
                     n.IdHistorial,
@@ -88,8 +89,8 @@ namespace ZofraTacna.Presentacion
                     n.Asunto,
                     n.LoginUsuarioAccion,
                     n.DetalleAccion,
-                    fecha = n.FechaCambio.ToString("yyyy-MM-ddTHH:mm:ss"),
-                    fechaTxt = n.FechaCambio.ToString("dd/MM/yyyy HH:mm"),
+                    fecha = localFecha.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    fechaTxt = localFecha.ToString("dd/MM/yyyy HH:mm"),
                     n.ToastText
                 });
             }
@@ -97,5 +98,22 @@ namespace ZofraTacna.Presentacion
         }
 
         public bool IsReusable => false;
+
+        private static System.DateTime ConvertirAPeruTime(System.DateTime utcDateTime)
+        {
+            if (utcDateTime == System.DateTime.MinValue || utcDateTime == System.DateTime.MaxValue)
+                return utcDateTime;
+            try
+            {
+                System.TimeZoneInfo zone = System.TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                System.DateTime utc = System.DateTime.SpecifyKind(utcDateTime, System.DateTimeKind.Utc);
+                return System.TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
+            }
+            catch
+            {
+                // Fallback: Peru is UTC - 5
+                return utcDateTime.AddHours(-5);
+            }
+        }
     }
 }

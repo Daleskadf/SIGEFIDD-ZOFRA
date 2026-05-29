@@ -40,7 +40,26 @@
         .btn-agregar{padding:9px 20px;border:none;border-radius:8px;background:linear-gradient(90deg,#1a2a4a,#2a4a8a);color:white;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
         /* STAT CARDS */
         .stat-cards{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
-        .stat-card{background:white;border-radius:12px;padding:20px 24px;flex:1;min-width:160px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:4px}
+        .stat-card{background:white;border-radius:12px;padding:20px 24px;flex:1;min-width:160px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:4px;border:1.5px solid #e8eaf0;transition:all 0.3s ease}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+        
+        /* CARD COLORS AND SHADOWS */
+        .stat-card-adm{background:#f0f7ff;border-color:#bfdbfe;box-shadow:0 4px 12px rgba(59,130,246,0.06)}
+        .stat-card-adm:hover{box-shadow:0 8px 24px rgba(59,130,246,0.12);border-color:#3b82f6}
+        .stat-card-adm .stat-value{color:#1e3a8a}
+        
+        .stat-card-reg{background:#f0fdf4;border-color:#bbf7d0;box-shadow:0 4px 12px rgba(16,185,129,0.06)}
+        .stat-card-reg:hover{box-shadow:0 8px 24px rgba(16,185,129,0.12);border-color:#10b981}
+        .stat-card-reg .stat-value{color:#065f46}
+
+        .stat-card-rev{background:#fffbeb;border-color:#fef08a;box-shadow:0 4px 12px rgba(245,158,11,0.06)}
+        .stat-card-rev:hover{box-shadow:0 8px 24px rgba(245,158,11,0.12);border-color:#f59e0b}
+        .stat-card-rev .stat-value{color:#78350f}
+
+        .stat-card-fir{background:#faf5ff;border-color:#e9d5ff;box-shadow:0 4px 12px rgba(139,92,246,0.06)}
+        .stat-card-fir:hover{box-shadow:0 8px 24px rgba(139,92,246,0.12);border-color:#8b5cf6}
+        .stat-card-fir .stat-value{color:#5b21b6}
+
         .stat-label{font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
         .stat-value{font-size:32px;font-weight:700;color:#1a2a4a}
         .stat-icon{margin-bottom:8px}
@@ -55,22 +74,110 @@
         tbody td{padding:13px 16px;font-size:13px;color:#444;vertical-align:middle}
         .user-row-name{font-weight:600;color:#1a2a4a;font-size:14px}
         .user-row-email{color:#888;font-size:12px}
-        .badge{border-radius:10px;padding:3px 10px;font-size:11px;font-weight:600;display:inline-block}
-        .badge-rev{background:white;color:#555;border:1.5px solid #aaa}
-        .badge-fir{background:white;color:#6b21a8;border:1.5px solid #a855f7}
-        .badge-adm{background:white;color:#1a56db;border:1.5px solid #3b82f6}
-        .badge-reg{background:white;color:#2e7d32;border:1.5px solid #4caf50}
-        .btn-editar{padding:5px 14px;border:1.5px solid #dde1f0;border-radius:6px;background:white;color:#1a2a4a;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;text-decoration:none;display:inline-block}
-        .btn-eliminar{padding:5px 14px;border:1.5px solid #fca5a5;border-radius:6px;background:white;color:#c0392b;font-size:12px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block}
+        
+        /* BADGE COLORS - UNISON PASTEL */
+        .badge{border-radius:10px;padding:4px 12px;font-size:11px;font-weight:600;display:inline-block;transition:all 0.2s ease}
+        .badge-adm{background:#f0f7ff;color:#1e3a8a;border:1.5px solid #bfdbfe}
+        .badge-reg{background:#f0fdf4;color:#065f46;border:1.5px solid #bbf7d0}
+        .badge-rev{background:#fffbeb;color:#78350f;border:1.5px solid #fef08a}
+        .badge-fir{background:#faf5ff;color:#5b21b6;border:1.5px solid #e9d5ff}
+        .btn-editar{
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 6px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(59,130,246,0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-editar:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #4f46e5, #2563eb);
+            box-shadow: 0 6px 14px rgba(59,130,246,0.3);
+        }
+        
+        .btn-eliminar{
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(239,68,68,0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-eliminar:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #f87171, #dc2626);
+            box-shadow: 0 6px 14px rgba(239,68,68,0.3);
+        }
+        
         .empty{text-align:center;padding:60px;color:#aaa;font-size:14px}
         /* FILTER BAR */
         .filter-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
-        .filter-bar input{flex:1;min-width:180px;padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;color:#333;outline:none;font-family:'Segoe UI',sans-serif}
-        .filter-bar input:focus{border-color:#1a2a4a}
-        .filter-bar select{padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;color:#333;outline:none;font-family:'Segoe UI',sans-serif;background:white}
-        .filter-bar select:focus{border-color:#1a2a4a}
-        .btn-limpiar-filtro{padding:9px 16px;border:1.5px solid #ddd;border-radius:8px;background:white;color:#555;font-size:13px;cursor:pointer;white-space:nowrap}
-        .btn-limpiar-filtro:hover{background:#f4f4f4}
+        .filter-bar input{
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+            outline: none;
+            font-family: inherit;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .filter-bar input:focus{
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        .filter-bar select{
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+            outline: none;
+            font-family: inherit;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-bar select:focus{
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        
+        .btn-limpiar-filtro{
+            padding: 9px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(107,114,128,0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-limpiar-filtro:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #9ca3af, #4b5563);
+            box-shadow: 0 6px 14px rgba(107,114,128,0.3);
+        }
         .filter-count{font-size:12px;color:#888;margin-left:auto;white-space:nowrap}
         /* FORM PANEL UC-006 */
         .fup{background:white;border-radius:12px;border-left:4px solid #1a2a4a;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px 24px;margin-bottom:20px}
@@ -164,17 +271,21 @@
 
             <!-- STAT CARDS -->
             <div class="stat-cards">
-                <div class="stat-card">
+                <div class="stat-card stat-card-adm">
+                    <div class="stat-label">Administradores</div>
+                    <div class="stat-value"><asp:Literal ID="litCntAdm" runat="server">0</asp:Literal></div>
+                </div>
+                <div class="stat-card stat-card-reg">
+                    <div class="stat-label">Registradores</div>
+                    <div class="stat-value"><asp:Literal ID="litCntReg" runat="server">0</asp:Literal></div>
+                </div>
+                <div class="stat-card stat-card-rev">
                     <div class="stat-label">Revisores</div>
                     <div class="stat-value"><asp:Literal ID="litCntRev" runat="server">0</asp:Literal></div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stat-card-fir">
                     <div class="stat-label">Firmantes</div>
                     <div class="stat-value"><asp:Literal ID="litCntFir" runat="server">0</asp:Literal></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Administradores</div>
-                    <div class="stat-value"><asp:Literal ID="litCntAdm" runat="server">0</asp:Literal></div>
                 </div>
             </div>
 

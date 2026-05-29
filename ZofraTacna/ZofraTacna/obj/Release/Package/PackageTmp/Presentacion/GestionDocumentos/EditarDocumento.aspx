@@ -884,6 +884,7 @@
                             <asp:TextBox ID="txtCodigoDocumentoCompleto" runat="server" CssClass="form-input"
                                 MaxLength="120"
                                 placeholder="Ej: RS-0001-2026 (c&oacute;digo completo tal como se guarda en BD)" />
+                            <span id="errCodigoEspecial" style="display: none; color: #c0392b; font-size: 11px; margin-top: 4px; font-weight: 600;">error en el nombre no uses caracteres especiales</span>
                             <p style="font-size:11px;color:#999;margin-top:6px;line-height:1.4;">
                                 Edite el c&oacute;digo completo manualmente si corresponde (prefijo, correlativo y
                                 a&ntilde;o seg&uacute;n su formato institucional).
@@ -1398,11 +1399,26 @@
                 var msgCli = editDocGet('editDocMsgCliente');
                 var lblSrv = editDocGet('<%= lblMensaje.ClientID %>');
                 if (lblSrv) { lblSrv.style.display = 'none'; }
+
+                var errSpan = document.getElementById('errCodigoEspecial');
+                if (errSpan) errSpan.style.display = 'none';
+
                 var errores = [];
                 var codCompleto = (editDocGet('<%= txtCodigoDocumentoCompleto.ClientID %>') || {}).value || '';
                 var asunto = (editDocGet('<%= txtAsunto.ClientID %>') || {}).value || '';
                 var cat = (editDocGet('<%= ddlCategoria.ClientID %>') || {}).value || '';
                 var pri = (editDocGet('<%= ddlPrioridad.ClientID %>') || {}).value || '';
+
+                if (/[<>]/.test(codCompleto)) {
+                    if (errSpan) {
+                        errSpan.style.display = 'block';
+                        errSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        alert('error en el nombre no uses caracteres especiales');
+                    }
+                    return false;
+                }
+
                 if (!codCompleto.trim()) errores.push('Código de documento (completo)');
                 if (!asunto.trim()) errores.push('Asunto');
                 if (!cat) errores.push('Categoría');

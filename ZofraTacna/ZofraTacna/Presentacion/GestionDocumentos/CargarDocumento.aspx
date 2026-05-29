@@ -1169,6 +1169,7 @@
                                     <asp:TextBox ID="txtCodigoDocumentoCompleto" runat="server" CssClass="form-input"
                                         MaxLength="120"
                                         placeholder="Ej: RS-0001-2026 (código, n&uacute;mero y a&ntilde;o en un solo campo)" />
+                                    <span id="errCodigoEspecial" style="display: none; color: #c0392b; font-size: 11px; margin-top: 4px; font-weight: 600;">error en el nombre no uses caracteres especiales</span>
                                     <div style="font-size:11px;color:#999;margin-top:6px;line-height:1.4;">
                                         Ingrese manualmente el c&oacute;digo completo tal como debe guardarse en el
                                         sistema (incluye prefijo, correlativo y a&ntilde;o si aplica).
@@ -2097,6 +2098,19 @@
                     let area = (document.getElementById('<%= ddlArea.ClientID %>') || {}).value || '';
                     let participantes = (document.getElementById('<%= hfParticipantes.ClientID %>') || {}).value || '';
                     let fileInput = document.getElementById('<%= filePDF.ClientID %>');
+
+                    let errSpan = document.getElementById('errCodigoEspecial');
+                    if (errSpan) errSpan.style.display = 'none';
+
+                    if (/[<>]/.test(codigoCompleto)) {
+                        if (errSpan) {
+                            errSpan.style.display = 'block';
+                            errSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            alert('error en el nombre no uses caracteres especiales');
+                        }
+                        return false;
+                    }
 
                     if (!codigoCompleto.trim()) errores.push('Código de documento (completo)');
                     if (!asunto.trim()) errores.push('Asunto');

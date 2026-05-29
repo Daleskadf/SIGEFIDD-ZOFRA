@@ -48,7 +48,7 @@ namespace ZofraTacna.Presentacion
 
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text = login;
-            litRol.Text    = Session["RolNombre"] != null ? Session["RolNombre"].ToString() : "";
+            litRol.Text    = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
 
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
             var lista = new List<object>();

@@ -22,6 +22,13 @@ namespace ZofraTacna.Presentacion
     {
         private static ConcurrentDictionary<string, string> TokenLoginMap = new ConcurrentDictionary<string, string>();
 
+        // Propiedades para recuperar las coordenadas enviadas desde el cliente web (HiddenFields de la UI)
+        protected string strPage => Request.Form["ctl00$MainContent$hfFirmaPage"] ?? "1";
+        protected string strX => Request.Form["ctl00$MainContent$hfFirmaX"] ?? "-1";
+        protected string strY => Request.Form["ctl00$MainContent$hfFirmaY"] ?? "-1";
+        protected string strW => Request.Form["ctl00$MainContent$hfFirmaW"] ?? "-1";
+        protected string strH => Request.Form["ctl00$MainContent$hfFirmaH"] ?? "-1";
+
         protected int IdDocumentoActual
         {
             get { return ViewState["IdDocumentoActual"] != null ? Convert.ToInt32(ViewState["IdDocumentoActual"]) : 0; }
@@ -52,12 +59,10 @@ namespace ZofraTacna.Presentacion
             if (!IsPostBack)
             {
                 string login = Session["LoginUsuario"].ToString();
-                // Token Stateless: Contiene toda la información necesaria (URL-Safe Base64)
                 string plainToken = idDoc + "|" + login + "|" + DateTime.Now.Ticks;
                 string token = Convert.ToBase64String(Encoding.UTF8.GetBytes(plainToken))
-                                      .Replace("+", "-").Replace("/", "_").Replace("=", "");
+                                    .Replace("+", "-").Replace("/", "_").Replace("=", "");
                 
-                // Mantenemos la lógica antigua por compatibilidad si es necesario
                 FirmaPeruTokenStore.StoreToken(token, login);
                 TokenActual = token;
             }
@@ -70,7 +75,7 @@ namespace ZofraTacna.Presentacion
             string login = Session["LoginUsuario"].ToString();
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text = login;
-            litRol.Text = Session["RolNombre"] != null ? Session["RolNombre"].ToString() : "";
+            litRol.Text = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
 
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
             using (var cn = new SqlConnection(connStr))
@@ -88,7 +93,7 @@ namespace ZofraTacna.Presentacion
             string estadoDesc = ObtenerEstadoDocumento(idDoc, connStr);
 
             litSubtituloDoc.Text = "<span class='doc-code'>" + HttpUtility.HtmlEncode(doc.CodigoDocumento) +
-                                   "</span> " + HttpUtility.HtmlEncode(doc.Asunto);
+                                "</span> " + HttpUtility.HtmlEncode(doc.Asunto);
 
             int idAdj; string nombrePdf; int tamBytes;
             bool hayPdf = repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombrePdf, out tamBytes);
@@ -104,20 +109,11 @@ namespace ZofraTacna.Presentacion
         protected void btnEmitirFirma_Click(object sender, EventArgs e)
         {
             int idDoc = IdDocumentoActual;
-            if (idDoc <= 0)
-            {
-                Response.Redirect("BandejaTrabajo.aspx");
-                return;
-            }
+            if (idDoc <= 0) { Response.Redirect("BandejaTrabajo.aspx"); return; }
 
             string login = Session["LoginUsuario"] != null ? Session["LoginUsuario"].ToString() : "";
-            if (string.IsNullOrWhiteSpace(login))
-            {
-                Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(login)) { Response.Redirect("~/Presentacion/InicioSesion/Login.aspx"); return; }
 
-            // Obtener el IdParticipante del usuario actual como firmante (tipo FIR)
             string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
             int idParticipante = 0;
 
@@ -128,8 +124,8 @@ namespace ZofraTacna.Presentacion
                                FROM DocumentoParticipante dp
                                INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
                                WHERE dp.IdDocumento = @idDoc
-                                 AND dp.LoginUsuario = @login
-                                 AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
+                                   AND dp.LoginUsuario = @login
+                                   AND mt.Tipo='TIPO_PARTICIPANTE' AND mt.Codigo='FIR'
                                ORDER BY dp.OrdenSecuencial ASC";
 
                 using (var cmd = new SqlCommand(sql, cn))
@@ -142,31 +138,101 @@ namespace ZofraTacna.Presentacion
                 }
             }
 
-            if (idParticipante <= 0)
-            {
-                // No es un participante firmante válido
-                Response.Redirect("BandejaTrabajo.aspx");
-                return;
-            }
+            if (idParticipante <= 0) { Response.Redirect("BandejaTrabajo.aspx"); return; }
 
-            // Generar un hash de firma (aquí se podría integrar con un componente de firma digital real)
-            string hashFirma = Guid.NewGuid().ToString("N"); // Por ahora, un GUID como placeholder
+            // Generar identificador de firma
+            string hashFirma = Guid.NewGuid().ToString("N");
 
-            // Registrar firma y actualizar estado
+            // Registrar la operación en BD
             var modulo = new ZofraTacna.LogicaNegocio.ModuloGestionDocumental();
             string mensaje;
             bool ok = modulo.RegistrarFirmaConEstado(idDoc, idParticipante, login, hashFirma, out mensaje);
 
             if (ok)
             {
-                // Redirigir a bandeja después de firmar exitosamente
                 ScriptManager.RegisterStartupScript(this, GetType(), "FirmaExito", "mostrarExitoYRedirigir();", true);
             }
             else
             {
-                // Mostrar mensaje de error (aquí se podría mejorar con paneles de error en la UI)
                 CargarVista(idDoc, Session["RolCodigo"]?.ToString() ?? "FIR");
             }
+        }
+
+        // ==========================================
+        // MÉTODO MEJORADO COMPLETO PARA INTEGRACIÓN DEL LOGO
+        // ==========================================
+        private void ConfigurarAparienciaFirma(PdfReader reader, PdfSignatureAppearance appearance, string titular, string prefijoFirma)
+        {
+            appearance.Reason = "Firma Oficial ZOFRATACNA" + (prefijoFirma == "Firma_DNIe_" ? " (DNIe)" : "");
+            appearance.Location = "Tacna, Perú";
+            appearance.SignatureCreator = titular;
+            
+            int pageNum = 1;
+            float llx = 36f, lly = 36f, urx = 270f, ury = 100f; // Dimensiones por defecto si falla el parseo
+            
+            if (int.TryParse(strPage, out int p) && p > 0 && p <= reader.NumberOfPages)
+                pageNum = p;
+
+            if (float.TryParse(strX, NumberStyles.Float, CultureInfo.InvariantCulture, out float relX) && relX >= 0)
+            {
+                float relY = float.Parse(strY, CultureInfo.InvariantCulture);
+                float relW = float.Parse(strW, CultureInfo.InvariantCulture);
+                float relH = float.Parse(strH, CultureInfo.InvariantCulture);
+                iTextSharp.text.Rectangle pageSize = reader.GetPageSize(pageNum);
+                
+                int rotation = reader.GetPageRotation(pageNum);
+                if (rotation == 90 || rotation == 270)
+                {
+                    pageSize = new iTextSharp.text.Rectangle(pageSize.Height, pageSize.Width);
+                }
+
+                // Transformar coordenadas relativas de la web al espacio del PDF
+                float pdfX = relX * pageSize.Width;
+                float pdfY = (1 - relY - relH) * pageSize.Height;
+                float pdfW = relW * pageSize.Width;
+                float pdfH = relH * pageSize.Height;
+
+                llx = pdfX;
+                lly = pdfY;
+                urx = pdfX + pdfW;
+                ury = pdfY + pdfH;
+            }
+
+            // Configuración del Texto de la Firma
+            string fechaFirma = DateTime.Now.ToString("dd/MM/yyyy HH:mm:sszzz");
+            string textoFirma = $"Firmado digitalmente por:\n{titular} FIR\nMotivo: Soy el autor del documento\nFecha: {fechaFirma}";
+            appearance.Layer2Text = textoFirma;
+
+            // CONTROLADOR PROTEGIDO E INCRUSTACIÓN DEL LOGO
+            try
+            {
+                string imagePath = HttpContext.Current?.Server.MapPath("~/images/logo.jpg");
+                
+                // Log de diagnóstico en modo debug de Visual Studio para comprobar rutas
+                System.Diagnostics.Debug.WriteLine("Ruta calculada del logotipo: " + imagePath);
+
+                if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
+                {
+                    iTextSharp.text.Image sigImage = iTextSharp.text.Image.GetInstance(imagePath);
+                    appearance.SignatureGraphic = sigImage;
+                    
+                    // Asegura renderizado simultáneo: Logo a la izquierda, Descripción a la derecha
+                    appearance.SignatureRenderingMode = PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION;
+                    System.Diagnostics.Debug.WriteLine("✓ Logotipo incrustado con éxito en la firma.");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Archivo logo.jpg no encontrado en la ruta física.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Previene que un error con la imagen corrompa o detenga el flujo de la firma
+                System.Diagnostics.Debug.WriteLine("⚠️ Error procesando la imagen de firma: " + ex.Message);
+            }
+
+            // Aplicación final de la firma visual
+            appearance.SetVisibleSignature(new iTextSharp.text.Rectangle(llx, lly, urx, ury), pageNum, prefijoFirma + DateTime.Now.Ticks);
         }
 
         private static string ObtenerEstadoDocumento(int idDoc, string connStr)
@@ -216,7 +282,7 @@ namespace ZofraTacna.Presentacion
         {
             double h = (limite - DateTime.Now).TotalHours;
             return h >= 0 ? string.Format(CultureInfo.InvariantCulture, "{0} h restantes", Math.Ceiling(h))
-                          : string.Format(CultureInfo.InvariantCulture, "{0} h fuera de limite", Math.Ceiling(Math.Abs(h)));
+                        : string.Format(CultureInfo.InvariantCulture, "{0} h fuera de limite", Math.Ceiling(Math.Abs(h)));
         }
 
         private static string FormatearTamano(int bytes)
@@ -259,18 +325,18 @@ namespace ZofraTacna.Presentacion
             
             if (rol == "FIR")
                 return "<a href='../Firmante.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                       "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
-                       "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
+                    "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
+                    "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
             else if (rol == "REV")
                 return "<a href='../Revisor.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                       "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
-                       "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
+                    "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>" +
+                    "<a href='../GestionDocumentos/Historial.aspx' class='nav-item'>" + svgHist + "Historial</a>";
             else if (rol == "REG")
                 return "<a href='../Registrador.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                       "<a href='../GestionDocumentos/CargarDocumento.aspx' class='nav-item'>" + svgCarga + "Cargar Documento</a>" +
-                       "<a href='../GestionDocumentos/MisDocumentos.aspx' class='nav-item'>" + svgDocs + "Mis Documentos</a>";
+                    "<a href='../GestionDocumentos/CargarDocumento.aspx' class='nav-item'>" + svgCarga + "Cargar Documento</a>" +
+                    "<a href='../GestionDocumentos/MisDocumentos.aspx' class='nav-item'>" + svgDocs + "Mis Documentos</a>";
             return "<a href='../Default.aspx' class='nav-item'>" + svgHome + "Inicio</a>" +
-                   "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>";
+                "<a href='BandejaTrabajo.aspx' class='nav-item active'>" + svgBandeja + "Bandeja de Trabajo" + badgeHtml + "</a>";
         }
 
         protected void btnCerrarSesion_Click(object sender, EventArgs e)

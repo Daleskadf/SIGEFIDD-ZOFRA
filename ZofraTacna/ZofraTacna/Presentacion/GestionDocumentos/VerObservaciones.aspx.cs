@@ -52,7 +52,7 @@ namespace ZofraTacna.Presentacion
             string login = Session["LoginUsuario"].ToString();
             litAvatar.Text = login.Length >= 2 ? login.Substring(0, 2).ToUpper() : login.ToUpper();
             litNombre.Text = login;
-            litRol.Text = Session["RolNombre"].ToString();
+            litRol.Text = ZofraTacna.Helpers.RolSwitcherHelper.GenerarBadgeRolOSwitcher(Context, Session["RolCodigo"]?.ToString() ?? "", Session["RolNombre"]?.ToString() ?? "");
             litSidebarNav.Text = BuildNav(rol);
 
             var repo = new RepositorioDocumentos();
@@ -162,7 +162,7 @@ namespace ZofraTacna.Presentacion
                     
                     sb.Append("<div class='obs-meta'>");
                     sb.Append("<svg style='width:12px;height:12px;fill:#999;margin-right:4px;vertical-align:middle' viewBox='0 0 24 24'><path d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z'/></svg>");
-                    sb.Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("dd/MM/yyyy HH:mm", pe)));
+                    sb.Append(HttpUtility.HtmlEncode(ConvertirAPeruTime(o.FechaObservacion).ToString("dd/MM/yyyy HH:mm", pe)));
                     sb.Append(" &mdash; Revisor: <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "Sin especificar")).Append("</strong>");
                     sb.Append("</div></div>");
                 }
@@ -229,12 +229,12 @@ namespace ZofraTacna.Presentacion
                     
                     sb.Append("<div class='obs-meta' style='border-top:1px solid rgba(46,125,50,.15);margin-top:12px;padding-top:10px'>");
                     sb.Append("<svg style='width:12px;height:12px;fill:#2e7d32;margin-right:4px;vertical-align:middle' viewBox='0 0 24 24'><path d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-13c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z'/></svg>");
-                    sb.Append("Observada el <strong>").Append(HttpUtility.HtmlEncode(o.FechaObservacion.ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
+                    sb.Append("Observada el <strong>").Append(HttpUtility.HtmlEncode(ConvertirAPeruTime(o.FechaObservacion).ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
                     sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginRevisor ?? "Sin especificar")).Append("</strong>");
                     if (o.FechaLevantamiento.HasValue)
                     {
                         sb.Append("<br/><svg style='width:12px;height:12px;fill:#2e7d32;margin-right:4px;margin-top:6px;vertical-align:middle' viewBox='0 0 24 24'><path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/></svg>");
-                        sb.Append(" Levantada el <strong>").Append(HttpUtility.HtmlEncode(o.FechaLevantamiento.Value.ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
+                        sb.Append(" Levantada el <strong>").Append(HttpUtility.HtmlEncode(ConvertirAPeruTime(o.FechaLevantamiento.Value).ToString("dd/MM/yyyy HH:mm", pe))).Append("</strong>");
                         sb.Append(" por <strong>").Append(HttpUtility.HtmlEncode(o.LoginLevantamiento ?? "Sin especificar")).Append("</strong>");
                     }
                     sb.Append("</div></div>");
@@ -349,6 +349,23 @@ namespace ZofraTacna.Presentacion
         protected void btnCerrarSesion_Click(object sender, EventArgs e)
         {
             Session.Clear(); Session.Abandon(); Response.Redirect("~/Presentacion/InicioSesion/Login.aspx");
+        }
+
+        private static DateTime ConvertirAPeruTime(DateTime utcDateTime)
+        {
+            if (utcDateTime == DateTime.MinValue || utcDateTime == DateTime.MaxValue)
+                return utcDateTime;
+            try
+            {
+                TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                DateTime utc = DateTime.SpecifyKind(utcDateTime, DateTimeKind.Utc);
+                return TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
+            }
+            catch
+            {
+                // Fallback: Peru is UTC - 5
+                return utcDateTime.AddHours(-5);
+            }
         }
     }
 }

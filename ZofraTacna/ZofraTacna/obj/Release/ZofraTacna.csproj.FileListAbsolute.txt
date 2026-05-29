@@ -59,3 +59,4 @@ C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Release\
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Release\ZofraTacna.csproj.Up2Date
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Release\ZofraTacna.dll
 C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\obj\Release\ZofraTacna.pdb
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraTacna\ZofraTacna\bin\images\logo.jpg

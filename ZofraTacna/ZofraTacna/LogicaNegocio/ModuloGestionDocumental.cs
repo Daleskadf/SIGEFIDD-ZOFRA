@@ -217,7 +217,7 @@ namespace ZofraTacna.LogicaNegocio
         /// <summary>
         /// Registra una firma y actualiza automáticamente el estado del documento si es necesario.
         /// Cambia de PEN a FPAR cuando firma el primero, y a FCOM cuando todos firman.
-        /// Además, revierte los roles de FIR a REV cuando el documento se completa.
+        /// (Nota: Los roles de participación residen únicamente en DocumentoParticipante y no afectan el rol global).
         /// </summary>
         public bool RegistrarFirmaConEstado(int idDocumento, int idParticipante, string loginFirmante, 
             string hashFirma, out string mensaje)

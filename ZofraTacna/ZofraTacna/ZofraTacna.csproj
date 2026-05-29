@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="images\logo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Presentacion\Default.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
@@ -92,6 +95,7 @@
     <Content Include="Presentacion\InicioSesion\Login.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Presentacion\InicioSesion\CambiarRol.ashx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +145,9 @@
     </Compile>
     <Compile Include="Presentacion\InicioSesion\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\InicioSesion\CambiarRol.ashx.cs">
+      <DependentUpon>CambiarRol.ashx</DependentUpon>
     </Compile>
     <!-- Presentacion - BandejaTrabajo -->
     <Compile Include="Presentacion\BandejaTrabajo\BandejaTrabajo.aspx.cs">
@@ -273,6 +280,7 @@
     <Compile Include="Datos\RepositorioBloqueoFlujo.cs" />
     <Compile Include="Datos\RepositorioDocumentos.cs" />
     <Compile Include="Datos\RepositorioUsuariosRoles.cs" />
+    <Compile Include="Helpers\RolSwitcherHelper.cs" />
     <Compile Include="Datos\RepositorioAuditoria.cs" />
     <Compile Include="Datos\RepositorioNotificacionesApp.cs" />
     <Compile Include="Presentacion\Notificaciones.ashx.cs">
@@ -313,6 +321,7 @@
     <Content Include="Presentacion\BandejaTrabajo\FirmaPeruParametros.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\FirmaPeruSubir.ashx" />
     <Content Include="Presentacion\BandejaTrabajo\FirmaPeruDocumento.ashx" />
+    <Content Include="Presentacion\BandejaTrabajo\VerificarEstadoFirma.ashx" />
     <Content Include="Presentacion\Notificaciones.ashx" />
     <Content Include="Presentacion\BloqueoFlujo.ashx" />
     <Content Include="Content\sigefidd-notificaciones.css" />
