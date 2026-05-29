@@ -11,7 +11,6 @@
     <script>
         var jqFirmaPeru = jQuery.noConflict(true);
     </script>
-    <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
     <style>
@@ -107,7 +106,7 @@
                     </div>
                     <div class="pdf-frame-wrap" id="pdfViewerWrapper">
                         <div class="pdf-float-actions" id="floatActionsFirma">
-                            <asp:LinkButton ID="btnAbrirModal" runat="server" CssClass="btn-firma" OnClick="btnAbrirModal_Click" OnClientClick="return prepararFirma();">&#9998; Firmar Documento</asp:LinkButton>
+                            <button type="button" class="btn-firma" onclick="prepararFirma(); abrirModalOpcionesFirma();">&#9998; Firmar Documento</button>
                         </div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
@@ -145,34 +144,22 @@
         <div class="form-group">
             <label>Seleccione el método de firma:</label>
             <select id="ddlMetodoFirma" class="form-select" onchange="cambiarMetodoFirma()">
-                <option value="dnie">DNI electrónico (Firma Perú)</option>
-                <option value="agente">Token USB (Agente Local)</option>
+                <option value="dnie">DNIe electrónico</option>
+                <option value="usb">Token USB</option>
             </select>
         </div>
         
         <div id="panelDnie" class="panel-opcion active">
-            <p style="font-size:13px; color:#666; margin-bottom:10px;">Seleccione su certificado DNIe:</p>
-            <div style="margin-bottom:10px;">
-                <asp:DropDownList ID="ddlCertificadosDnie" runat="server" CssClass="form-select" />
-            </div>
+            <p style="font-size:13px; color:#666; margin-bottom:10px;">Asegúrese de insertar su <b>DNI electrónico (v2/v3)</b> en la lectora.</p>
             <div style="margin-top:15px;">
-                <asp:Button ID="btnFirmarDnie" runat="server" Text="Firmar con DNIe" CssClass="btn-accion" OnClick="btnFirmarDnie_Click" OnClientClick="return mostrarCargaDnie();" />
+                <button type="button" class="btn-accion" style="background-color:#28a745;" onclick="lanzarAgente()">&#9998; Firmar Documento</button>
             </div>
-            <asp:Label ID="lblErrorDnie" runat="server" CssClass="mensaje-error" />
         </div>
         
         <div id="panelAgente" class="panel-opcion">
-            <p style="font-size:13px; color:#666; margin-bottom:10px;">Se abrirá <b>ZofraTacna Signer</b> en su computadora para firmar con su Token USB (Bit4ID, ePass, etc.).</p>
+            <p style="font-size:13px; color:#666; margin-bottom:10px;">Asegúrese de conectar su <b>Token USB (Bit4ID, ePass, etc.)</b> a la computadora.</p>
             <div style="margin-top:15px;">
-                <button type="button" class="btn-accion" style="background-color:#28a745;" onclick="lanzarAgente()">&#9998; Firmar con Agente Local</button>
-            </div>
-            <div id="msgAgente" style="margin-top:10px; font-size:13px; color:#d9534f; display:none;">
-                Asegúrese de tener ZofraTacna Signer instalado.
-            </div>
-            <div style="display:none;">
-                <asp:DropDownList ID="ddlCertificados" runat="server" />
-                <asp:Button ID="btnFirmarUsb" runat="server" OnClick="btnFirmarUsb_Click" />
-                <asp:Label ID="lblErrorUsb" runat="server" />
+                <button type="button" class="btn-accion" style="background-color:#28a745;" onclick="lanzarAgente()">&#9998; Firmar Documento</button>
             </div>
         </div>
     </div>
@@ -235,28 +222,6 @@ var urlParametros = baseUrlNgrok
     ? baseUrlNgrok + '/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=<%= TokenActual %>'
     : '<%= new Uri(Request.Url, ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx?token=")).AbsoluteUri %>' + '<%= TokenActual %>';
 
-function mostrarCargaDnie() {
-    var ddl = document.getElementById('<%= ddlCertificadosDnie.ClientID %>');
-    if(!ddl || ddl.value === '') {
-        alert('Seleccione un certificado DNIe primero.');
-        return false;
-    }
-    document.getElementById('modalOpcionesFirma').style.display='none';
-    document.getElementById('modalCargaFirma').style.display='flex';
-    return true;
-}
-
-function mostrarCargaUsb() {
-    var ddl = document.getElementById('<%= ddlCertificados.ClientID %>');
-    if(!ddl || ddl.value === '') {
-        alert('Seleccione un certificado USB primero.');
-        return false;
-    }
-    document.getElementById('modalOpcionesFirma').style.display='none';
-    document.getElementById('modalCargaFirma').style.display='flex';
-    return true;
-}
-
 function copiarError() {
     var txt = document.getElementById('lblMensajeErrorModal').innerText;
     navigator.clipboard.writeText(txt).then(function() {
@@ -302,7 +267,7 @@ function cambiarMetodoFirma() {
     var panelAgente = document.getElementById('panelAgente');
     if(panelAgente) panelAgente.classList.remove('active');
     
-    if(val === 'agente') {
+    if(val === 'usb') {
         if(panelAgente) panelAgente.classList.add('active');
     } else {
         document.getElementById('panelDnie').classList.add('active');
@@ -320,8 +285,15 @@ function lanzarAgente() {
     
     var params = {
         documentToSign: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Presentacion/BandejaTrabajo/DescargaDocumentoTemporal.ashx?token=") %>' + tokenGlobal,
-        uploadDocumentSigned: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx") %>',
-        token: tokenGlobal
+        uploadDocumentSigned: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx?token=") %>' + tokenGlobal,
+        logoUrl: '<%= Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/images/logo.jpg") %>',
+        token: tokenGlobal,
+        page: document.getElementById('<%= hfFirmaPage.ClientID %>').value,
+        x: document.getElementById('<%= hfFirmaX.ClientID %>').value,
+        y: document.getElementById('<%= hfFirmaY.ClientID %>').value,
+        w: document.getElementById('<%= hfFirmaW.ClientID %>').value,
+        h: document.getElementById('<%= hfFirmaH.ClientID %>').value,
+        rot: document.getElementById('<%= hfFirmaRot.ClientID %>').value
     };
     
     var base64Params = btoa(unescape(encodeURIComponent(JSON.stringify(params))));
@@ -348,7 +320,9 @@ function lanzarAgente() {
                     var res = JSON.parse(chk.responseText);
                     if (res.status === 'firmado') {
                         clearInterval(pollTimer);
-                        window.location.href = '../GestionDocumentos/Historial.aspx';
+                        var modalCarga = document.getElementById('modalCargaFirma');
+                        if (modalCarga) modalCarga.style.display = 'none';
+                        mostrarExitoYRedirigir();
                     }
                 } catch(e) {}
             }
@@ -581,17 +555,7 @@ if(firmaBox) {
     });
 }
 
-// Si hay error desde servidor y necesitamos mostrar el modal (opcional, para UX)
-function mostrarModalPorError() {
-    var errorLabel = document.getElementById('<%= lblErrorUsb.ClientID %>');
-    if(errorLabel && errorLabel.innerText.trim() !== "") {
-        document.getElementById('ddlMetodoFirma').value = 'agente';
-        abrirModalOpcionesFirma();
-    }
-}
-window.onload = function() {
-    mostrarModalPorError();
-};
+
 </script>
 </form>
 </body>

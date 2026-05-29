@@ -1,0 +1,12 @@
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.csproj.AssemblyReference.cache
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.csproj.CoreCompileInputs.cache
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\bin\Debug\ZofraFirmaInvoker.exe
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\bin\Debug\ZofraFirmaInvoker.pdb
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\bin\Debug\itextsharp.dll
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFir.21B3D14F.Up2Date
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.exe
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.pdb
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.FormMain.resources
+C:\Users\Angel\Desktop\SPRINT3\SIGEFIDD-ZOFRA\ZofraFirmaInvoker\obj\Debug\ZofraFirmaInvoker.csproj.GenerateResource.cache

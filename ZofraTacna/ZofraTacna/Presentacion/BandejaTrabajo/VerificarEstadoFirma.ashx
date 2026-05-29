@@ -38,10 +38,8 @@ namespace ZofraTacna.Presentacion
                     string sql = @"SELECT TOP 1 fd.FechaFirma 
                                    FROM FirmaDetalle fd
                                    INNER JOIN DocumentoParticipante dp ON fd.IdParticipante = dp.IdParticipante
-                                   INNER JOIN Maestro mt ON dp.IdTipoParticipante = mt.IdMaestro
                                    WHERE dp.IdDocumento = @idDoc 
-                                     AND dp.LoginUsuario = @login 
-                                     AND mt.Tipo = 'TIPO_PARTICIPANTE' AND mt.Codigo = 'FIR'";
+                                     AND dp.LoginUsuario = @login";
                                      
                     using (var cmd = new SqlCommand(sql, cn))
                     {

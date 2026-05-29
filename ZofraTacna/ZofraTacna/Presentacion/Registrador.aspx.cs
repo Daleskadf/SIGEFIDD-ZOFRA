@@ -121,6 +121,8 @@ namespace ZofraTacna
                 WHERE d.LoginUsuarioRegistrador = @u
                   AND DATEADD(day, dp.PlazoDias, d.FechaCreacion) < GETDATE()
                   AND d.Activo = 1
+                  AND me.Codigo NOT IN ('FCOM', 'ANU')
+                  AND (dp.EstadoParticipante IS NULL OR dp.EstadoParticipante = (SELECT IdMaestro FROM Maestro WHERE Tipo='ESTADO_PARTICIPANTE' AND Codigo='PEN'))
                 ORDER BY HorasVencido DESC";
 
             var alertas = new List<object>();

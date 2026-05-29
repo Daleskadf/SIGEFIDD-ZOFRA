@@ -123,7 +123,22 @@ namespace ZofraTacna.Presentacion
                 var repo = new RepositorioDocumentos();
                 string hashFirma = Guid.NewGuid().ToString("N");
 
-                repo.ActualizarAdjuntoFirmado(idDoc, fileBytes, file.FileName);
+                int idAdj;
+                string nombreOriginal;
+                int tamBytes;
+                string nuevoNombre = file.FileName;
+
+                if (repo.IntentarAdjuntoPrincipal(idDoc, out idAdj, out nombreOriginal, out tamBytes))
+                {
+                    if (!string.IsNullOrEmpty(nombreOriginal))
+                    {
+                        string extension = System.IO.Path.GetExtension(nombreOriginal);
+                        string sinExtension = System.IO.Path.GetFileNameWithoutExtension(nombreOriginal);
+                        nuevoNombre = sinExtension + "[F]" + extension;
+                    }
+                }
+
+                repo.ActualizarAdjuntoFirmado(idDoc, fileBytes, nuevoNombre);
 
                 var modulo = new ZofraTacna.LogicaNegocio.ModuloGestionDocumental();
                 string mensaje;

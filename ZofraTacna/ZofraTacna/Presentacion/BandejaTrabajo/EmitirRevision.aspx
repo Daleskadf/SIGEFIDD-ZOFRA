@@ -1447,6 +1447,8 @@
                             onModoAnotacion: function (on) {
                                 var btn = document.getElementById('btnEmitirObservacionPdf');
                                 if (btn) { if (on) btn.classList.add('modo-activo'); else btn.classList.remove('modo-activo'); }
+                                var actions = document.querySelector('.pdf-float-actions');
+                                if (actions) { actions.style.opacity = on ? '0' : '1'; actions.style.pointerEvents = on ? 'none' : 'auto'; }
                             },
                             onReady: function (v) { emRevActualizarBarraMarcadores(v.contarBorradores()); }
                         });

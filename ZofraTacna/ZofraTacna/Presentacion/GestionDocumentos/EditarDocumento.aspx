@@ -784,6 +784,22 @@
                     grid-template-columns: 1fr
                 }
             }
+
+            /* Searchable combo */
+            .combo-search-wrap{position:relative}
+            .combo-search-input{width:100%;padding:12px 36px 12px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;color:#333;font-family:'Segoe UI',sans-serif;outline:none;background:white;cursor:text;transition:border-color .2s}
+            .combo-search-input:focus{border-color:#1a2a4a}
+            .combo-search-input.has-value{font-weight:600;color:#1a2a4a}
+            .combo-search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;fill:#999}
+            .combo-search-clear{position:absolute;right:34px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;width:20px;height:20px;font-size:16px;color:#c0392b;display:none;padding:0;line-height:1}
+            .combo-search-clear:hover{color:#8b1a1a}
+            .combo-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #1a2a4a;border-top:none;border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;z-index:1000;box-shadow:0 8px 16px rgba(0,0,0,.1);animation:gpSlideDown .15s ease-out}
+            .combo-dropdown-item{padding:10px 16px;cursor:pointer;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;transition:all .15s}
+            .combo-dropdown-item:last-child{border-bottom:none}
+            .combo-dropdown-item:hover{background:#f0f2ff;padding-left:20px;color:#1a2a4a;font-weight:600}
+            .combo-dropdown-item.selected{background:#e8f5e9;color:#2e7d32;font-weight:600}
+            .combo-dropdown-empty{padding:14px 16px;text-align:center;color:#999;font-size:13px}
+            @keyframes gpSlideDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
         </style>
     </head>
 
@@ -891,16 +907,30 @@
                         <div class="form-row">
                             <div>
                                 <label class="form-label">CATEGORÍA <span class="required">*</span></label>
-                                <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="form-input" />
+                                <div class="combo-search-wrap">
+                                    <input type="text" id="txtComboCategoria" class="combo-search-input" placeholder="Buscar categoría..." autocomplete="off" />
+                                    <button type="button" id="btnClearCategoria" class="combo-search-clear" title="Limpiar">&times;</button>
+                                    <svg class="combo-search-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                                    <div id="dropdownCategoria" class="combo-dropdown"></div>
+                                    <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="form-input" style="display:none" />
+                                </div>
+                                <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las categorías disponibles</div>
                             </div>
                             <div>
                                 <label class="form-label">PRIORIDAD <span class="required">*</span></label>
-                                <asp:DropDownList ID="ddlPrioridad" runat="server" CssClass="form-input">
-                                    <asp:ListItem Value="">Seleccionar...</asp:ListItem>
-                                    <asp:ListItem Value="ALTA">Alta</asp:ListItem>
-                                    <asp:ListItem Value="MEDIA">Media</asp:ListItem>
-                                    <asp:ListItem Value="BAJA">Baja</asp:ListItem>
-                                </asp:DropDownList>
+                                <div class="combo-search-wrap">
+                                    <input type="text" id="txtComboPrioridad" class="combo-search-input" placeholder="Buscar prioridad..." autocomplete="off" />
+                                    <button type="button" id="btnClearPrioridad" class="combo-search-clear" title="Limpiar">&times;</button>
+                                    <svg class="combo-search-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                                    <div id="dropdownPrioridad" class="combo-dropdown"></div>
+                                    <asp:DropDownList ID="ddlPrioridad" runat="server" CssClass="form-input" style="display:none">
+                                        <asp:ListItem Value="">Seleccionar...</asp:ListItem>
+                                        <asp:ListItem Value="ALTA">Alta</asp:ListItem>
+                                        <asp:ListItem Value="MEDIA">Media</asp:ListItem>
+                                        <asp:ListItem Value="BAJA">Baja</asp:ListItem>
+                                    </asp:DropDownList>
+                                </div>
+                                <div style="font-size:11px;color:#999;margin-top:4px">Escriba para filtrar las prioridades disponibles</div>
                             </div>
                         </div>
 
@@ -917,30 +947,37 @@
                             </div>
                         </div>
 
-                        <!-- OBSERVACIONES -->
-                        <div class="box">
-                            <div class="form-label" style="margin-bottom:12px">OBSERVACIONES</div>
-                            <asp:Literal ID="litObservaciones" runat="server" />
-                        </div>
-
-                        <!-- NUEVO PDF -->
-                        <div class="box">
-                            <div class="form-label" style="margin-bottom:12px">NUEVO PDF (OPCIONAL)</div>
-                            <div class="upload-zone"
-                                onclick="var el=document.getElementById('<%= filePDF.ClientID %>'); if(el) el.click();">
-                                📄 Clic para seleccionar un nuevo PDF
-                                <asp:FileUpload ID="filePDF" runat="server" Accept=".pdf"
-                                    onchange="editDocMostrarArchivoYVisor();" />
-                            </div>
-                            <p class="upload-hint">Si adjunta un PDF, puede previsualizarlo antes de enviar la
-                                corrección.</p>
-                            <div class="msg-bajo-pdf">
-                                <span id="editDocLblArchivo" class="lbl-archivo-ok" style="display:none;"
-                                    aria-live="polite"></span>
-                                <div id="editDocMsgCliente" class="alert-err" style="display:none;margin-top:8px;">
+                        <!-- SECCIÓN DOS COLUMNAS: OBSERVACIONES Y NUEVO PDF -->
+                        <div class="form-row" style="align-items: stretch; margin-bottom: 24px;">
+                            <!-- OBSERVACIONES (Izquierda) -->
+                            <div class="box" style="margin-bottom: 0; display: flex; flex-direction: column;">
+                                <div class="form-label" style="margin-bottom:12px">OBSERVACIONES</div>
+                                <div style="flex: 1; overflow-y: auto; max-height: 280px; padding-right: 4px;">
+                                    <asp:Literal ID="litObservaciones" runat="server" />
                                 </div>
-                                <asp:Label ID="lblMensaje" runat="server" EnableViewState="true"
-                                    Style="display:none;" />
+                            </div>
+
+                            <!-- NUEVO PDF (Derecha) -->
+                            <div class="box" style="margin-bottom: 0; display: flex; flex-direction: column;">
+                                <div class="form-label" style="margin-bottom:12px">NUEVO PDF (OPCIONAL)</div>
+                                <div class="upload-zone" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;"
+                                    onclick="var el=document.getElementById('<%= filePDF.ClientID %>'); if(el) el.click();">
+                                    <svg viewBox="0 0 24 24" style="width:36px;height:36px;fill:#aab;margin-bottom:10px;"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 8H7v-2h4v2zm6-4H7v-2h10v2z"/></svg>
+                                    <div style="font-weight:600; color:#555; margin-bottom: 4px;">Clic para seleccionar un nuevo PDF</div>
+                                    <div style="font-size:12px; color:#aaa;">Solo PDF, m&aacute;x. 50 MB</div>
+                                    <asp:FileUpload ID="filePDF" runat="server" Accept=".pdf"
+                                        onchange="editDocMostrarArchivoYVisor();" />
+                                </div>
+                                <p class="upload-hint" style="text-align:center;">Si adjunta un PDF, puede previsualizarlo antes de enviar la
+                                    corrección.</p>
+                                <div class="msg-bajo-pdf" style="text-align:center;">
+                                    <span id="editDocLblArchivo" class="lbl-archivo-ok" style="display:none;"
+                                        aria-live="polite"></span>
+                                    <div id="editDocMsgCliente" class="alert-err" style="display:none;margin-top:8px;">
+                                    </div>
+                                    <asp:Label ID="lblMensaje" runat="server" EnableViewState="true"
+                                        Style="display:none;" />
+                                </div>
                             </div>
                         </div>
 
@@ -1046,6 +1083,19 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal de Bloqueo por Firmas -->
+            <div id="modalBloqueoFirmas" class="modal-overlay" aria-hidden="true" style="display:none;">
+                <div class="modal-box">
+                    <div class="modal-head" style="background: linear-gradient(135deg, #c0392b, #8b1a1a);">Documento Inválido</div>
+                    <div class="modal-body">
+                        No se puede cargar el documento ya que cuenta con una <strong>firma digital previa</strong>. Por favor, elimine la firma o suba un documento original sin firmas.
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-modal-ok"
+                            onclick="document.getElementById('modalBloqueoFirmas').style.display='none';">Entendido</button>
+                    </div>
+                </div>
+            </div>
         </form>
         <script type="text/javascript">
             window.editDocPdfArchivo = null;
@@ -1070,15 +1120,36 @@
                 var msgCli = editDocGet('editDocMsgCliente');
                 if (msgCli) { msgCli.style.display = 'none'; msgCli.textContent = ''; }
                 if (!fileInput || !lblArchivo) return;
+                
                 if (fileInput.files.length > 0) {
                     var archivo = fileInput.files[0];
                     var mb = (archivo.size / (1024 * 1024)).toFixed(2);
-                    lblArchivo.innerHTML = '✓ <strong>Archivo listo:</strong> ' + archivo.name.replace(/</g, '&lt;') + ' (' + mb + ' MB). Puede enviar la corrección o cambiar el archivo.';
-                    lblArchivo.style.display = 'block';
-                    lblArchivo.style.color = '#1e7e34';
-                    if (btnVis) btnVis.style.display = 'inline-flex';
-                    if (btnCmp && window.editDocPdfVigenteUrl) btnCmp.style.display = 'inline-flex';
-                    window.editDocPdfArchivo = archivo;
+
+                    // Validación cliente de firmas previas usando FileReader
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var content = e.target.result;
+                        if (content.indexOf('/ByteRange') !== -1 && (content.indexOf('/adbe.pkcs7.detached') !== -1 || content.indexOf('/Adobe.PPKLite') !== -1)) {
+                            document.getElementById('modalBloqueoFirmas').style.display = 'flex';
+                            fileInput.value = ''; // Limpiar el input
+                            lblArchivo.innerHTML = '';
+                            lblArchivo.style.display = 'none';
+                            if (btnVis) btnVis.style.display = 'none';
+                            if (btnCmp) btnCmp.style.display = 'none';
+                            window.editDocPdfArchivo = null;
+                            return;
+                        }
+                        
+                        // Si todo está bien, mostrar nombre y botones
+                        lblArchivo.innerHTML = '✓ <strong>Archivo listo:</strong> ' + archivo.name.replace(/</g, '&lt;') + ' (' + mb + ' MB). Puede enviar la corrección o cambiar el archivo.';
+                        lblArchivo.style.display = 'block';
+                        lblArchivo.style.color = '#1e7e34';
+                        if (btnVis) btnVis.style.display = 'inline-flex';
+                        if (btnCmp && window.editDocPdfVigenteUrl) btnCmp.style.display = 'inline-flex';
+                        window.editDocPdfArchivo = archivo;
+                    };
+                    reader.readAsText(archivo);
+
                 } else {
                     lblArchivo.innerHTML = '';
                     lblArchivo.style.display = 'none';
@@ -1193,6 +1264,16 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
+                // Inicializar combos
+                initComboSearch(
+                    'txtComboCategoria', 'dropdownCategoria', 'btnClearCategoria',
+                    '<%= ddlCategoria.ClientID %>'
+                );
+                initComboSearch(
+                    'txtComboPrioridad', 'dropdownPrioridad', 'btnClearPrioridad',
+                    '<%= ddlPrioridad.ClientID %>'
+                );
+
                 var modal = editDocGet('modalVisorPDFEdit');
                 if (modal) {
                     modal.addEventListener('click', function (e) {
@@ -1211,6 +1292,107 @@
                     window.editDocLockTimer = setInterval(function () { editDocEnviarBloqueo('touch'); }, 15000);
                 }
             });
+
+            // ============================================================
+            // SEARCHABLE COMBO: Categoría y Prioridad
+            // ============================================================
+            function initComboSearch(inputId, dropdownId, clearBtnId, ddlClientId) {
+                var input = document.getElementById(inputId);
+                var dropdown = document.getElementById(dropdownId);
+                var clearBtn = document.getElementById(clearBtnId);
+                var ddl = document.getElementById(ddlClientId);
+                if (!input || !dropdown || !ddl) return;
+
+                // Extraer opciones del DDL oculto
+                var allItems = [];
+                for (var i = 0; i < ddl.options.length; i++) {
+                    var opt = ddl.options[i];
+                    if (opt.value === '' || opt.value === 'Seleccionar...') continue;
+                    allItems.push({ value: opt.value, text: opt.text });
+                }
+
+                // Si ya hay un valor seleccionado, mostrarlo
+                if (ddl.value && ddl.value !== '') {
+                    var selOpt = ddl.options[ddl.selectedIndex];
+                    if (selOpt && selOpt.value !== '') {
+                        input.value = selOpt.text;
+                        input.classList.add('has-value');
+                        if (clearBtn) clearBtn.style.display = 'block';
+                    }
+                }
+
+                function renderDropdown(filtro) {
+                    var filtered = allItems;
+                    if (filtro && filtro.length > 0) {
+                        var term = filtro.toLowerCase();
+                        filtered = allItems.filter(function (it) { return it.text.toLowerCase().indexOf(term) >= 0; });
+                    }
+                    if (filtered.length === 0) {
+                        dropdown.innerHTML = '<div class="combo-dropdown-empty">No se encontraron resultados</div>';
+                    } else {
+                        var html = '';
+                        filtered.forEach(function (it) {
+                            var sel = ddl.value === it.value ? ' selected' : '';
+                            html += '<div class="combo-dropdown-item' + sel + '" data-val="' + it.value + '">' + it.text + '</div>';
+                        });
+                        dropdown.innerHTML = html;
+                        // Click en cada item
+                        dropdown.querySelectorAll('.combo-dropdown-item').forEach(function (el) {
+                            el.addEventListener('click', function () {
+                                var val = this.getAttribute('data-val');
+                                var txt = this.textContent;
+                                ddl.value = val;
+                                input.value = txt;
+                                input.classList.add('has-value');
+                                dropdown.style.display = 'none';
+                                if (clearBtn) clearBtn.style.display = 'block';
+                            });
+                        });
+                    }
+                    dropdown.style.display = 'block';
+                }
+
+                // Al escribir, filtrar
+                input.addEventListener('input', function () {
+                    var val = this.value.trim();
+                    if (val.length === 0) {
+                        renderDropdown('');
+                    } else {
+                        renderDropdown(val);
+                    }
+                    // Si el texto no coincide exactamente, limpiar selección
+                    var matchExact = allItems.find(function (it) { return it.text === input.value; });
+                    if (!matchExact) {
+                        ddl.value = '';
+                        input.classList.remove('has-value');
+                        if (clearBtn) clearBtn.style.display = 'none';
+                    }
+                });
+
+                // Al hacer foco, mostrar todo si está vacío o filtrar si hay texto
+                input.addEventListener('focus', function () {
+                    renderDropdown(this.value.trim());
+                });
+
+                // Limpiar
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', function () {
+                        input.value = '';
+                        ddl.value = '';
+                        input.classList.remove('has-value');
+                        clearBtn.style.display = 'none';
+                        input.focus();
+                        renderDropdown('');
+                    });
+                }
+
+                // Cerrar al hacer clic fuera
+                document.addEventListener('click', function (e) {
+                    if (!input.contains(e.target) && !dropdown.contains(e.target) && (!clearBtn || !clearBtn.contains(e.target))) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
 
             function editDocValidarAntesEnviar() {
                 var msgCli = editDocGet('editDocMsgCliente');

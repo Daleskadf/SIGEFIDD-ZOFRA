@@ -1966,12 +1966,25 @@
                         let nombreArchivo = archivo.name;
                         let tamanoMB = (archivo.size / (1024 * 1024)).toFixed(2);
 
-                        // Mostrar nombre y tamaño
-                        lblArchivo.innerHTML = '✓ <strong style="color:#27ae60;">Archivo cargado:</strong> ' + nombreArchivo + ' (' + tamanoMB + ' MB)';
-                        lblArchivo.style.color = '#27ae60';
-
-                        // Mostrar botón visualizar
-                        btnVisualizar.style.display = 'inline-block';
+                        // Validación cliente de firmas previas usando FileReader
+                        let reader = new FileReader();
+                        reader.onload = function(e) {
+                            let content = e.target.result;
+                            if (content.indexOf('/ByteRange') !== -1 && (content.indexOf('/adbe.pkcs7.detached') !== -1 || content.indexOf('/Adobe.PPKLite') !== -1)) {
+                                document.getElementById('modalBloqueoRevision').style.display = 'flex';
+                                fileInput.value = ''; // Limpiar el input
+                                lblArchivo.innerHTML = '';
+                                btnVisualizar.style.display = 'none';
+                                return;
+                            }
+                            
+                            // Si todo está bien, mostrar nombre y botón
+                            lblArchivo.innerHTML = '✓ <strong style="color:#27ae60;">Archivo cargado:</strong> ' + nombreArchivo + ' (' + tamanoMB + ' MB)';
+                            lblArchivo.style.color = '#27ae60';
+                            btnVisualizar.style.display = 'inline-block';
+                        };
+                        // Leemos todo el archivo como texto, es super rápido y sirve para buscar las firmas
+                        reader.readAsText(archivo);
 
                         // Guardar referencia del archivo para el visor
                         window.pdfArchivoActual = archivo;
