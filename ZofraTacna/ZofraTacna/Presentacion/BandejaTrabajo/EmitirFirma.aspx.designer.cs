@@ -19,5 +19,11 @@ namespace ZofraTacna.Presentacion
         protected global::System.Web.UI.WebControls.Label lblErrorDnie;
         protected global::System.Web.UI.WebControls.Button btnFirmarUsb;
         protected global::System.Web.UI.WebControls.Label lblErrorUsb;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaPage;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaX;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaY;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaW;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaH;
+        protected global::System.Web.UI.WebControls.HiddenField hfFirmaRot;
     }
 }
