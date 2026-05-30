@@ -8,8 +8,113 @@ namespace ZofraTacna.Presentacion
 {
     public class VerificarEstadoFirma : IHttpHandler, System.Web.SessionState.IRequiresSessionState
     {
-        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> EstadoTransaccion = 
-            new System.Collections.Concurrent.ConcurrentDictionary<string, string>();
+        private static void AsegurarTablaTransacciones(string connStr)
+        {
+            try
+            {
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    string sql = @"
+                        IF OBJECT_ID('dbo.FirmaEstadoTransaccion', 'U') IS NULL
+                        BEGIN
+                            CREATE TABLE dbo.FirmaEstadoTransaccion (
+                                Token VARCHAR(100) NOT NULL PRIMARY KEY,
+                                Estado VARCHAR(50) NOT NULL,
+                                MensajeError VARCHAR(1000) NULL,
+                                FechaRegistro DATETIME NOT NULL DEFAULT GETDATE()
+                            );
+                        END";
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private static void RegistrarEstadoEnBD(string connStr, string token, string estado, string errorMsg)
+        {
+            AsegurarTablaTransacciones(connStr);
+            try
+            {
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    string sql = @"
+                        MERGE dbo.FirmaEstadoTransaccion AS target
+                        USING (SELECT @token AS Token) AS source
+                        ON (target.Token = source.Token)
+                        WHEN MATCHED THEN
+                            UPDATE SET Estado = @estado, MensajeError = @errorMsg, FechaRegistro = GETDATE()
+                        WHEN NOT MATCHED THEN
+                            INSERT (Token, Estado, MensajeError) VALUES (@token, @estado, @errorMsg);";
+                            
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@token", token);
+                        cmd.Parameters.AddWithValue("@estado", estado);
+                        cmd.Parameters.AddWithValue("@errorMsg", (object)errorMsg ?? DBNull.Value);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private static string ObtenerYRemoverEstadoDeBD(string connStr, string token, out string errorMsg)
+        {
+            errorMsg = null;
+            AsegurarTablaTransacciones(connStr);
+            try
+            {
+                using (var cn = new SqlConnection(connStr))
+                {
+                    cn.Open();
+                    
+                    // 1. Obtener
+                    string estado = null;
+                    string sqlSelect = "SELECT Estado, MensajeError FROM dbo.FirmaEstadoTransaccion WHERE Token = @token";
+                    using (var cmd = new SqlCommand(sqlSelect, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@token", token);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                estado = reader["Estado"].ToString();
+                                errorMsg = reader["MensajeError"] != DBNull.Value ? reader["MensajeError"].ToString() : null;
+                            }
+                        }
+                    }
+
+                    // 2. Si existe, remover
+                    if (estado != null)
+                    {
+                        string sqlDelete = "DELETE FROM dbo.FirmaEstadoTransaccion WHERE Token = @token";
+                        using (var cmd = new SqlCommand(sqlDelete, cn))
+                        {
+                            cmd.Parameters.AddWithValue("@token", token);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    // 3. Limpiar registros antiguos (> 5 minutos)
+                    string sqlClean = "DELETE FROM dbo.FirmaEstadoTransaccion WHERE FechaRegistro < DATEADD(minute, -5, GETDATE())";
+                    using (var cmd = new SqlCommand(sqlClean, cn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return estado;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         public void ProcessRequest(HttpContext context)
         {
@@ -17,6 +122,7 @@ namespace ZofraTacna.Presentacion
             
             string action = context.Request.QueryString["action"];
             string token = context.Request.QueryString["token"];
+            string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
 
             if (!string.IsNullOrEmpty(action))
             {
@@ -28,14 +134,14 @@ namespace ZofraTacna.Presentacion
                 
                 if (action == "cancel")
                 {
-                    EstadoTransaccion[token] = "cancelado";
+                    RegistrarEstadoEnBD(connStr, token, "cancelado", null);
                     context.Response.Write("OK");
                     return;
                 }
                 else if (action == "error")
                 {
                     string errorMsg = context.Request.QueryString["error"] ?? "Error desconocido en el agente.";
-                    EstadoTransaccion[token] = "error:" + errorMsg;
+                    RegistrarEstadoEnBD(connStr, token, "error", errorMsg);
                     context.Response.Write("OK");
                     return;
                 }
@@ -77,7 +183,6 @@ namespace ZofraTacna.Presentacion
             bool firmado = false;
             try
             {
-                string connStr = ConfigurationManager.ConnectionStrings["FirmaDigital"].ConnectionString;
                 using (var cn = new SqlConnection(connStr))
                 {
                     cn.Open();
@@ -112,22 +217,15 @@ namespace ZofraTacna.Presentacion
             }
             else
             {
-                // Si no esta firmado, ver si el agente registro cancelacion o error
-                if (!string.IsNullOrEmpty(token) && EstadoTransaccion.TryRemove(token, out string estadoAgente))
+                // Si no esta firmado, ver si el agente registro cancelacion o error en la BD
+                string estadoAgente = ObtenerYRemoverEstadoDeBD(connStr, token, out string errorMsg);
+                if (estadoAgente == "cancelado")
                 {
-                    if (estadoAgente == "cancelado")
-                    {
-                        context.Response.Write("{\"status\":\"cancelado\"}");
-                    }
-                    else if (estadoAgente.StartsWith("error:"))
-                    {
-                        string errMsg = estadoAgente.Substring(6);
-                        context.Response.Write("{\"status\":\"error\", \"mensaje\":\"" + errMsg.Replace("\"", "'") + "\"}");
-                    }
-                    else
-                    {
-                        context.Response.Write("{\"status\":\"pendiente\"}");
-                    }
+                    context.Response.Write("{\"status\":\"cancelado\"}");
+                }
+                else if (estadoAgente == "error")
+                {
+                    context.Response.Write("{\"status\":\"error\", \"mensaje\":\"" + (errorMsg ?? "Error").Replace("\"", "'") + "\"}");
                 }
                 else
                 {
@@ -142,4 +240,3 @@ namespace ZofraTacna.Presentacion
         }
     }
 }
-
