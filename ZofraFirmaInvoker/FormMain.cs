@@ -16,12 +16,24 @@ namespace ZofraFirmaInvoker
     public partial class FormMain : Form
     {
         private string _url;
+        private string _uploadUrl = null;
+        private bool _completed = false;
         
         public FormMain(string url)
         {
             InitializeComponent();
             _url = url;
             this.Load += FormMain_Load;
+            this.FormClosing += FormMain_FormClosing;
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!_completed && !string.IsNullOrEmpty(_uploadUrl))
+            {
+                _completed = true;
+                NotificarErrorServidor(_uploadUrl, "cancelado");
+            }
         }
 
         private async void FormMain_Load(object sender, EventArgs e)
@@ -37,7 +49,7 @@ namespace ZofraFirmaInvoker
                 var payload = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(jsonString);
                 
                 string downloadUrl = payload.documentToSign;
-                string uploadUrl = payload.uploadDocumentSigned;
+                _uploadUrl = payload.uploadDocumentSigned;
                 string logoUrl = payload.logoUrl;
                 string token = payload.token;
 
@@ -70,6 +82,8 @@ namespace ZofraFirmaInvoker
                 {
                     lblStatus.Text = "Firma cancelada por el usuario.";
                     btnCerrar.Visible = true;
+                    _completed = true;
+                    NotificarErrorServidor(_uploadUrl, "cancelado");
                     return;
                 }
                 
@@ -85,7 +99,7 @@ namespace ZofraFirmaInvoker
                 progressBar.Value = 90;
 
                 // 5. Subir PDF firmado
-                bool subidaOk = await SubirPdf(uploadUrl, pdfFirmado);
+                bool subidaOk = await SubirPdf(_uploadUrl, pdfFirmado);
                 if (!subidaOk)
                     throw new Exception("Error al subir el documento firmado.");
 
@@ -93,12 +107,56 @@ namespace ZofraFirmaInvoker
                 lblStatus.ForeColor = Color.MediumSeaGreen;
                 progressBar.Value = 100;
                 btnCerrar.Visible = true;
+                _completed = true;
             }
             catch (Exception ex)
             {
                 lblStatus.Text = "Error: " + ex.Message;
                 lblStatus.ForeColor = Color.Salmon;
                 btnCerrar.Visible = true;
+                _completed = true;
+                if (!string.IsNullOrEmpty(_uploadUrl))
+                {
+                    NotificarErrorServidor(_uploadUrl, "error:" + ex.Message);
+                }
+            }
+        }
+
+        private void NotificarErrorServidor(string uploadUrl, string status)
+        {
+            if (string.IsNullOrEmpty(uploadUrl)) return;
+            try
+            {
+                int idx = uploadUrl.IndexOf("FirmaPeruSubir.ashx", StringComparison.OrdinalIgnoreCase);
+                string verifyUrl = idx >= 0 
+                    ? uploadUrl.Substring(0, idx) + "VerificarEstadoFirma.ashx" + uploadUrl.Substring(idx + "FirmaPeruSubir.ashx".Length)
+                    : uploadUrl.Replace("FirmaPeruSubir.ashx", "VerificarEstadoFirma.ashx");
+
+                string actionParam = status == "cancelado" ? "cancel" : "error";
+                string url = verifyUrl + "&action=" + actionParam;
+                if (actionParam == "error")
+                {
+                    string errMsg = Uri.EscapeDataString(status.Replace("error:", ""));
+                    url += "&error=" + errMsg;
+                }
+
+                // Deshabilitar la verificación de certificado SSL (para entornos locales, auto-firmados o Azure)
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+
+                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+                request.Method = "GET";
+                request.Timeout = 10000; // 10 segundos
+                using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                {
+                    using (var reader = new System.IO.StreamReader(response.GetResponseStream()))
+                    {
+                        reader.ReadToEnd(); // Consumir respuesta
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al notificar al servidor: " + ex.Message);
             }
         }
 
