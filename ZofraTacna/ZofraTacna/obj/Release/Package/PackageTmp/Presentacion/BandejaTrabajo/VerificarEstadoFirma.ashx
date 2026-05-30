@@ -8,9 +8,38 @@ namespace ZofraTacna.Presentacion
 {
     public class VerificarEstadoFirma : IHttpHandler, System.Web.SessionState.IRequiresSessionState
     {
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> EstadoTransaccion = 
+            new System.Collections.Concurrent.ConcurrentDictionary<string, string>();
+
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "application/json";
+            
+            string action = context.Request.QueryString["action"];
+            string token = context.Request.QueryString["token"];
+
+            if (!string.IsNullOrEmpty(action))
+            {
+                if (string.IsNullOrEmpty(token))
+                {
+                    context.Response.Write("{\"status\":\"error\", \"mensaje\":\"Falta token para registrar accion\"}");
+                    return;
+                }
+                
+                if (action == "cancel")
+                {
+                    EstadoTransaccion[token] = "cancelado";
+                    context.Response.Write("OK");
+                    return;
+                }
+                else if (action == "error")
+                {
+                    string errorMsg = context.Request.QueryString["error"] ?? "Error desconocido en el agente.";
+                    EstadoTransaccion[token] = "error:" + errorMsg;
+                    context.Response.Write("OK");
+                    return;
+                }
+            }
             
             // 1. Validar sesión (con fallback por token si la sesión expiró en Azure)
             string login = context.Session["LoginUsuario"] as string;
@@ -83,7 +112,27 @@ namespace ZofraTacna.Presentacion
             }
             else
             {
-                context.Response.Write("{\"status\":\"pendiente\"}");
+                // Si no esta firmado, ver si el agente registro cancelacion o error
+                if (!string.IsNullOrEmpty(token) && EstadoTransaccion.TryRemove(token, out string estadoAgente))
+                {
+                    if (estadoAgente == "cancelado")
+                    {
+                        context.Response.Write("{\"status\":\"cancelado\"}");
+                    }
+                    else if (estadoAgente.StartsWith("error:"))
+                    {
+                        string errMsg = estadoAgente.Substring(6);
+                        context.Response.Write("{\"status\":\"error\", \"mensaje\":\"" + errMsg.Replace("\"", "'") + "\"}");
+                    }
+                    else
+                    {
+                        context.Response.Write("{\"status\":\"pendiente\"}");
+                    }
+                }
+                else
+                {
+                    context.Response.Write("{\"status\":\"pendiente\"}");
+                }
             }
         }
 
