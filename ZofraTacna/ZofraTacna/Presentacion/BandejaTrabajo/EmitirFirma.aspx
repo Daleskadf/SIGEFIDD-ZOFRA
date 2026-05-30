@@ -106,7 +106,7 @@
                     </div>
                     <div class="pdf-frame-wrap" id="pdfViewerWrapper">
                         <div class="pdf-float-actions" id="floatActionsFirma">
-                            <button type="button" class="btn-firma" onclick="prepararFirma(); abrirModalOpcionesFirma();">&#9998; Firmar Documento</button>
+                            <button type="button" class="btn-firma" onclick="abrirModalPreaviso();">&#9998; Firmar Documento</button>
                         </div>
                         <asp:Panel ID="pnlSinPdf" runat="server" Visible="false" CssClass="pdf-empty">No hay PDF almacenado para este tr&aacute;mite.</asp:Panel>
                         <iframe runat="server" id="ifrPdf" visible="false" title="Visor PDF"></iframe>
@@ -137,6 +137,20 @@
     </div>
 </div>
 <div id="addComponent"></div>
+<div id="modalPreavisoDni" class="modal-opciones-firma" style="z-index: 9100; display: none;">
+    <div class="modal-opciones-content" style="text-align: center; width: 420px; max-width: 90%;">
+        <button type="button" class="btn-cerrar-modal" onclick="cerrarModalPreaviso()">&times;</button>
+        <h3 style="color: #1a2a4a; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 18px; border-bottom: 1px solid #eef0f8; padding-bottom: 10px; margin-bottom: 15px;">
+            <svg viewBox="0 0 24 24" style="width: 22px; height: 22px; fill: #1a2a4a;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Verificación de Lector de DNI
+        </h3>
+        <p style="font-size: 13.5px; color: #555; line-height: 1.5; margin: 15px 0 20px 0; text-align: left;">
+            Asegúrese de introducir su DNI electrónico (v1/v2/v3) en el lector de DNI Electrónico y que este lo reconozca (normalmente con un sonido del sistema o mediante la aplicación IDplug manager), antes de apretar el botón "Firmar".
+        </p>
+        <button type="button" class="btn-accion" style="background: linear-gradient(135deg, #1a2a4a, #2a3f6f); margin-bottom: 10px;" onclick="confirmarPreaviso()">Firmar</button>
+        <button type="button" class="btn-secundario" style="margin-top: 0; width: 100%; border: 1px solid #c8d3ec; background: #f4f6fb;" onclick="cerrarModalPreaviso()">Cancelar</button>
+    </div>
+</div>
 <div id="modalOpcionesFirma" class="modal-opciones-firma">
     <div class="modal-opciones-content">
         <button type="button" class="btn-cerrar-modal" onclick="cerrarModalOpcionesFirma()">&times;</button>
@@ -249,8 +263,21 @@ function mostrarExitoYRedirigir() {
     }
 }
 
-function abrirModalOpcionesFirma() {
+function abrirModalPreaviso() {
     prepararFirma();
+    document.getElementById('modalPreavisoDni').style.display = 'flex';
+}
+
+function cerrarModalPreaviso() {
+    document.getElementById('modalPreavisoDni').style.display = 'none';
+}
+
+function confirmarPreaviso() {
+    cerrarModalPreaviso();
+    abrirModalOpcionesFirma();
+}
+
+function abrirModalOpcionesFirma() {
     document.getElementById('modalOpcionesFirma').style.display = 'flex';
     cambiarMetodoFirma();
 }
@@ -323,6 +350,30 @@ function lanzarAgente() {
                         var modalCarga = document.getElementById('modalCargaFirma');
                         if (modalCarga) modalCarga.style.display = 'none';
                         mostrarExitoYRedirigir();
+                    } else if (res.status === 'cancelado') {
+                        clearInterval(pollTimer);
+                        var modalCarga = document.getElementById('modalCargaFirma');
+                        if (modalCarga) modalCarga.style.display = 'none';
+                        
+                        document.getElementById('lblMensajeErrorModal').innerText = 'El proceso de firma fue cancelado por el usuario en el agente nativo de Windows.';
+                        var modalError = document.getElementById('modalErrorFirma');
+                        if (modalError) {
+                            var title = modalError.querySelector('.modal-error-title');
+                            if (title) title.innerText = 'Firma Cancelada';
+                            modalError.style.display = 'flex';
+                        }
+                    } else if (res.status === 'error') {
+                        clearInterval(pollTimer);
+                        var modalCarga = document.getElementById('modalCargaFirma');
+                        if (modalCarga) modalCarga.style.display = 'none';
+                        
+                        document.getElementById('lblMensajeErrorModal').innerText = res.mensaje || 'Ocurrió un error desconocido al intentar firmar el documento.';
+                        var modalError = document.getElementById('modalErrorFirma');
+                        if (modalError) {
+                            var title = modalError.querySelector('.modal-error-title');
+                            if (title) title.innerText = 'Error al firmar documento';
+                            modalError.style.display = 'flex';
+                        }
                     }
                 } catch(e) {}
             }
@@ -332,6 +383,7 @@ function lanzarAgente() {
         intentos++;
         if (intentos >= maxIntentos) {
             clearInterval(pollTimer);
+            var modalCarga = document.getElementById('modalCargaFirma');
             if (modalCarga) modalCarga.style.display = 'none';
             alert("Tiempo de espera agotado. Verifique si el documento fue firmado en el historial.");
         }
