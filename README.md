@@ -74,33 +74,6 @@ En la pantalla **Emitir firma**, se utiliza un certificado disponible en el alma
 
 Para evitar invalidar firmas previas, el PDF se firma en modo **append** (anexar), lo que permite múltiples firmas en el mismo documento.
 
-### Firma vía Firma Perú / agente local (flujo por endpoints)
-
-Existe un flujo basado en endpoints HTTP para integrarse con un firmador externo (aplicación/cliente):
-
-- **Entrega del documento a firmar**: endpoint que sirve el PDF del documento.
-- **Parámetros de firma**: endpoint que entrega parámetros serializados (para consumo del cliente de firma).
-- **Recepción del documento firmado**: endpoint que recibe el PDF firmado y actualiza el flujo.
-
-Además, se soportan dos mecanismos típicos:
-
-- **Firma Perú (ClickOnce)**: handler que intenta abrir la aplicación instalada en el equipo (escenarios locales/intranet).
-- **Agente local (protocolo personalizado)**: desde el navegador se invoca un esquema `zofratacna://...` para abrir un firmador de escritorio, el cual descarga el PDF y luego sube el PDF firmado al sistema.
-
-### Firma usada en esta rama para despliegue web (Cliente Web Firma Perú)
-
-En el escenario “desplegado en web” (servidor en una máquina y usuarios firmando desde sus PCs), **la firma no se ejecuta en el servidor**. En esta rama se utiliza el **Cliente Web de Firma Perú** (JS) que invoca un componente local en la PC del usuario para firmar con su certificado.
-
-- **Biblioteca JS**: se carga `firmaperu.min.js` desde `https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js` (ver [EmitirFirma](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/EmitirFirma.aspx) y el ejemplo [EmitirFirmaSimple](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/EmitirFirmaSimple.aspx)).
-- **Invocación**: el navegador arma un JSON con `param_url`, `param_token` y `document_extension`, lo codifica en Base64 y llama `startSignature(48596, base64)` (ver [EmitirFirmaSimple](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/EmitirFirmaSimple.aspx)).
-- **Token**: `param_token` es un token URL-safe Base64 generado por el sistema con el formato `idDocumento|login|ticks`. Se usa para identificar el documento y el usuario firmante en la descarga/subida del PDF (ver [DescargaDocumentoTemporal](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/DescargaDocumentoTemporal.ashx.cs) y [FirmaPeruSubir](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx.cs)).
-- **Obtención de parámetros**: el componente local consulta `param_url` para obtener parámetros de firma (Base64) generados por el sistema (ver [FirmaPeruParametros](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx.cs)).
-- **Descarga del PDF**: el componente local descarga el PDF desde el endpoint indicado en `documentToSign` (por ejemplo [FirmaPeruDocumento](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruDocumento.ashx.cs)).
-- **Firma en el equipo del usuario**: el usuario selecciona el certificado y confirma el PIN en el diálogo nativo del proveedor (token/DNIe). El PDF se firma localmente.
-- **Subida del PDF firmado**: el componente local realiza un POST hacia `uploadDocumentSigned` y el sistema recibe el PDF firmado (ver [FirmaPeruSubir](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruSubir.ashx.cs)).
-- **Confirmación en UI**: la pantalla puede consultar si ya se registró la firma para el usuario/documento (polling) (ver [VerificarEstadoFirma](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/VerificarEstadoFirma.ashx)).
-
-Este enfoque permite un despliegue web real, ya que **las llaves privadas nunca salen del dispositivo del usuario** y el servidor solo recibe el PDF ya firmado y actualiza el flujo.
 
 ## Firma desplegada (firma visible en el PDF)
 
@@ -119,4 +92,3 @@ El proceso es:
 
 Este mecanismo permite estampar la firma en diferentes páginas y posiciones de manera consistente, independientemente del tamaño del PDF.
 
-Nota: en el flujo de **Cliente Web Firma Perú**, la visibilidad/estilo de la firma depende de los parámetros que se entregan en [FirmaPeruParametros](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx.cs) (por ejemplo `visiblePosition`). En el flujo nativo del servidor (firma con iTextSharp), la firma visible se construye con PDF.js + coordenadas relativas capturadas en [EmitirFirma](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/EmitirFirma.aspx) y se aplica al firmar.
