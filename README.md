@@ -99,5 +99,3 @@ El proceso es:
 Este mecanismo permite estampar la firma en diferentes páginas y posiciones de manera consistente, independientemente del tamaño del PDF.
 
 Nota: en el flujo de **Cliente Web Firma Perú**, la visibilidad/estilo de la firma depende de los parámetros que se entregan en [FirmaPeruParametros](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/FirmaPeruParametros.ashx.cs) (por ejemplo `visiblePosition`). En el flujo nativo del servidor (firma con iTextSharp), la firma visible se construye con PDF.js + coordenadas relativas capturadas en [EmitirFirma](ZofraTacna/ZofraTacna/Presentacion/BandejaTrabajo/EmitirFirma.aspx) y se aplica al firmar.
-# SIGEFIDD-ZOFRA
-
